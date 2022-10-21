@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'authors.apps.AuthorsConfig',
+    'friends.apps.FriendsConfig',
 ]
 
 MIDDLEWARE = [
