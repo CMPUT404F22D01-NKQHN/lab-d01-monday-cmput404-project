@@ -11,6 +11,7 @@ Team Members:
 1. Setup virtual environment
 
 `virtualenv venv --python=python3`
+
 `source venv/bin/activate`
 
 2. Install packages
