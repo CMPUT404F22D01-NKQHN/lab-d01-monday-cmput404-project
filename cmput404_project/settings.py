@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'authors.apps.AuthorsConfig',
     'friends.apps.FriendsConfig',
+    'posts.apps.PostsConfig',
 ]
 
 MIDDLEWARE = [
