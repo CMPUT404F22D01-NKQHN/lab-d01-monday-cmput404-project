@@ -14,9 +14,9 @@ class AuthorManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email = email, display_name = display_name, password = password, **kwargs)
         user.set_password(password)
-        user.is_admin = True
+        user.is_admin = False
         user.save()
-        return user
+        return user 
 
 
     def create_superuser(self, email: str, display_name, password, **kwargs):
@@ -41,11 +41,23 @@ class Author(AbstractUser):
     # host = models.TextField(max_length=200, default = 'localhost')
     display_name = models.TextField(max_length=200, editable = True)
     github = models.TextField(max_length = 200, default = '', blank = True)
-    #profileImage = models.ImageField(blank = True)
-    is_admin = models.BooleanField(default=True)
+    profileImage = models.TextField(max_length = 200, default = '', blank = True)
+    is_admin = models.BooleanField(default=False)
     REQUIRED_FIELDS = ['email', 'display_name', 'password']
 
     objects = AuthorManager()
+    def __str__(self):
+        return self.display_name   
+
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    def has_module_perms(self, app_label):
+        "Does the user have permissions to view the app `app_label`?"
+        # Simplest possible answer: Yes, always
+        return True
     
     @property
     def is_staff(self):
