@@ -1,0 +1,30 @@
+name: Code Coverage
+on:
+  push:
+    branches: ["main"]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
+      - name: Remove git i
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install coverage
+      - name: Generate Code Coverage
+        run: |
+          coverage run --source='.' manage.py test
+          coverage html
+      - name: Commit Code Coverage
+        uses: EndBug/add-and-commit@v7
+        with:
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
+          message: "Generate code coverage"
+          branch: "code-coverage"
