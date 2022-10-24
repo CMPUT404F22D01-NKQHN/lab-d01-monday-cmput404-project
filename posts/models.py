@@ -10,11 +10,21 @@ class Post(models.Model):
     published = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length = 500, blank = True)
     unlisted = models.BooleanField(default = False)
-    contentType = models.TextField(max_length = 2000)
-    content = models.CharField(max_length = 200, blank = True)
-    visibility = models.TextField(max_length = 2000)
-    author = models.ForeignKey('authors.Author', on_delete = models.CASCADE)
+    contentType = models.TextField(max_length = 200)
+    content = models.CharField(max_length = 2000, blank = True)
+    visibility = models.TextField(max_length = 200)
+    author = models.ForeignKey('authors.Author', on_delete=models.DO_NOTHING)
+    categories = models.ManyToManyField('posts.Category')
+    comments = models.ManyToManyField('posts.Comment')
     
-    # todo: Adding later
-    # comments = models.ForeignKey(
-    # categories = models.ForeignKey('')
+class Comment(models.Model):
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    post_id = models.UUIDField(editable = False)
+    replies = models.ManyToManyField('posts.Comment')
+    reply_to = models.UUIDField(blank = True, null = True)
+    content = models.TextField(max_length = 200)
+    author = models.ForeignKey('authors.Author', on_delete=models.DO_NOTHING)
+    published = models.DateTimeField(auto_now_add=True)
+    
+class Category(models.Model):
+    name = models.CharField(max_length = 300)
