@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from authors.models import Author
-from .models import Post, Comment
+from .models import Like, Post, Comment
 from .serializers import (
     CreateCommentSerializer,
     ReadCommentSerializer,
@@ -121,6 +121,41 @@ def like_post(request):
             
         like = CreateLikeSerializer().create(request.data)
         return Response(ReadLikeSerializer(like).data)
+    except AssertionError:
+        return Response(status=403)
+    
+@login_required
+@api_view(["GET"])
+def get_likes_on_post(request, post_id):
+    try:
+        post = Post.objects.get(id=int(post_id))
+        assert post.visibility == "PUBLIC" or post.author.id == request.user.id or post.author.followers.filter(id=request.user.id).exists()
+        likes = ReadLikeSerializer(post.likes, many=True).data
+        return Response(likes)
+    except AssertionError:
+        return Response(status=403)
+
+@login_required
+@api_view(["GET"])
+def get_likes_on_comment(request, comment_id):
+    try:
+        comment = Comment.objects.get(id=int(comment_id))
+        post_id = comment.post_id
+        post = Post.objects.get(id=post_id)
+        assert post.visibility == "PUBLIC" or post.author.id == request.user.id or post.author.followers.filter(id=request.user.id).exists()
+        likes = ReadLikeSerializer(comment.likes, many=True).data
+        return Response(likes)
+    except AssertionError:
+        return Response(status=403)
+
+@login_required
+@api_view(["POST"])
+def delete_like(request):
+    try:
+        like = Like.objects.get(id=int(request.data['like_id']))
+        assert like.sender.id == request.user.id
+        like.delete()
+        return Response(status=204)
     except AssertionError:
         return Response(status=403)
 
