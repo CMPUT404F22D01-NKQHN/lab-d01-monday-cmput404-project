@@ -14,17 +14,17 @@ class Post(models.Model):
     content = models.CharField(max_length = 2000, blank = True)
     visibility = models.TextField(max_length = 200)
     author = models.ForeignKey('authors.Author', on_delete=models.DO_NOTHING)
-    categories = models.ManyToManyField('posts.Category')
-    comments = models.ManyToManyField('posts.Comment')
+    #categories = models.ManyToManyField('posts.Category')
+    #comments = models.ManyToManyField('posts.Comment')
     
-class Comment(models.Model):
-    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
-    post_id = models.UUIDField(editable = False)
-    replies = models.ManyToManyField('posts.Comment')
-    reply_to = models.UUIDField(blank = True, null = True)
-    content = models.TextField(max_length = 200)
-    author = models.ForeignKey('authors.Author', on_delete=models.DO_NOTHING)
-    published = models.DateTimeField(auto_now_add=True)
+#class Comment(models.Model):
+#     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+#     post_id = models.UUIDField(editable = False)
+#     replies = models.ManyToManyField('posts.Comment')
+#     reply_to = models.UUIDField(blank = True, null = True)
+#     content = models.TextField(max_length = 200)
+#     author = models.ForeignKey('authors.Author', on_delete=models.DO_NOTHING)
+#     published = models.DateTimeField(auto_now_add=True)
     
-class Category(models.Model):
-    name = models.CharField(max_length = 300)
+# #class Category(models.Model):
+#     name = models.CharField(max_length = 300)

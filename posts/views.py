@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Post, Comment
+from .models import Post# Comment
 from .serializers import (
-    CreateCommentSerializer,
-    ReadCommentSerializer,
+    #CreateCommentSerializer,
+    #ReadCommentSerializer,
     ReadPostSerializer,
     CreatePostSerializer,
 )
@@ -36,7 +36,6 @@ def update_post(request, post_id):
     # TODO: Implement this
     pass
 
-
 @api_view(["DELETE"])
 def delete_post(request, post_id):
     post = Post.objects.get(id=int(post_id))
@@ -52,16 +51,16 @@ def get_posts_by_author(request, author_id):
         ).data
     )
 
-@extend_schema(
-    request=CreateCommentSerializer,
-    responses=ReadCommentSerializer,
-)
-@api_view(["POST"])
-def comment_post(request):
-    comment = CreateCommentSerializer().create(request.data)
-    return Response(ReadCommentSerializer(comment).data)
+# @extend_schema(
+#     request=CreateCommentSerializer,
+#     responses=ReadCommentSerializer,
+# )
+# @api_view(["POST"])
+# def comment_post(request):
+#     comment = CreateCommentSerializer().create(request.data)
+#     return Response(ReadCommentSerializer(comment).data)
 
 
-@api_view(["GET"])
-def get_all_comments(request):
-    return Response(ReadCommentSerializer(Comment.objects.all(), many=True).data)
+# @api_view(["GET"])
+# def get_all_comments(request):
+#     return Response(ReadCommentSerializer(Comment.objects.all(), many=True).data)

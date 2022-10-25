@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from authors.models import Author
 from authors.serializers import AuthorSerializer
-from .models import Post,Comment
+from .models import Post#Comment
 
 class CreatePostSerializer(serializers.ModelSerializer):
     title = serializers.CharField()
@@ -42,9 +42,9 @@ class CreateCommentSerializer(serializers.ModelSerializer):
             reply_to = Comment.objects.get(id=data['reply_to'])
             reply_to.replies.add(comment)
         return comment
-    class Meta:
-        model = Comment
-        exclude = ('id', 'published', 'replies')
+    # class Meta:
+    #     model = Comment
+    #     exclude = ('id', 'published', 'replies')
 
 class ReadCommentSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField('get_type')
@@ -56,9 +56,9 @@ class ReadCommentSerializer(serializers.ModelSerializer):
     def get_author(self, obj):
         return AuthorSerializer(obj.author).data
     
-    class Meta:
-        model = Comment
-        fields = '__all__'
+    # class Meta:
+    #     model = Comment
+    #     fields = '__all__'
     
 
 class ReadPostSerializer(serializers.ModelSerializer):
