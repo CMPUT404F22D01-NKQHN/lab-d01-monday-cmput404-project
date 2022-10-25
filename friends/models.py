@@ -19,3 +19,7 @@ class FriendRequest(models.Model):
                 fields=['sender', 'accepter'], name='unique_friend_request_combination'
             )
         ]
+        permissions = [
+            ('can_accept_friend_request', 'Can accept friend request'),
+            ('can_reject_friend_request', 'Can reject friend request'),
+        ]

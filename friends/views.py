@@ -4,14 +4,16 @@ from rest_framework.response import Response
 from .serializers import FollowersSerializer, FriendRequestSerializer
 from .models import FriendRequest
 from authors.models import Author
-
+from django.contrib.auth.decorators import login_required
 
 @api_view(['POST'])
+@login_required
 def create_friend_request(request):
-    sender_id = request.data['sender_id']
+    sender_id = request.user.id
     accepter_id = request.data['accepter_id']
     friend_request = FriendRequestSerializer().create(sender_id, accepter_id)
     return Response(FriendRequestSerializer(friend_request).data)
+
 
 @api_view(['GET'])
 def get_all_friend_requests(request):
@@ -27,13 +29,13 @@ def get_authors_friend_requests(request):
     return Response(serializer.data)
 
 @api_view(['PUT'])
+@login_required
 def accept_friend_request(request):
-    author_id = request.data['author_id']
+    author = request.user
     friend_id = request.data['friend_id']
-    friend_request = FriendRequest.objects.get(sender=friend_id, accepter=author_id)
+    friend_request = FriendRequest.objects.get(sender=friend_id, accepter=author.id)
     friend_request.accepted = True
     friend_request.save()
-    author:Author = Author.objects.get(id=author_id)
     friend = Author.objects.get(id=friend_id)
     author.followers.add(friend)
     return Response(FriendRequestSerializer(friend_request).data)

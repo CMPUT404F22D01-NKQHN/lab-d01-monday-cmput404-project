@@ -10,4 +10,5 @@ urlpatterns = [
     path('service/get-posts-by-author/<str:author_id>', views.get_posts_by_author, name='get_posts_by_author'),
     path('service/get-all-comments/', views.get_all_comments, name='get_all_comments'),
     path('service/comment-on-post/', views.comment_post, name='comment_post')
+    #path('service/like-post/', views.like_post, name = 'like_post')
 ]   
