@@ -108,17 +108,23 @@ def get_all_comments(request):
 
 @login_required
 @api_view(["POST"])
-def like_post(request):
+def like_post(request, post_id):
     try:
-        if not request.data['is_comment']:
-            post = Post.objects.get(id=int(request.data['liked_id']))
-            assert post.visibility == "PUBLIC" or post.author.id == request.user.id or post.author.followers.filter(id=request.user.id).exists()
-        else:
-            comment = Comment.objects.get(id=int(request.data['liked_id']))
-            post_id = comment.post_id
-            post = Post.objects.get(id=post_id)
-            assert post.visibility == "PUBLIC" or post.author.id == request.user.id or post.author.followers.filter(id=request.user.id).exists()
-            
+        post = Post.objects.get(id=int(post_id))
+        assert post.visibility == "PUBLIC" or post.author.id == request.user.id or post.author.followers.filter(id=request.user.id).exists()
+        like = CreateLikeSerializer().create(request.data)
+        return Response(ReadLikeSerializer(like).data)
+    except AssertionError:
+        return Response(status=403)
+
+@login_required
+@api_view(["POST"])
+def like_comment(request, comment_id):
+    try:
+        comment = Comment.objects.get(id=int(comment_id))
+        post_id = comment.post_id
+        post = Post.objects.get(id=post_id)
+        assert post.visibility == "PUBLIC" or post.author.id == request.user.id or post.author.followers.filter(id=request.user.id).exists()
         like = CreateLikeSerializer().create(request.data)
         return Response(ReadLikeSerializer(like).data)
     except AssertionError:

@@ -69,19 +69,20 @@ class CreateLikeSerializer(serializers.ModelSerializer):
     accepter_id = serializers.IntegerField(required = False)
     liked_id = serializers.IntegerField()
     
-    def create(self, data):
-        sender:Author = Author.objects.get(id=data['sender_id'])
-        del data['sender_id']
-        data['sender'] = sender
-        accepter = Author.objects.get(id=data['accepter_id'])
-        del data['accepter_id']
-        data['accepter'] = accepter
-        like = Like.objects.create(**data)
-        if data['is_comment']:
-            comment = Comment.objects.get(id=data['liked_id'])
+    def create(self, sender, accepter, is_comment, liked_id):
+        if is_comment:
+            assert Comment.objects.filter(id=liked_id).exists(), "Comment does not exist"
+            assert Comment.objects.get(id=liked_id).author == accepter, "Comment does not belong to accepter"
+        else:
+            assert Post.objects.filter(id=liked_id).exists(), "Post does not exist"
+            assert Post.objects.get(id=liked_id).author == accepter, "Post does not belong to accepter"
+        
+        like = Like.objects.create(sender=sender, accepter=accepter, is_comment=is_comment, liked_id=liked_id)
+        if is_comment:
+            comment = Comment.objects.get(id=liked_id)
             comment.likes.add(like)
         else:
-            post = Post.objects.get(id=data['liked_id'])
+            post = Post.objects.get(id=liked_id)
             post.likes.add(like)
         sender.liked.add(like)
         return like

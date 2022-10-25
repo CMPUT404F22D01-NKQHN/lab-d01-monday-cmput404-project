@@ -66,18 +66,12 @@ class LikeTestCase(TestCase):
     author = create_author("test", "test", "test", "test")
     author2 = create_author("test2", "test2", "test2", "test2")
     post = create_post(author)
-    like_data = {
-      "liked_id": post.id,
-      "sender_id": author.id,
-      "is_comment": False,
-      "accepter_id": author2.id,
-    }
-    like = CreateLikeSerializer().create(like_data)
+    like = CreateLikeSerializer().create(sender=author2, liked_id=post.id, is_comment=False, accepter=author)
     self.assertEqual(like.liked_id, post.id)
-    self.assertEqual(like.sender, author)
-    self.assertEqual(like.accepter, author2)
+    self.assertEqual(like.sender, author2)
+    self.assertEqual(like.accepter, author)
     self.assertTrue(like in post.likes.all())
-    self.assertTrue(like in author.liked.all())
+    self.assertTrue(like in author2.liked.all())
     self.assertTrue(ReadPostSerializer(post).data['likes']==1)
     
   def test_like_comment(self):
@@ -90,27 +84,15 @@ class LikeTestCase(TestCase):
       "author_id": author.id,
     }
     comment = CreateCommentSerializer().create(comment_data)
-    like_data = {
-      "liked_id": comment.id,
-      "sender_id": author.id,
-      "is_comment": True,
-      "accepter_id": author2.id,
-    }
-    like = CreateLikeSerializer().create(like_data)
+    like = CreateLikeSerializer().create(sender=author2, liked_id=comment.id, is_comment=True, accepter=author)
     self.assertEqual(like.liked_id, comment.id)
-    self.assertEqual(like.sender, author)
-    self.assertEqual(like.accepter, author2)
+    self.assertEqual(like.sender, author2)
+    self.assertEqual(like.accepter, author)
     self.assertTrue(like in comment.likes.all())
-    self.assertTrue(like in author.liked.all())
+    self.assertTrue(like in author2.liked.all())
     self.assertTrue(ReadCommentSerializer(comment).data['likes']==1)
     author3 = create_author("test3", "test3", "test3", "test3")
-    like_data = {
-      "liked_id": comment.id,
-      "sender_id": author3.id,
-      "is_comment": True,
-      "accepter_id": author2.id,
-    }
-    like = CreateLikeSerializer().create(like_data)
+    like = CreateLikeSerializer().create(sender=author3, liked_id=comment.id, is_comment=True, accepter=author)
     self.assertTrue(ReadCommentSerializer(comment).data['likes']==2)
     print(ReadLikeSerializer(like).data)
     
