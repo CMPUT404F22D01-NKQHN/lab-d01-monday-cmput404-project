@@ -35,10 +35,7 @@ class AuthorManager(BaseUserManager):
 
 
 class Author(AbstractUser):
-    #email = models.EmailField(verbose_name = 'email', max_length = 200, unique = True)
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False) 
-    # url = models.TextField(max_length=100, blank= False, editable = False)
-    # host = models.TextField(max_length=200, default = 'localhost')
     display_name = models.TextField(max_length=200, editable = True)
     github = models.TextField(max_length = 200, default = '', blank = True)
     profileImage = models.TextField(max_length = 200, default = '', blank = True)
