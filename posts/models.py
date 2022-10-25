@@ -17,7 +17,7 @@ class Post(models.Model):
     author = models.ForeignKey('authors.Author', on_delete=models.DO_NOTHING)
     categories = models.ManyToManyField('posts.Category')
     comments = models.ManyToManyField('posts.Comment')
-    #likes = models.ManyToManyField('posts.Likes')
+    likes = models.ManyToManyField('posts.Like')
     
 class Comment(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
@@ -27,18 +27,15 @@ class Comment(models.Model):
     content = models.TextField(max_length = 200)
     author = models.ForeignKey('authors.Author', on_delete=models.DO_NOTHING)
     published = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField('posts.Like')
 
-class Likes(models.Model):
+class Like(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
-    context = models.CharField(max_length = 200)
-    summary = models.CharField(max_length = 100)
     liked_id = models.UUIDField(editable = False)
-    author = models.ForeignKey('authors.Author', on_delete = models.CASCADE)
-    url = models.CharField(max_length = 100)
-    object = models.CharField(max_length = 200)
     sender = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='likes_sender')
     accepter = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='likes_accepter')
     is_comment = models.BooleanField(default = False)
+    published = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         sender:Author = self.sender

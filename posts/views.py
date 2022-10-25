@@ -9,7 +9,8 @@ from .serializers import (
     ReadCommentSerializer,
     ReadPostSerializer,
     CreatePostSerializer,
-    LikesSerializer
+    ReadLikeSerializer,
+    CreateLikeSerializer,
 )
 from drf_spectacular.utils import extend_schema
 from django.contrib.auth.decorators import login_required
@@ -105,12 +106,21 @@ def comment_post(request):
 def get_all_comments(request):
     return Response(ReadCommentSerializer(Comment.objects.all(), many=True).data)
 
-
-# @api_view(["POST"])
-# def like_post(request):
-#     # try:
-#     #     assert request.user.id == request.data['author_id']
-#     #     likes = LikesSerializer.create(request.data)
-#     #     return Response()
-#     # pass
+@login_required
+@api_view(["POST"])
+def like_post(request):
+    try:
+        if not request.data['is_comment']:
+            post = Post.objects.get(id=int(request.data['liked_id']))
+            assert post.visibility == "PUBLIC" or post.author.id == request.user.id or post.author.followers.filter(id=request.user.id).exists()
+        else:
+            comment = Comment.objects.get(id=int(request.data['liked_id']))
+            post_id = comment.post_id
+            post = Post.objects.get(id=post_id)
+            assert post.visibility == "PUBLIC" or post.author.id == request.user.id or post.author.followers.filter(id=request.user.id).exists()
+            
+        like = CreateLikeSerializer().create(request.data)
+        return Response(ReadLikeSerializer(like).data)
+    except AssertionError:
+        return Response(status=403)
 
