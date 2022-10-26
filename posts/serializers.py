@@ -51,7 +51,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
         assert data['visibility'] in ["PUBLIC","FRIENDS"], "Invalid visibility"
         assert data['contentType'] in ["text/markdown","text/plain","application/base64","image/png;base64","image/jpeg;base64"],"Invalid content-type"
         author = Author.objects.get(id=data['author_id'])
-        del data['author_id']
+        # del data['author_id']
         data['author'] = author
         post = Post.objects.create(**data)
         return post

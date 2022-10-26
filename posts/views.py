@@ -257,5 +257,5 @@ class PostListAPI(GenericAPIView):
         responses=ReadPostSerializer,
     )
     def post(self, request, author_id):
-        return create_post(request)
+        return create_post(request, author_id)
     
