@@ -42,15 +42,14 @@ class CreatePostSerializer(serializers.ModelSerializer):
     origin = serializers.CharField()
     description = serializers.CharField()
     unlisted = serializers.BooleanField()
-    author_id = serializers.IntegerField()
     visibility = serializers.CharField()
     contentType = serializers.CharField()
     content = serializers.CharField()
     
-    def create(self, data):
+    def create(self, data, author_id):
         assert data['visibility'] in ["PUBLIC","FRIENDS"], "Invalid visibility"
         assert data['contentType'] in ["text/markdown","text/plain","application/base64","image/png;base64","image/jpeg;base64"],"Invalid content-type"
-        author = Author.objects.get(id=data['author_id'])
+        author = Author.objects.get(id=int(author_id))
         # del data['author_id']
         data['author'] = author
         post = Post.objects.create(**data)

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from authors.models import Author
 from posts.models import Post
+import requests
 # Create your views here.
 
 # I think here we will send all the required data for the feed as well as the buttons for the user to click on i.e. posts
@@ -8,13 +9,16 @@ from posts.models import Post
 def home(request):
     
     authors = Author.objects.all()
+    authors2 = requests.get('http://127.0.0.1:8000/authors')
+    print(authors2.json())
     # Get posts and order by published date
     posts = Post.objects.all().order_by('-published')
     # get the posts title and author
     #posts = posts.values('title', 'author', 'id', 'published')
     context = {
         'posts': posts,
-        'authors': authors
+        'authors': authors,
+        'author_id': int(request.user.id),
     }
     
     return render(request, 'home/index.html', context)

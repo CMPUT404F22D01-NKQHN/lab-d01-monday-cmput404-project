@@ -22,7 +22,11 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="http://127.0.0.1:8000/admin/posts/post/add/">Post <span class="sr-only">(current)</span></a>
+            {% comment %} <a class="nav-link" href="http://127.0.0.1:8000/admin/posts/post/add/">Post <span class="sr-only">(current)</span></a> {% endcomment %}
+            <button type="button" class="btn btn-primary" onclick="showForm()">
+              Post
+            </button>
+            </form>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Profile</a> <!-- Here we can put the logged in user's name instead of "Profile" -->
@@ -36,7 +40,8 @@
         </ul>
       </div>
     </nav>
-    <div class = "container">    
+    <div class = "container">  
+      {{author_id}}  
     {% for post in posts %}
         <h1>{{ post.title }}</h1>
         <p>By {{ post.author }} On {{post.published}}</p>
@@ -49,5 +54,40 @@
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    </body>
+        <script>
+          function showForm(){
+            const title = prompt("Enter the title of your post");
+            const content = prompt("Enter the content of your post");
+            const source = prompt("Enter the source of your post");
+            const origin = prompt("Enter the origin of your post");
+            const description = prompt("Enter the description of your post");
+            const unlisted = true;
+            const author_id = "{{ author_id }}";
+            
+            const visibility = "PUBLIC";
+            const contentType ="text/plain";
+            const data = {
+              "title": title,
+              "source": source,
+              "origin": origin,
+              "description": description,
+              "unlisted": unlisted,
+              "visibility": visibility,
+              "contentType": contentType,
+              "content": content
+            }
+            const options = {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+              },
+              body: JSON.stringify(data)
+            }
+            fetch('http://127.0.0.1:8000/authors/'+author_id+'/posts', options);
+            
+          }
+          
+        </script>
+      </body>
 </html>
