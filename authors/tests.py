@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Author
+from .models import Author, AuthorManager
 
 class AuthorTestCase(TestCase):
     def setUp(self):
@@ -24,3 +24,9 @@ class AuthorTestCase(TestCase):
     def test_get_all(self):
         all_authors = Author.objects.all()
         self.assertEqual(len(all_authors), 2)
+        
+    def test_user_manager(self):
+        test1 = Author.objects.create_user(display_name = 'test', email = 'test1', password = 'test1', username = 'normal')
+        test2 = Author.objects.create_superuser(display_name = 'test2', email = 'test2', password = 'test2', username = 'super')
+        self.assertTrue(not test1.is_staff)
+        self.assertTrue(test2.is_staff)

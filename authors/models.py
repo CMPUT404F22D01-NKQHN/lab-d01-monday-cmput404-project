@@ -43,6 +43,7 @@ class Author(AbstractUser):
     REQUIRED_FIELDS = ['email', 'display_name', 'password']
     followers = models.ManyToManyField('Author')
     objects = AuthorManager()
+    liked = models.ManyToManyField('posts.Like')
     def __str__(self):
         return self.display_name   
 

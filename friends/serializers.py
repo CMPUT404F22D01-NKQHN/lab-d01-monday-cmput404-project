@@ -4,6 +4,11 @@ from authors.serializers import AuthorSerializer
 from authors.models import Author
 from .models import FriendRequest
 
+class CreateFriendRequestSerializer(serializers.Serializer):
+    accepter_id = serializers.IntegerField()
+    def create(self, sender_id, accepter_id):
+        friend_request = FriendRequest.objects.create(sender_id=sender_id, accepter_id=accepter_id)
+        return friend_request
 class FriendRequestSerializer(serializers.Serializer):
     type = serializers.SerializerMethodField('get_type')
     summary = serializers.SerializerMethodField('get_summary')
@@ -35,7 +40,7 @@ class FollowersSerializer(serializers.Serializer):
     items = serializers.SerializerMethodField('get_items')
     
     def get_type(self, model):
-        return 'Followers'
+        return 'followers'
     
     def get_items(self, model:Author):
         return AuthorSerializer(model.followers, many=True).data
