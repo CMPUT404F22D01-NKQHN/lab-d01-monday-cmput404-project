@@ -12,6 +12,10 @@ def get_authors(request):
     authors = ReadAuthorsSerializer(Author.objects.all())
     return Response(authors.data)
 
+@extend_schema(
+    request=UpdateAuthorSerializer,
+    responses=AuthorSerializer,
+)
 @api_view(['GET','POST'])
 def author(request, author_id):
     if request.method == 'GET':
@@ -19,17 +23,11 @@ def author(request, author_id):
     elif request.method == 'POST':
         return update_author(request, author_id)
 
-@api_view(['GET'])
 def get_author(request, author_id):
     """Get author"""
     author = Author.objects.get(id=int(author_id))
     return Response(AuthorSerializer(author).data)
 
-@api_view(['POST'])
-@extend_schema(
-    request=UpdateAuthorSerializer,
-    responses=AuthorSerializer,
-)
 def update_author(request, author_id):
     """Update The Author"""
     author = Author.objects.get(id = int(author_id))

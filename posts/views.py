@@ -17,30 +17,12 @@ from drf_spectacular.utils import extend_schema
 from django.contrib.auth.decorators import login_required
 
 
-@api_view(["GET"])
-@extend_schema(
-    description="Get all posts",
-    responses=ReadPostSerializer,
-)
 def get_all_posts(request):
     return Response(ReadPostSerializer(Post.objects.all(), many=True).data)
 
-
-@api_view(["GET"])
-@extend_schema(
-    description="Get given post",
-    responses=ReadPostSerializer,
-)
 def get_post(request, post_id="", author_id=""):
     return Response(ReadPostSerializer(Post.objects.get(id=int(post_id))).data)
 
-
-@extend_schema(
-    request=CreatePostSerializer,
-    responses=ReadPostSerializer,
-)
-@login_required
-@api_view(["POST"])
 def create_post(request, author_id):
     try:
         assert int(request.user.id) == int(author_id), "User ID does not match author ID"
@@ -49,8 +31,22 @@ def create_post(request, author_id):
     except AssertionError as e:
         return Response(status=403, data={"error": str(e)})
 
+@api_view(["POST","GET","DELETE", "PUT"])
+def post_crud(request, author_id, post_id=""):
+    if request.method == "GET":
+        return get_post(request, post_id, author_id)
+    elif request.method == "PUT":
+        return update_post(request, author_id, post_id)
+    elif request.method == "DELETE":
+        return delete_post(request, post_id)
+    
+@api_view(["POST","GET"])
+def all_posts(request, author_id):
+    if request.method == "GET":
+        return get_posts_by_author(request, author_id)
+    elif request.method == "POST":
+        return create_post(request, author_id)
 
-@api_view(["PUT"])
 def update_post(request, post_id):
     """Update The Post"""
     post = Post.objects.get(id = int(post_id))
@@ -62,8 +58,6 @@ def update_post(request, post_id):
     return Response(ReadPostSerializer(post).data)
 
 
-@login_required
-@api_view(["DELETE"])
 def delete_post(request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
@@ -73,9 +67,6 @@ def delete_post(request, post_id):
     except AssertionError:
         return Response(status=403)
 
-
-@api_view(["GET"])
-@login_required
 def get_posts_by_author(request, author_id):
     follower = Author.objects.get(id=int(author_id)).followers.filter(id=request.user.id).exists()
     if follower:
