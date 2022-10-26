@@ -1,0 +1,27 @@
+.post-btn{
+    background-color: #f5f5f5;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    color: #333;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 700;
+    height: 36px;
+    line-height: 36px;
+    margin: 0;
+    padding: 0 16px;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    vertical-align: middle;
+    white-space: nowrap;
+    width: auto;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-transition: background-color .2s ease-in-out, border-color .2s ease-in-out, color .2s ease-in-out;
+    transition: background-color .2s ease-in-out, border-color .2s ease-in-out, color .2s ease-in-out;
+
+}

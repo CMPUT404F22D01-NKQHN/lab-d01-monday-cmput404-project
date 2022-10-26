@@ -9,6 +9,7 @@ import requests
 def home(request):
     
     authors = Author.objects.all()
+    # We need to be sending authors2 
     authors2 = requests.get('http://127.0.0.1:8000/authors')
     print(authors2.json())
     # Get posts and order by published date
@@ -20,7 +21,7 @@ def home(request):
         'authors': authors,
         'author_id': int(request.user.id),
     }
-    
+    # Not context 
     return render(request, 'home/index.html', context)
 
 def profile(request):
