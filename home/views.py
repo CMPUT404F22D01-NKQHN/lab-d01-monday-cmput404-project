@@ -18,3 +18,23 @@ def home(request):
     }
     
     return render(request, 'home/index.html', context)
+
+def profile(request):
+    
+    author = Author.objects.all()
+    # author_github = Author.github
+    # author_profileImage = Author.profileImage
+    # author_is_admin = Author.is_admin
+    # author_REQUIRED_FIELDS = Author.REQUIRED_FIELDS
+    # author_followers = Author.followers
+
+    context = {
+        'author': author,
+        # 'author_github': author_github,
+        # 'author_profileImage': author_profileImage,
+        # 'author_is_admin': author_is_admin, 
+        # 'author_REQUIRED_FIELDS': author_REQUIRED_FIELDS, 
+        # 'author_followers': author_followers, 
+    }
+    
+    return render(request, 'profile/profile.html', context)

@@ -9,7 +9,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <title>Home</title>
+    <title>Profile</title>
   </head>
   <body>
     <!-- Create a navigation bar with the following buttons: Post, Authors, Logout, Profile, Inbox -->
@@ -22,7 +22,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="http://127.0.0.1:8000/admin/posts/post/add/">Post <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="">Post <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Profile</a> <!-- Here we can put the logged in user's name instead of "Profile" -->
@@ -37,12 +37,11 @@
       </div>
     </nav>
     <div class = "container">    
-    {% for post in posts %}
-        <h1>{{ post.title }}</h1>
-        <p>By {{ post.author }} On {{post.published}}</p>
-          <p>{{ post.content }}</p>
-      {% endfor %}</div>
-      </body>
+    </body>
+    
+    <h3>{{author.name}}</h3>
+
+
     <body>  
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
