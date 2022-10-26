@@ -2,7 +2,7 @@ from rest_framework import serializers
 from authors.models import Author
 from authors.serializers import AuthorSerializer
 from .models import Post,Comment,Like
-
+from drf_spectacular.utils import extend_schema_field
 class UpdatePostSerializer(serializers.Serializer):
     title = serializers.CharField(required=False)
     source = serializers.CharField(required=False)
@@ -58,7 +58,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        exclude = ('id', 'published', 'categories', 'comments', 'author')
+        exclude = ('id', 'published', 'categories', 'comments', 'author','likes')
         
 class CreateCommentSerializer(serializers.ModelSerializer):
     content = serializers.CharField()
@@ -80,7 +80,7 @@ class CreateCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        exclude = ('id', 'published', 'replies')
+        exclude = ('id', 'published', 'replies', 'likes')
 
 class ReadCommentSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField('get_type')
@@ -88,7 +88,6 @@ class ReadCommentSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField('get_likes')
     def get_type(self, obj):
         return "comment"
-
     def get_author(self, obj):
         return AuthorSerializer(obj.author).data
     def get_likes(self, obj: Comment):
@@ -164,7 +163,8 @@ class ReadPostSerializer(serializers.ModelSerializer):
     contentType = serializers.CharField()
     content = serializers.CharField()
     likes = serializers.SerializerMethodField('get_likes')
-    
+    count = serializers.SerializerMethodField('get_comments_count')
+    commentsSrc = serializers.SerializerMethodField('get_comments_list')
     def get_author(self, model: Post):
         author = AuthorSerializer(model.author).data
         return author
@@ -178,7 +178,30 @@ class ReadPostSerializer(serializers.ModelSerializer):
         
     def get_likes(self, model: Post):
         return model.likes.count()
+    
+    def get_comments_count(self, model: Post):
+        return model.comments.count()
+    
+    def get_comments_list(self, model: Post):
+        comments = model.comments.filter(reply_to=None).order_by('-published')[:5]
+        return ReadCommentSerializer(comments, many=True).data
+    
     class Meta:
         model = Post
         fields = '__all__'
 
+
+
+class ReadAuthorsPostsSerializer(serializers.Serializer):
+    type = serializers.SerializerMethodField("get_type")
+    items = serializers.SerializerMethodField("get_items")
+
+    def get_type(self, _):
+        return "posts"
+
+    @extend_schema_field(serializers.ListSerializer(child=ReadPostSerializer()))
+    def get_items(self, data):
+        return data
+
+    class Meta:
+        fields = ("type", "items")
