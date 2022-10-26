@@ -40,7 +40,7 @@ class FollowersSerializer(serializers.Serializer):
     items = serializers.SerializerMethodField('get_items')
     
     def get_type(self, model):
-        return 'Followers'
+        return 'followers'
     
     def get_items(self, model:Author):
         return AuthorSerializer(model.followers, many=True).data

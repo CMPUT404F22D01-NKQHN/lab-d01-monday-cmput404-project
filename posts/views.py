@@ -11,6 +11,7 @@ from .serializers import (
     CreatePostSerializer,
     ReadLikeSerializer,
     CreateLikeSerializer,
+    UpdatePostSerializer
 )
 from drf_spectacular.utils import extend_schema
 from django.contrib.auth.decorators import login_required
@@ -30,7 +31,7 @@ def get_all_posts(request):
     description="Get given post",
     responses=ReadPostSerializer,
 )
-def get_post(request, post_id):
+def get_post(request, post_id="", author_id=""):
     return Response(ReadPostSerializer(Post.objects.get(id=int(post_id))).data)
 
 
@@ -40,9 +41,9 @@ def get_post(request, post_id):
 )
 @login_required
 @api_view(["POST"])
-def create_post(request, **kwargs):
+def create_post(request, author_id):
     try:
-        assert int(request.user.id) == request.data["author_id"], "User ID does not match author ID"
+        assert int(request.user.id) == int(author_id), "User ID does not match author ID"
         post = CreatePostSerializer().create(request.data)
         return Response(ReadPostSerializer(post).data)
     except AssertionError as e:
@@ -51,8 +52,14 @@ def create_post(request, **kwargs):
 
 @api_view(["PUT"])
 def update_post(request, post_id):
-    # TODO: Implement this
-    pass
+    """Update The Post"""
+    post = Post.objects.get(id = int(post_id))
+    update = UpdatePostSerializer(data=request.data)
+    if update.is_valid():
+        UpdatePostSerializer().update(post, request.data)
+    else:
+        return Response(update.error_messages)
+    return Response(ReadPostSerializer(post).data)
 
 
 @login_required

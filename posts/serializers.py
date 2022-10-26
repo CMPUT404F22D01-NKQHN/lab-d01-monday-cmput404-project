@@ -3,6 +3,39 @@ from authors.models import Author
 from authors.serializers import AuthorSerializer
 from .models import Post,Comment,Like
 
+class UpdatePostSerializer(serializers.Serializer):
+    title = serializers.CharField(required=False)
+    source = serializers.CharField(required=False)
+    origin = serializers.CharField(required=False)
+    description = serializers.CharField(required=False)
+    unlisted = serializers.BooleanField(required=False)
+    visibility = serializers.CharField(required=False)
+    contentType = serializers.CharField(required=False)
+    content = serializers.CharField(required=False)
+    
+    def update(self, instance: Post, data):
+        if data.get('title'):
+            instance.title = data['title']
+        if data.get('source'):
+            instance.source = data['source']
+        if data.get('origin'):
+            instance.origin = data['origin']
+        if data.get('description'):
+            instance.description = data['description']
+        if data.get('unlisted'):
+            instance.unlisted = data['unlisted']
+        if data.get('visibility'):
+            instance.visibility = data['visibility']
+        if data.get('contentType'):
+            instance.contentType = data['contentType']
+        if data.get('content'):
+            instance.content = data['content']
+        instance.save()
+        
+    class Meta:
+        model = Post
+        fields = ('title', 'source', 'origin', 'description', 'unlisted',  'visibility', 'contentType', 'content') 
+
 class CreatePostSerializer(serializers.ModelSerializer):
     title = serializers.CharField()
     source = serializers.CharField()
@@ -148,3 +181,4 @@ class ReadPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = '__all__'
+
