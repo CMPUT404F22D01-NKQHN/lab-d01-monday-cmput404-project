@@ -126,41 +126,5 @@ class LikeTestCase(TestCase):
 
 
 class PostsViewsTestCase(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
-        self.user = Author.objects.create_user(
-            username="test", email="test@gmail", password="test",
-            display_name="test"
-        )
-        # Create a post 
-        self.post = create_post(self.user)
-        
-    def test_api_get_posts(self):
-        request = self.factory.get("/get-all-posts")
-        request.user = self.user
-        response = views.get_all_posts(request)
-        self.assertEqual(response.status_code, 200)
-      
-    def test_api_get_post(self):
-        request = self.factory.get("/get-post/{}".format(self.post.id))
-        request.user = self.user
-        response = views.get_post(request, self.post.id)
-        self.assertEqual(response.status_code, 200)
-        
-    # def test_api_create_post(self):
-    #     # Authenticate the user
-    #     self.client.login(username="test", password="test")
-    #     request = self.factory.post("/create-post", {
-    #         "title": "title",
-    #         "source": "source",
-    #         "origin": "origin",
-    #         "description": "description",
-    #         "unlisted": False,
-    #         "author_id": self.user.id,
-    #         "visibility": "PUBLIC",
-    #         "contentType": "text/plain",
-    #         "content": "content",
-    #     })
-    #     request.user = self.user
-    #     response = views.create_post(request)
-    #     self.assertEqual(response.status_code, 200)
+    #TODO: test the views
+    pass
