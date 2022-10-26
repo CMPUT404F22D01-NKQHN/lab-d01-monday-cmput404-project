@@ -81,11 +81,18 @@ def get_posts_by_author(request, author_id):
     return Response(posts)
 
 
+@api_view(["POST","GET"])
+def comment_crud(request, author_id, post_id = ""):
+    if request.method == "GET":
+        return get_all_comments(request)
+    elif request.method == "POST":
+        return comment_post(request)
+
+
 @extend_schema(
     request=CreateCommentSerializer,
     responses=ReadCommentSerializer,
 )
-@api_view(["POST"])
 @login_required
 def comment_post(request):
     try:
@@ -98,11 +105,10 @@ def comment_post(request):
         return Response(ReadCommentSerializer(comment).data)
     except AssertionError:
         return Response(status=403)
-
-
-@api_view(["GET"])
+      
 def get_all_comments(request):
     return Response(ReadCommentSerializer(Comment.objects.all(), many=True).data)
+
 
 @login_required
 @api_view(["POST"])
