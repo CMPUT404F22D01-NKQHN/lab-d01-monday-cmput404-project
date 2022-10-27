@@ -27,14 +27,16 @@ def home(request):
     # sort posts newest to oldest
     sorted_posts = sorted(all_posts, key =lambda x: datetime.strptime(x["published"][:-12], "%Y-%m-%dT%H:%M:%S."))
     sorted_posts.reverse()
-    print(sorted_posts)
+    #print(sorted_posts)
+
 
     # Get posts and order by published date
     posts = Post.objects.all().order_by('-published')
     # get the posts title and author
     #posts = posts.values('title', 'author', 'id', 'published')
     context = {
-        "author_list" : sorted_posts
+        "author_list" : sorted_posts,
+        "author_id": int(request.user.id)
     }
     # Not context
     return render(request, 'home/index.html', context)
@@ -75,10 +77,13 @@ def profile(request):
         # add new combined post + author attributes to list of posts
         author_posts.append(temp_dict)
     
-    # print(author_posts)
+    # sort posts newest to oldest
+    sorted_posts = sorted(author_posts, key =lambda x: datetime.strptime(x["published"][:-12], "%Y-%m-%dT%H:%M:%S."))
+    sorted_posts.reverse()
+    print(sorted_posts)
 
     context = {
-        "author_list" : author_posts
+        "author_list" : sorted_posts
     }
 
     # author_posts = dict(enumerate((posts.json()["items"][0])["author"]))
