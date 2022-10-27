@@ -37,7 +37,7 @@ def create_post(request, author_id):
         assert int(request.user.id) == int(
             author_id
         ), "User ID does not match author ID"
-        post = CreatePostSerializer().create(request.data)
+        post = CreatePostSerializer().create(request.data, request.user.id)
         return Response(ReadPostSerializer(post).data)
     except AssertionError as e:
         return Response(status=403, data={"error": str(e)})

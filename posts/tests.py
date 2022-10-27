@@ -35,11 +35,10 @@ def create_post(author):
             "origin": "origin",
             "description": "description",
             "unlisted": False,
-            "author_id": author.id,
             "visibility": "PUBLIC",
             "contentType": "text/plain",
             "content": "content",
-        }
+        }, author.id
     )
 
 

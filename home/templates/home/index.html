@@ -1,0 +1,122 @@
+<!-- Java script and css ref from here: https://getbootstrap.com/docs/4.0/getting-started/introduction/#starter-template -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="index.css"> -->
+    <title>Home</title>
+  </head>
+  <body>
+    <!-- Create a navigation bar with the following buttons: Post, Authors, Logout, Profile, Inbox -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href=http://127.0.0.1:8000/">Social Media Project</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            {% comment %} <a class="nav-link" href="http://127.0.0.1:8000/admin/posts/post/add/">Post <span class="sr-only">(current)</span></a> {% endcomment %}
+            <button type="button" class="btn btn-primary" onclick="showForm()">
+              Post
+            </button>
+            </form>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="http://127.0.0.1:8000/profile">Profile</a> <!-- Here we can put the logged in user's name instead of "Profile" -->
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Inbox</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class = "container">  
+    {% for author_post in author_list %}
+        <h3>Title: {{author_post.title}}</h3>
+        <li>By: {{author_post.display_name}}</li>
+        <li>Type: {{author_post.type}}</li>
+        <li>Source: {{author_post.source}}</li>
+        <li>Origin: {{author_post.origin}}</li>
+        <li>Published Date: {{author_post.published}}</li>
+        <li>Description: {{author_post.description}}</li>
+        <li>Unlisted: {{author_post.unlisted}}</li>
+        <li>Github: {{author_post.github}}</li>
+        <img src={{author_post.profileImage}} alt="" width="50">
+        <li>Visibility: {{author_post.visibility}}</li>
+        <li>Content-Type: {{author_post.contentType}}</li>
+        <li>Likes: {{author_post.likes}}</li>
+        <li>Count: {{author_post.count}}</li>
+        <li>comment source: {{author_post.commentsSrc}}</li>
+        <li>Categories: {{author_post.categories}}</li> 
+        <li>Comments: {{author_post.comments}}</li>
+        
+        
+
+    <!-- <div class="card" style="width: 18rem;">
+        <p>Title: {{ author_post.title }}</p>
+        <p>Github: {{ author_post.github }}</p>
+        <p>Display Name: {{ author_post.display_name }}</p> -->
+
+    {% endfor %}
+      </body>
+    <body>  
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        
+        <script>
+          function showForm(){
+        
+
+
+            const title = prompt("Enter the title of your post");
+            const content = prompt("Enter the content of your post");
+            const source = prompt("Enter the source of your post");
+            const origin = prompt("Enter the origin of your post");
+            const description = prompt("Enter the description of your post");
+            const unlisted = true;
+            const author_id = "{{ author_id }}";
+            const visibility = "PUBLIC";
+            const contentType ="text/plain";
+            //wait 2 seconds
+
+            const data = {
+              "title": title,
+              "source": source,
+              "origin": origin,
+              "description": description,
+              "unlisted": unlisted,
+              "visibility": visibility,
+              "contentType": contentType,
+              "content": content
+            }
+            const options = {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+              },
+              body: JSON.stringify(data)
+            }
+            fetch('http://localhost:8000/authors/'+author_id+'/posts', options);
+            location.reload();
+
+            //refresh the page
+            
+          }
+          
+        </script>
+      </body>
+</html>
