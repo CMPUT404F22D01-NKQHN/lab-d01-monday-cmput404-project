@@ -1,3 +1,6 @@
+<!-- Profile: Posts, email, friends, all author information -->
+
+
 <!-- Java script and css ref from here: https://getbootstrap.com/docs/4.0/getting-started/introduction/#starter-template -->
 <!DOCTYPE html>
 <html>
@@ -8,11 +11,12 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="index.css">
-    <title>Home</title>
+    <!-- <link rel="stylesheet" href="index.css"> -->
+    <title>Profile</title>
   </head>
   <body>
     <!-- Create a navigation bar with the following buttons: Post, Authors, Logout, Profile, Inbox -->
+    
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">Social Media Project</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,7 +33,7 @@
             </form>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Profile</a> <!-- Here we can put the logged in user's name instead of "Profile" -->
+            <a class="nav-link" href="#">Profile</a> 
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Inbox</a>
@@ -40,7 +44,17 @@
         </ul>
       </div>
     </nav>
-    <div class = "container">  
+   
+    <body>
+    
+    </body>
+    
+
+    <!-- <div class = "container">   -->
+    
+    <!-- Create a title from author_post and then paragraphs of all its attributes -->
+        
+    
     {% for author_post in author_list %}
         <h3>Title: {{author_post.title}}</h3>
         <li>By: {{author_post.display_name}}</li>
@@ -57,7 +71,7 @@
         <li>Likes: {{author_post.likes}}</li>
         <li>Count: {{author_post.count}}</li>
         <li>comment source: {{author_post.commentsSrc}}</li>
-        <li>Categories: {{author_post.categories}}</li> 
+        <li>Categories: {{author_post.categories}}</li>
         <li>Comments: {{author_post.comments}}</li>
         
         
@@ -68,8 +82,8 @@
         <p>Display Name: {{ author_post.display_name }}</p> -->
 
     {% endfor %}
-      </body>
-    <body>  
+
+    
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
