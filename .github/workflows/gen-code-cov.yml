@@ -27,9 +27,10 @@ jobs:
           coverage run --source='.' manage.py test
           coverage html
       - name: Commit Code Coverage
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v9
         with:
-          committer_name: GitHub Actions
-          committer_email: actions@github.com
-          message: "Generate code coverage"
-          branch: "code-coverage"
+          author_name: ${{ github.actor }}
+          author_email: ${{ github.actor }}@users.noreply.github.com
+          message: "Update Code Coverage"
+          new_branch: "code-coverage"
+          add: "."
