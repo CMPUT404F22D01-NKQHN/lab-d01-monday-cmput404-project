@@ -11,10 +11,6 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: 3.8
-      - name: Fetch git branches
-        run: git fetch --all
-      - name: Reset to main
-        run: git reset --hard origin/main
       - name: Remove git ignore
         run: rm -rf .gitignore
       - name: Install Dependencies
@@ -24,8 +20,9 @@ jobs:
           pip install coverage
       - name: Generate Code Coverage
         run: |
-          coverage run --source='.' manage.py test
-          coverage html
+          coverage run --source='.' manage.py test && coverage html
+      - name: Coverage Badge
+        uses: tj-actions/coverage-badge-py@v1.8
       - name: Commit Code Coverage
         uses: EndBug/add-and-commit@v9
         with:
@@ -34,3 +31,4 @@ jobs:
           message: "Update Code Coverage"
           new_branch: "code-coverage"
           add: "."
+          push: 'origin code-coverage --force'
