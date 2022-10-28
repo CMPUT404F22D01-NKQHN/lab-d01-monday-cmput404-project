@@ -30,4 +30,4 @@ jobs:
           message: "Update Code Coverage"
           new_branch: "code-coverage"
           add: "."
-          tag_push: '--force'
+          push: 'origin code-coverage --force'
