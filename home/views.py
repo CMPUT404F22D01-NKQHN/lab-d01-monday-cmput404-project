@@ -21,22 +21,23 @@ def home(request):
         author_posts = requests.get(link["id"] + '/posts')
 
         print(author_posts)
+        # get each pot from every author and add to posts
         for post in author_posts.json()["items"]:
             all_posts.append(post)
     
     # sort posts newest to oldest
-    sorted_posts = sorted(all_posts, key =lambda x: datetime.strptime(x["published"][:-12], "%Y-%m-%dT%H:%M:%S."))
+    sorted_posts = sorted(all_posts, key =lambda x: datetime.strptime(x["published"], "%Y-%m-%dT%H:%M:%S.%f%z"))
     sorted_posts.reverse()
     #print(sorted_posts)
 
-
+    #print(request.id)
     # Get posts and order by published date
     posts = Post.objects.all().order_by('-published')
     # get the posts title and author
     #posts = posts.values('title', 'author', 'id', 'published')
     context = {
         "author_list" : sorted_posts,
-        "author_id": int(request.user.id)
+        "author_id": int(request.user.id),
     }
     # Not context
     return render(request, 'home/index.html', context)
@@ -45,6 +46,7 @@ def profile(request):
     author = Author.objects.all()
     author_id = int(request.user.id)
     posts = requests.get('http://localhost:8000/authors/'+str(author_id)+'/posts')
+    #print(posts.json())
     # Get authors posts from post.json().items() using a for loop    
     # for key, value in posts.json().items():
     #     print(key, value)
@@ -69,7 +71,9 @@ def profile(request):
             if key == "author":
                 # add everything from the author attributes except type
                 for subkey, subvalue in value.items():
-                    if key != "type":
+                    if subkey == "id":
+                        temp_dict["post_id"] = subvalue
+                    elif subkey != "type":
                         temp_dict[subkey] = subvalue
             else:
                 temp_dict[key] = value
@@ -78,7 +82,7 @@ def profile(request):
         author_posts.append(temp_dict)
     
     # sort posts newest to oldest
-    sorted_posts = sorted(author_posts, key =lambda x: datetime.strptime(x["published"][:-12], "%Y-%m-%dT%H:%M:%S."))
+    sorted_posts = sorted(author_posts, key =lambda x: datetime.strptime(x["published"], "%Y-%m-%dT%H:%M:%S.%f%z"))
     sorted_posts.reverse()
     print(sorted_posts)
 
