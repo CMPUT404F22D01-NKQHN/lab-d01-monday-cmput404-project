@@ -11,10 +11,6 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: 3.8
-      - name: Fetch git branches
-        run: git fetch --all
-      - name: Reset to main
-        run: git reset --hard origin/main
       - name: Remove git ignore
         run: rm -rf .gitignore
       - name: Install Dependencies
