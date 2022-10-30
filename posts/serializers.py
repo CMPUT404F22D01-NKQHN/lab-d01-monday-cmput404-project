@@ -2,6 +2,8 @@ from tkinter import E
 from rest_framework import serializers
 from authors.models import Author
 from authors.serializers import AuthorSerializer
+from friends.models import FriendRequest
+from friends.serializers import FriendRequestSerializer
 from .models import Inbox, InboxItem, Post, Comment, Like
 from drf_spectacular.utils import extend_schema_field
 import os
@@ -313,6 +315,9 @@ class ReadInboxSerializer(serializers.ModelSerializer):
             elif item.item_type == "like":
                 like = Like.objects.get(id=item.item_id)
                 items.append(ReadLikeSerializer(like).data)
+            elif item.item_type == "friend_request":
+                follow = FriendRequest.objects.get(sender_id=item.item_id)
+                items.append(FriendRequestSerializer(follow).data)
         return items
 
     class Meta:

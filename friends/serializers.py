@@ -2,12 +2,22 @@ from statistics import mode
 from rest_framework import serializers
 from authors.serializers import AuthorSerializer
 from authors.models import Author
+from posts.models import Inbox
 from .models import FriendRequest
 
 class CreateFriendRequestSerializer(serializers.Serializer):
     accepter_id = serializers.CharField()
     def create(self, sender_id, accepter_id):
-        friend_request = FriendRequest.objects.create(sender_id=sender_id, accepter_id=accepter_id)
+        friend_request = FriendRequest.objects.create(sender_id=sender_id, accepter_id=int(accepter_id))
+        # Add the friend request to the accepter's inbox
+        accepter = Author.objects.get(id=accepter_id)
+        inbox = Inbox.objects.get(author=accepter)
+        from posts.serializers import AddInboxItemSerializer
+        AddInboxItemSerializer(inbox).create(
+            {
+                "item_type": "friend_request",
+                "item_id": str(sender_id)
+            }, sender_id=sender_id, author_id=accepter_id)
         return friend_request
 class AcceptFriendRequestSerializer(serializers.Serializer):
     friend_id = serializers.CharField()

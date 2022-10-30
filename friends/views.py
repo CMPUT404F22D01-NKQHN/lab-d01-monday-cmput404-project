@@ -24,7 +24,7 @@ from rest_framework.generics import GenericAPIView
 def create_friend_request(request):
     try:
         friend_request = CreateFriendRequestSerializer().create(
-            sender_id=request.user.id, accepter_id=request.data["accepter_id"]
+            sender_id=request.user.id, accepter_id=int(request.data["accepter_id"])
         )
         return Response(FriendRequestSerializer(friend_request).data)
     except Exception as e:
@@ -41,8 +41,7 @@ def get_authors_friend_requests(request):
     return Response(serializer.data)
 
 @extend_schema(
-    examples=[OpenApiExample(name="Accept",value={"friend_id":1})],
-    request=CreateFriendRequestSerializer,
+    request=AcceptFriendRequestSerializer,
     summary="Accept a friend request, where friend_id is the id of the person who sent the request"
 )
 @api_view(["PUT"])
@@ -50,7 +49,7 @@ def get_authors_friend_requests(request):
 def accept_friend_request(request):
     try:
         author = request.user
-        friend_id = request.data["friend_id"]
+        friend_id = int(request.data["friend_id"])
         friend_request = FriendRequest.objects.get(sender=friend_id, accepter=author.id)
         friend_request.accepted = True
         friend_request.save()

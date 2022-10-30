@@ -81,7 +81,7 @@ def get_posts_by_author(request, author_id):
             .followers.filter(id=request.user.id)
             .exists()
         )
-        if follower:
+        if follower or int(author_id) == int(request.user.id):
             posts = ReadPostSerializer(
                 Post.objects.filter(author_id=int(author_id)), many=True
             ).data
@@ -97,9 +97,6 @@ def get_posts_by_author(request, author_id):
 
 def comment_post(request, author_id, post_id):
     try:
-        assert int(request.user.id) == int(
-            author_id
-        ), "User ID does not match author ID"
         post = Post.objects.get(id=int(post_id))
         # Check if post is public
         commentable = (
@@ -266,10 +263,11 @@ class LikedListAPIView(GenericAPIView):
     
     def get_serializer_class(self):
         return ReadLikeSerializer
-
+    def get_queryset(self):
+        return []
     def get(self, request, author_id):
         try:
-            author = Author.objects.get(id=author_id)
+            author = Author.objects.get(id=int(author_id))
             assert author.id == request.user.id
             likes = ReadLikeSerializer(author.liked, many=True).data
             return Response(likes)
