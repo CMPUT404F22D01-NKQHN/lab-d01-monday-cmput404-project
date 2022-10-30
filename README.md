@@ -6,6 +6,9 @@ Team Members:
 * Qasim Khawaja
 * Natnail Ghebresilasie
 
+# Test Coverage
+![Test Coverage](https://raw.githubusercontent.com/CMPUT404F22D01-NKQHN/lab-d01-monday-cmput404-project/09758d8049ddef6c0aaf56a3de05afb75dcafd91/coverage.svg)
+
 # Setup guide
 
 1. Setup virtual environment

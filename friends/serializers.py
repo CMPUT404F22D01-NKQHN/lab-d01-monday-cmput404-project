@@ -5,10 +5,13 @@ from authors.models import Author
 from .models import FriendRequest
 
 class CreateFriendRequestSerializer(serializers.Serializer):
-    accepter_id = serializers.IntegerField()
+    accepter_id = serializers.CharField()
     def create(self, sender_id, accepter_id):
         friend_request = FriendRequest.objects.create(sender_id=sender_id, accepter_id=accepter_id)
         return friend_request
+class AcceptFriendRequestSerializer(serializers.Serializer):
+    friend_id = serializers.CharField()
+    
 class FriendRequestSerializer(serializers.Serializer):
     type = serializers.SerializerMethodField('get_type')
     summary = serializers.SerializerMethodField('get_summary')

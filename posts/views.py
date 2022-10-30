@@ -3,11 +3,13 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from authors.models import Author
-from .models import Like, Post, Comment
+from .models import Inbox, Like, Post, Comment
 from .serializers import (
+    AddInboxItemSerializer,
     CreateCommentSerializer,
     ReadAuthorsPostsSerializer,
     ReadCommentSerializer,
+    ReadInboxSerializer,
     ReadPostSerializer,
     CreatePostSerializer,
     ReadLikeSerializer,
@@ -93,29 +95,12 @@ def get_posts_by_author(request, author_id):
     except Author.DoesNotExist:
         return Response(status=404, data={"error": "Author not found"})
 
-@extend_schema(
-    methods=["GET"],
-    responses=ReadCommentSerializer,
-)
-@extend_schema(
-    methods=["POST"],
-    responses=ReadCommentSerializer,
-    request=CreateCommentSerializer,
-)
-@api_view(["POST", "GET"])
-def comment_crud(request, author_id, post_id=""):
-    if request.method == "GET":
-        return get_all_comments_by_post(request, post_id)
-    elif request.method == "POST":
-        return comment_post(request)
-
-
-def comment_post(request):
+def comment_post(request, author_id, post_id):
     try:
         assert int(request.user.id) == int(
-            request.data["author_id"]
+            author_id
         ), "User ID does not match author ID"
-        post = Post.objects.get(id=int(request.data["post_id"]))
+        post = Post.objects.get(id=int(post_id))
         # Check if post is public
         commentable = (
             post.visibility == "PUBLIC"
@@ -123,7 +108,7 @@ def comment_post(request):
             or post.author.followers.filter(id=request.user.id).exists()
         )
         assert commentable, "Post is not commentable"
-        comment = CreateCommentSerializer().create(request.data)
+        comment = CreateCommentSerializer().create(request.data, request.user, post)
         return Response(ReadCommentSerializer(comment).data)
     except AssertionError as e:
         return Response(status=403, data={"error": str(e)})
@@ -144,9 +129,6 @@ def get_all_comments_by_post(request, post_id):
     except AssertionError as e:
         return Response(status=403, data={"error": str(e)})
 
-
-@login_required
-@api_view(["POST"])
 def like_post(request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
@@ -155,14 +137,11 @@ def like_post(request, post_id):
             or post.author.id == request.user.id
             or post.author.followers.filter(id=request.user.id).exists()
         )
-        like = CreateLikeSerializer().create(request.data)
+        like = CreateLikeSerializer().create(request.user, post.author, False, int(post_id))
         return Response(ReadLikeSerializer(like).data)
     except AssertionError:
         return Response(status=403)
 
-
-@login_required
-@api_view(["POST"])
 def like_comment(request, comment_id):
     try:
         comment = Comment.objects.get(id=int(comment_id))
@@ -173,14 +152,11 @@ def like_comment(request, comment_id):
             or post.author.id == request.user.id
             or post.author.followers.filter(id=request.user.id).exists()
         )
-        like = CreateLikeSerializer().create(request.data)
+        like = CreateLikeSerializer().create(request.user, comment.author, True, int(comment_id))
         return Response(ReadLikeSerializer(like).data)
     except AssertionError:
         return Response(status=403)
 
-
-@login_required
-@api_view(["GET"])
 def get_likes_on_post(request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
@@ -194,9 +170,6 @@ def get_likes_on_post(request, post_id):
     except AssertionError:
         return Response(status=403)
 
-
-@login_required
-@api_view(["GET"])
 def get_likes_on_comment(request, comment_id):
     try:
         comment = Comment.objects.get(id=int(comment_id))
@@ -212,9 +185,6 @@ def get_likes_on_comment(request, comment_id):
     except AssertionError:
         return Response(status=403)
 
-
-@login_required
-@api_view(["POST"])
 def delete_like(request):
     try:
         like = Like.objects.get(id=int(request.data["like_id"]))
@@ -241,7 +211,27 @@ class PostAPI(GenericAPIView):
 
     def delete(self, request, author_id, post_id):
         return delete_post(request, post_id)
+
+class LikesListAPIView(GenericAPIView):
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return ReadLikeSerializer
+        elif self.request.method == "POST":
+            return CreateLikeSerializer
+
+    def get(self, request, author_id, post_id, comment_id=None):
+        if comment_id:
+            return get_likes_on_comment(request, comment_id)
+        else:
+            return get_likes_on_post(request, post_id)
     
+    def post(self, request, author_id, post_id, comment_id=None):
+        if comment_id:
+            return like_comment(request, comment_id)
+        else:
+            return like_post(request, post_id)
+    def get_queryset(self):
+        return []
 class PostListAPI(GenericAPIView):
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -258,4 +248,64 @@ class PostListAPI(GenericAPIView):
     )
     def post(self, request, author_id):
         return create_post(request, author_id)
+
+
+class CommentListAPIView(GenericAPIView):
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ReadCommentSerializer
+        elif self.request.method == 'POST':
+            return CreateCommentSerializer
+    def post(self, request, author_id, post_id):
+        return comment_post(request,author_id, post_id)
+    def get(self, request, author_id, post_id):
+        return get_all_comments_by_post(request, post_id)
+    def get_queryset(self):
+        return []
+class LikedListAPIView(GenericAPIView):
     
+    def get_serializer_class(self):
+        return ReadLikeSerializer
+
+    def get(self, request, author_id):
+        try:
+            author = Author.objects.get(id=author_id)
+            assert author.id == request.user.id
+            likes = ReadLikeSerializer(author.liked, many=True).data
+            return Response(likes)
+        except AssertionError:
+            return Response(status=403, data={"error": "You are not authorized to view this page."})
+        
+class InboxAPIView(GenericAPIView):
+    def get_serializer_class(self):
+        return ReadInboxSerializer
+    def get(self, request, author_id):
+        try:
+            author = Author.objects.get(id=int(author_id))
+            assert author.id == request.user.id
+            try:
+                inbox = Inbox.objects.get(author=author)
+            except Inbox.DoesNotExist:
+                inbox = Inbox.objects.create(author=author)
+            return Response(ReadInboxSerializer(inbox).data)
+        except AssertionError:
+            return Response(status=403, data={"error": "You are not authorized to view this page."})
+    
+    def post(self, request, author_id):
+        try:
+            author = Author.objects.get(id=author_id)
+            assert author.id == request.user.id
+            AddInboxItemSerializer().create(request.data)
+            inbox = Inbox.objects.get(author=author)
+            return Response(ReadInboxSerializer(inbox, many=True).data)
+        except AssertionError:
+            return Response(status=403, data={"error": "You are not authorized to view this page."})
+    def delete(self, request, author_id):
+        try:
+            author = Author.objects.get(id=author_id)
+            assert author.id == request.user.id
+            inbox = Inbox.objects.get(author=author)
+            inbox.items.all().delete()
+            return Response(ReadInboxSerializer(inbox, many=True).data)
+        except AssertionError:
+            return Response(status=403, data={"error": "You are not authorized to view this page."})
