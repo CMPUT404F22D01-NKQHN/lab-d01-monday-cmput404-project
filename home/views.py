@@ -4,11 +4,12 @@ from authors.models import Author
 from posts.models import Post
 from datetime import datetime
 import requests
+from django.contrib.auth.decorators import login_required 
 import json
 # Create your views here.
 
 # I think here we will send all the required data for the feed as well as the buttons for the user to click on i.e. posts
-
+@login_required(login_url='/admin')
 def home(request):
     
     #authors = Author.objects.all()
@@ -42,6 +43,7 @@ def home(request):
     # Not context
     return render(request, 'home/index.html', context)
 
+@login_required(login_url='/admin')
 def profile(request):
     author = Author.objects.all()
     author_id = int(request.user.id)
