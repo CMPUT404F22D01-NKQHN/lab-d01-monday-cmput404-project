@@ -278,6 +278,10 @@ class LikedListAPIView(GenericAPIView):
         
 class InboxAPIView(GenericAPIView):
     def get_serializer_class(self):
+        if self.request.method == "GET":
+            return ReadInboxSerializer
+        elif self.request.method == "POST":
+            return AddInboxItemSerializer
         return ReadInboxSerializer
     def get(self, request, author_id):
         try:
@@ -294,8 +298,7 @@ class InboxAPIView(GenericAPIView):
     def post(self, request, author_id):
         try:
             author = Author.objects.get(id=author_id)
-            assert author.id == request.user.id
-            AddInboxItemSerializer().create(request.data)
+            AddInboxItemSerializer().create(request.data, request.user.id, author.id)
             inbox = Inbox.objects.get(author=author)
             return Response(ReadInboxSerializer(inbox, many=True).data)
         except AssertionError:

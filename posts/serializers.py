@@ -113,7 +113,7 @@ class CreateCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        exclude = ("id", "published", "replies", "likes")
+        exclude = ("id", "published", "replies", "likes", 'reply_to', 'author')
 
 
 class ReadCommentSerializer(serializers.ModelSerializer):
@@ -268,6 +268,8 @@ class ReadAuthorsPostsSerializer(serializers.Serializer):
 
 
 class AddInboxItemSerializer(serializers.ModelSerializer):
+    item_id = serializers.CharField()
+    item_type = serializers.CharField()
     def create(self, validated_data, sender_id, author_id):
         creator = Author.objects.get(id=sender_id)
         data = {**validated_data, "author": creator}
@@ -283,7 +285,7 @@ class AddInboxItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InboxItem
-        fields = ["item_type", "item_id"]
+        exclude = ["author"]
 
 
 class ReadInboxSerializer(serializers.ModelSerializer):
