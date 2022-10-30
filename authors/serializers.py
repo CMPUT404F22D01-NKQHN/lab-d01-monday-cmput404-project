@@ -30,7 +30,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         return os.environ.get("HOSTNAME", "http://localhost:8000")
 
     def get_id(self, model: Author) -> str:
-        return f"{self.get_host(model)}/{self.get_type(model)}s/{int(model.id)}"
+        return f"{self.get_host(model)}/authors/{int(model.id)}"
 
     def get_img(self, model: Author) -> str:
         if model.profileImage == "":

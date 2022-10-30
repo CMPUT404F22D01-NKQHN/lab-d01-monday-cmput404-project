@@ -41,9 +41,9 @@ class Author(AbstractUser):
     profileImage = models.TextField(max_length = 200, default = '', blank = True)
     is_admin = models.BooleanField(default=False)
     REQUIRED_FIELDS = ['email', 'display_name', 'password']
-    followers = models.ManyToManyField('Author')
+    followers = models.ManyToManyField('Author', blank = True)
     objects = AuthorManager()
-    liked = models.ManyToManyField('posts.Like')
+    liked = models.ManyToManyField('posts.Like', blank = True)
     def __str__(self):
         return self.display_name   
 
