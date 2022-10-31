@@ -81,7 +81,7 @@ def get_posts_by_author(request, author_id):
             .followers.filter(id=request.user.id)
             .exists()
         )
-        if follower or int(author_id) == int(request.user.id):
+        if follower or (request.user.id and int(request.user.id) == int(author_id)):
             posts = ReadPostSerializer(
                 Post.objects.filter(author_id=int(author_id)), many=True
             ).data
