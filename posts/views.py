@@ -295,18 +295,19 @@ class InboxAPIView(GenericAPIView):
     
     def post(self, request, author_id):
         try:
-            author = Author.objects.get(id=author_id)
+            author = Author.objects.get(id=int(author_id))
+            request.data["item_id"] = int(request.data["item_id"])
             AddInboxItemSerializer().create(request.data, request.user.id, author.id)
             inbox = Inbox.objects.get(author=author)
-            return Response(ReadInboxSerializer(inbox, many=True).data)
+            return Response(ReadInboxSerializer(inbox).data)
         except AssertionError:
             return Response(status=403, data={"error": "You are not authorized to view this page."})
     def delete(self, request, author_id):
         try:
-            author = Author.objects.get(id=author_id)
+            author = Author.objects.get(id=int(author_id))
             assert author.id == request.user.id
             inbox = Inbox.objects.get(author=author)
             inbox.items.all().delete()
-            return Response(ReadInboxSerializer(inbox, many=True).data)
+            return Response(ReadInboxSerializer(inbox).data)
         except AssertionError:
             return Response(status=403, data={"error": "You are not authorized to view this page."})
