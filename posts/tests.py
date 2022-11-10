@@ -136,9 +136,10 @@ class LikeTestCase(TestCase):
         # Check inbox for author
         inbox = Inbox.objects.get(author=author)
         obj = {
-            "items": inbox.items.all(),
+            "items": inbox.items.order_by("-published"),
             "author": inbox.author,
         }
+        
         self.assertTrue(ReadInboxSerializer(obj).data["items"][0] == ReadLikeSerializer(like).data)
 
 
