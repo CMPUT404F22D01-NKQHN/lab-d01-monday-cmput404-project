@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!-- https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_register_form -->
+</head>
+<body>
+    <form method = "POST" action="">
+        {% csrf_token %}
+        <div>
+            Username:
+            {{form.username}}
+            Password:
+            {{form.password}}
+        </div>
+
+
+
+
+    </form>
+
+<!-- <form action="/action_page.php">
+  <div class="container">
+    <h1>Register</h1>
+    <p>Please fill in this form to create an account.</p>
+    <hr>
+    <label for="displayName"><b>Display Name</b></label>
+    <input type="text" placeholder="Enter Display Name" name="displayName" id="displayName" required>
+
+    <label for="github"><b>Github</b></label>
+    <input type="text" placeholder="Enter your Github" name="github" id="github" required>
+
+    <label for="image">Image</label>
+    <input type="file" name="image" id="image">
+
+    <label for="psw"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
+
+    <label for="psw-repeat"><b>Repeat Password</b></label>
+    <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required>
+    <hr>
+    <p>By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p>
+
+    <button type="submit" class="registerbtn">Register</button>
+  </div>
+  
+  <div class="container signin">
+    <p>Already have an account? <a href="http://localhost:8000/">Sign in</a>.</p>
+  </div>
+</form> -->
+
+</body>
+</html>
+
+<!-- Create a register page where a user can input their display name, their github and upload an image -->
+<!-- <!DOCTYPE html> -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Register</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <form action="{% url 'register' %}" method="POST">
+        {% csrf_token %}
+        <label for="displayName">Display Name</label>
+        <input type="text" name="displayName" id="displayName" placeholder="Enter your display name">
+        <label for="github">Github</label>
+        <input type="text" name="github" id="github" placeholder="Enter your github">
+        <label for="image">Image</label>
+        <input type="file" name="image" id="image">
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html> -->

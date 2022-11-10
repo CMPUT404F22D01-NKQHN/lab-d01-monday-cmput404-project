@@ -4,7 +4,10 @@ from authors.models import Author
 from posts.models import Post
 from datetime import datetime
 import requests
-from django.contrib.auth.decorators import login_required 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout, get_user_model
+from .forms import UserLoginForm
+from django.contrib import messages
 import json
 # Create your views here.
 
@@ -23,6 +26,8 @@ def home(request):
 
         print(author_posts)
         # get each pot from every author and add to posts
+
+        # Need to change this to get posts from the inbox
         for post in author_posts.json()["items"]:
             all_posts.append(post)
     
@@ -103,3 +108,53 @@ def profile(request):
 
     
     return render(request, 'profile/profile.html', context)
+
+def login(request):
+    # Print all authors in the database
+    authors = Author.objects.all()
+    print(authors)
+    
+    
+
+
+    User = get_user_model()
+    print(User.objects)
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        User = get_user_model()
+        print(User)
+
+        try:
+            user = User.objects.get(username=username)
+        except Exception:
+            messages.info(request, "Failed try again")
+            return render(request, 'user/login.html')
+        
+        # If user is not None return the home page
+
+
+
+            
+            
+
+    #return render(request, 'user/login.html')
+
+
+def register(request):
+    # form = UserLoginForm(request.POST)
+
+    # if request.method == 'POST':
+    #     if form.is_valid():
+    #         # Should do this in a try except block
+    #         username = form.cleaned_data['username']
+    #         password = form.cleaned_data['password']
+
+    #         user = form.save()
+
+
+    # context = {'form':form}
+       
+    return render(request, 'user/register.html')#context)
