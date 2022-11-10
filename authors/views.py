@@ -1,6 +1,6 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
+from cmput404_project.utilities import CustomPagination
 from .serializers import AuthorSerializer, ReadAuthorsSerializer, UpdateAuthorSerializer
 from .models import Author
 from drf_spectacular.utils import extend_schema
@@ -34,7 +34,7 @@ class AuthorAPIView(generics.GenericAPIView):
 
 class AuthorsAPIView(generics.GenericAPIView):
     def get(self, request):
-        authors = self.get_queryset()
+        authors = self.paginate_queryset(self.get_queryset(), request)
         return Response(
             ReadAuthorsSerializer(AuthorSerializer(authors, many=True).data).data
         )
@@ -42,5 +42,10 @@ class AuthorsAPIView(generics.GenericAPIView):
     def get_queryset(self):
         return Author.objects.all()
 
+    def paginate_queryset(self, queryset, request):
+        return self.pagination_class().paginate_queryset(queryset, request, view=self)
+
     def get_serializer_class(self):
         return ReadAuthorsSerializer
+
+    pagination_class = CustomPagination

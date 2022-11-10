@@ -295,17 +295,16 @@ class ReadInboxSerializer(serializers.ModelSerializer):
     items = serializers.SerializerMethodField("get_items")
     author = serializers.SerializerMethodField("get_author")
 
-    def get_type(self, model: Inbox):
+    def get_type(self, obj):
         return "inbox"
 
-    def get_author(self, model: Inbox):
-        return AuthorSerializer(model.author).data.get("url")
-
-    def get_items(self, model: Inbox):
+    def get_author(self, obj):
+        return AuthorSerializer(obj["author"]).data.get("url")
+    
+    def get_items(self, obj):
         # Read the inbox items for the given author and convert them to the correct format
-        inbox_items = Inbox.objects.get(id=model.id).items.all().order_by("-published")
         items = []
-        for item in inbox_items:
+        for item in obj["items"]:
             if item.item_type == "post":
                 post = Post.objects.get(id=item.item_id)
                 items.append(ReadPostSerializer(post).data)

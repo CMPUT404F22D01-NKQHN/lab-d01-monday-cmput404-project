@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from authors.models import Author
+from cmput404_project.utilities import CustomPagination
 from .models import Inbox, Like, Post, Comment
 from .serializers import (
     AddInboxItemSerializer,
@@ -73,8 +74,7 @@ def delete_post(request, post_id):
     except Post.DoesNotExist:
         return Response(status=404, data={"error": "Post not found"})
 
-
-def get_posts_by_author(request, author_id):
+def get_posts_by_author(self, request, author_id):
     try:
         follower = (
             Author.objects.get(id=int(author_id))
@@ -83,11 +83,11 @@ def get_posts_by_author(request, author_id):
         )
         if follower or (request.user.id and int(request.user.id) == int(author_id)):
             posts = ReadPostSerializer(
-                Post.objects.filter(author_id=int(author_id)), many=True
+                self.paginate_queryset(Post.objects.filter(author_id=int(author_id))), many=True
             ).data
         else:
             posts = ReadPostSerializer(
-                Post.objects.filter(author_id=int(author_id), visibility="PUBLIC"),
+                self.paginate_queryset(Post.objects.filter(author_id=int(author_id), visibility="PUBLIC"), request),
                 many=True,
             ).data
         posts = ReadAuthorsPostsSerializer(posts).data
@@ -110,7 +110,7 @@ def comment_post(request, author_id, post_id):
     except AssertionError as e:
         return Response(status=403, data={"error": str(e)})
 
-def get_all_comments_by_post(request, post_id):
+def get_all_comments_by_post(self, request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
         assert (
@@ -120,7 +120,7 @@ def get_all_comments_by_post(request, post_id):
         ), "Post is not commentable"
         return Response(
             ReadCommentSerializer(
-                Comment.objects.filter(post_id=int(post_id)), many=True
+                self.paginate_queryset(Comment.objects.filter(post_id=int(post_id)).order_by("-published"), request), many=True
             ).data
         )
     except AssertionError as e:
@@ -237,7 +237,9 @@ class PostListAPI(GenericAPIView):
             return CreatePostSerializer
 
     def get(self, request, author_id):
-        return get_posts_by_author(request, author_id)
+        return get_posts_by_author(self, request, author_id)
+    
+    pagination_class= CustomPagination
     
     @extend_schema(
         request=CreatePostSerializer,
@@ -255,11 +257,19 @@ class CommentListAPIView(GenericAPIView):
             return CreateCommentSerializer
     def post(self, request, author_id, post_id):
         return comment_post(request,author_id, post_id)
+        
     def get(self, request, author_id, post_id):
-        return get_all_comments_by_post(request, post_id)
+       return get_all_comments_by_post(self,request, post_id)
+       
+    def paginate_queryset(self, queryset, request):
+        return self.pagination_class().paginate_queryset(queryset, request, view=self)
+    pagination_class = CustomPagination
+
     def get_queryset(self):
         return []
+
 class LikedListAPIView(GenericAPIView):
+    pagination_class= CustomPagination
     
     def get_serializer_class(self):
         return ReadLikeSerializer
@@ -289,10 +299,19 @@ class InboxAPIView(GenericAPIView):
                 inbox = Inbox.objects.get(author=author)
             except Inbox.DoesNotExist:
                 inbox = Inbox.objects.create(author=author)
-            return Response(ReadInboxSerializer(inbox).data)
+            items = self.paginate_queryset(inbox.items.order_by("-published").all(), request)
+            obj = {
+                "items": items,
+                "author": author,
+            }
+            return Response(ReadInboxSerializer(obj).data)
         except AssertionError:
             return Response(status=403, data={"error": "You are not authorized to view this page."})
-    
+            
+    def paginate_queryset(self, queryset, request):
+        return self.pagination_class().paginate_queryset(queryset, request, view=self)
+    pagination_class = CustomPagination
+
     def post(self, request, author_id):
         try:
             author = Author.objects.get(id=int(author_id))

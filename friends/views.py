@@ -9,6 +9,7 @@ from .serializers import (
     FollowersSerializer,
     FriendRequestSerializer,
 )
+
 from .models import FriendRequest
 from authors.models import Author
 from django.contrib.auth.decorators import login_required
@@ -58,14 +59,6 @@ def accept_friend_request(request):
         return Response(FriendRequestSerializer(friend_request).data)
     except FriendRequest.DoesNotExist:
         return Response(status=404, data={"error": "Friend not found"})
-
-
-@api_view(["GET"])
-@login_required
-def get_friends(request, author_id):
-    author = Author.objects.get(id=int(author_id))
-    serializer = FollowersSerializer(author)
-    return Response(serializer.data)
 
 class FollowerListAPIView(GenericAPIView):
     def get_serializer_class(self):
