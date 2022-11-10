@@ -103,8 +103,13 @@ class LikeTestCase(TestCase):
         self.assertTrue(like in post.likes.all())
         self.assertTrue(like in author2.liked.all())
         self.assertTrue(ReadPostSerializer(post).data["likes"] == 1)
+        
         inbox = Inbox.objects.get(author=author)
-        self.assertTrue(ReadInboxSerializer(inbox).data["items"][0] == ReadLikeSerializer(like).data)
+        obj = {
+            "items": inbox.items.all(),
+            "author": inbox.author,
+        }
+        self.assertTrue(ReadInboxSerializer(obj).data["items"][0] == ReadLikeSerializer(like).data)
 
     def test_like_comment(self):
         author = create_author("test", "test", "test", "test")
@@ -130,7 +135,12 @@ class LikeTestCase(TestCase):
         self.assertTrue(ReadCommentSerializer(comment).data["likes"] == 2)
         # Check inbox for author
         inbox = Inbox.objects.get(author=author)
-        self.assertTrue(ReadInboxSerializer(inbox).data["items"][0] == ReadLikeSerializer(like).data)
+        obj = {
+            "items": inbox.items.order_by("-published"),
+            "author": inbox.author,
+        }
+        
+        self.assertTrue(ReadInboxSerializer(obj).data["items"][0] == ReadLikeSerializer(like).data)
 
 
 class InboxTestCase(TestCase):
@@ -143,7 +153,11 @@ class InboxTestCase(TestCase):
         data = {"item_type": "post", "item_id": self.post.id}
         AddInboxItemSerializer().create(data, self.author2.id, self.author.id)
         inbox = Inbox.objects.get(author=self.author)
-        inbox = ReadInboxSerializer(inbox).data
+        obj = {
+            "items": inbox.items.all(),
+            "author": inbox.author,
+        }
+        inbox = ReadInboxSerializer(obj).data
         self.assertTrue(inbox["items"][0] == ReadPostSerializer(self.post).data)
 
     def test_add_comment(self):
@@ -154,7 +168,11 @@ class InboxTestCase(TestCase):
         data = {"item_type": "comment", "item_id": comment.id}
         AddInboxItemSerializer().create(data, self.author2.id, self.author.id)
         inbox = Inbox.objects.get(author=self.author)
-        inbox = ReadInboxSerializer(inbox).data
+        obj = {
+            "items": inbox.items.all(),
+            "author": inbox.author,
+        }
+        inbox = ReadInboxSerializer(obj).data
         self.assertTrue(inbox["items"][0] == ReadCommentSerializer(comment).data)
 
     def test_add_like(self):
@@ -167,5 +185,9 @@ class InboxTestCase(TestCase):
         data = {"item_type": "like", "item_id": like.id}
         AddInboxItemSerializer().create(data, self.author2.id, self.author.id)
         inbox = Inbox.objects.get(author=self.author)
-        inbox = ReadInboxSerializer(inbox).data
+        obj = {
+            "items": inbox.items.all(),
+            "author": inbox.author,
+        }
+        inbox = ReadInboxSerializer(obj).data
         self.assertTrue(inbox["items"][0] == ReadLikeSerializer(like).data)
