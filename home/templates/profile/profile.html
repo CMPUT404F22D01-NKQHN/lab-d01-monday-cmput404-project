@@ -1,53 +1,5 @@
-<!-- Profile: Posts, email, friends, all author information -->
-
-
-<!-- Java script and css ref from here: https://getbootstrap.com/docs/4.0/getting-started/introduction/#starter-template -->
-<!DOCTYPE html>
-<html>
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <!-- <link rel="stylesheet" href="index.css"> -->
-    <title>Profile</title>
-  </head>
-  <body>
-    <!-- Create a navigation bar with the following buttons: Post, Authors, Logout, Profile, Inbox -->
-    
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="http://localhost:8000">Social Media Project</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            {% comment %} <a class="nav-link" href="http://127.0.0.1:8000/admin/posts/post/add/">Post <span class="sr-only">(current)</span></a> {% endcomment %}
-            <button type="button" class="btn btn-primary" onclick="showForm()">
-              Post
-            </button>
-            </form>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Profile</a> 
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Inbox</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Logout</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-   
-    <body>
-    
-    </body>
+{% extends "base.html" %}
+{% block content %}
     
 
     <!-- <div class = "container">   -->
@@ -184,5 +136,4 @@
           }
           
         </script>
-      </body>
-</html>
+{% endblock %}

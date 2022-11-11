@@ -9,7 +9,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 from .models import Author
 # Register your models here.
-admin.site.register(Author)
+
 admin.site.unregister(Group)
 
 
@@ -72,9 +72,10 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'display_name', 'password1', 'password2'),
+            'fields': ('username','email', 'display_name', 'password1', 'password2'),
         }),
     )
     search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ()
+admin.site.register(Author, UserAdmin)
