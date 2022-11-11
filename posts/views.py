@@ -247,7 +247,8 @@ class PostListAPI(GenericAPIView):
     )
     def post(self, request, author_id):
         return create_post(request, author_id)
-
+    def paginate_queryset(self, queryset, request):
+        return self.pagination_class().paginate_queryset(queryset, request, view=self)
 
 class CommentListAPIView(GenericAPIView):
     def get_serializer_class(self):
