@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-    <form style="display:none" id="postForm">
+    <!-- <form style="display:none" id="postForm">
       <label for="title">Title:</label><br>
       <input type="text" id="title" name="title" value="Type title here..."><br>
       <label for="content">Content:</label><br>
       <input type="text" id="content" name="content" value="Type content here...">
       <input type="description" id="description" name="description" value="Type description here...">
-    </form>
+    </form> -->
     <div class = "container">  
     {% for author_post in author_list %}
         <h3>Title: {{author_post.title}}</h3>
@@ -62,11 +62,10 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         
         <script>
-          function showForm(form){
+          function submitPost(form){
             // have access to the form element, can make visible/popup
             console.log(form);
-            form.style.display='block';
-            console.log(form);
+            console.log("I AM HERE");
             
 
 
