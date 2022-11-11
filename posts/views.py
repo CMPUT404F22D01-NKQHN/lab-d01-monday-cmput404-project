@@ -83,11 +83,12 @@ def get_posts_by_author(self, request, author_id):
         )
         if follower or (request.user.id and int(request.user.id) == int(author_id)):
             posts = ReadPostSerializer(
-                self.paginate_queryset(Post.objects.filter(author_id=int(author_id))), many=True
+                self.paginate_queryset(Post.objects.filter(author_id=int(author_id)).order_by("-published")
+                                       , request), many=True
             ).data
         else:
             posts = ReadPostSerializer(
-                self.paginate_queryset(Post.objects.filter(author_id=int(author_id), visibility="PUBLIC"), request),
+                self.paginate_queryset(Post.objects.filter(author_id=int(author_id), visibility="PUBLIC").order_by("-published"), request),
                 many=True,
             ).data
         posts = ReadAuthorsPostsSerializer(posts).data

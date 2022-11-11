@@ -19,7 +19,7 @@ def home(request):
     # We need to be sending authors2 
 
     # get all author id's
-    authors = requests.get('http://localhost:8000/authors')
+    authors = requests.get(request.build_absolute_uri('/authors/'))
     all_posts = []
     for link in authors.json()["items"]:
         author_posts = requests.get(link["id"] + '/posts')
@@ -42,6 +42,7 @@ def home(request):
     context = {
         "author_list" : sorted_posts,
         "author_id": int(request.user.id),
+        "title": "Home",
     }
     # Not context
     return render(request, 'home/index.html', context)
@@ -50,7 +51,7 @@ def home(request):
 def profile(request):
     author = Author.objects.all()
     author_id = int(request.user.id)
-    posts = requests.get('http://localhost:8000/authors/'+str(author_id)+'/posts')
+    posts = requests.get(request.build_absolute_uri('/authors/'+str(author_id)+'/posts'))
     #print(posts.json())
     # Get authors posts from post.json().items() using a for loop    
     # for key, value in posts.json().items():
@@ -92,7 +93,8 @@ def profile(request):
     print(sorted_posts)
 
     context = {
-        "author_list" : sorted_posts
+        "author_list" : sorted_posts,
+        "title" : "Profile",
     }
 
     # author_posts = dict(enumerate((posts.json()["items"][0])["author"]))
