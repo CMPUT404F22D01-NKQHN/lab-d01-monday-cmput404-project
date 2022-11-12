@@ -57,6 +57,24 @@
                                 
                                 <!-- If the user selects image/png;base64 create a button to upload image/png;base64 -->
                                 <input type="file"  accept="image/png;base64, image/jpeg;base64, image/png"  id="image/png;base64" name="uploadImage">
+                                
+                                <!-- Create a script for the image upload button to convert the image to base64 and then display it in the text area -->
+                                <!-- <script>
+                                    // https://pqina.nl/blog/convert-a-file-to-a-base64-string-with-javascript/
+                                    var fileInput = document.getElementById('image/png;base64');
+                                    fileInput.addEventListener('change', function(e) {
+                                        const file = e.target.files[0];
+                                        const reader = new FileReader();
+                                        reader.onloadend = () => {
+                                           //console.log(reader.result);
+                                        }
+                                        reader.readAsDataURL(file);
+                                        // this file needs to sent to index.html
+                                       // console.log(file);
+                                        let fileData = file;
+                                        // this file is in base64 format but needs to be sent to index.html
+                                    });
+                                </script> -->
 
                                 <!-- If the user selects text/markdown create a text area for text/markdown -->
                                 <textarea id="text/markdown" name="text/markdown" rows="4" cols="50">
@@ -68,7 +86,7 @@
                                     document.getElementById("text/markdown").style.display = "block";
                                     document.getElementById("postType").addEventListener("change", function() {
                                         if (this.value == "image/png;base64") {
-                                            // document.getElementById("uploadImageButton").style.display = "block";
+                                            // document.getElementById("uploadImageButton").style.display = "block"; 
                                             document.getElementById("image/png;base64").style.display = "block";
                                             document.getElementById("text/markdown").style.display = "none";
                                         } else if (this.value == "text/markdown") {

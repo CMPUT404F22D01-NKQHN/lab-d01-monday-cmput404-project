@@ -7,6 +7,7 @@
       <input type="text" id="content" name="content" value="Type content here...">
       <input type="description" id="description" name="description" value="Type description here...">
     </form> -->
+    <script>var dataFile = '';</script>
     <div class = "container">  
     {% for author_post in author_list %}
         <h3>Title: {{author_post.title}}</h3>
@@ -19,6 +20,8 @@
         <!-- <li>Unlisted: {{author_post.unlisted}}</li>
         <li>Github: {{author_post.author.github}}</li> -->
         <img src={{author_post.author.profileImage}} alt="" width="50">
+        <li>Content: {{author_post.content}}</li>
+        <p id = "fileup"></p>
         <!-- <li>Visibility: {{author_post.visibility}}</li> -->
         <li>Content-Type: {{author_post.contentType}}</li>
         <li>Content: {{author_post.content}}</li>
@@ -45,6 +48,27 @@
             Comment
         </button>
     {% endfor %}
+
+    <script>
+      // https://pqina.nl/blog/convert-a-file-to-a-base64-string-with-javascript/
+      var fileInput = document.getElementById('image/png;base64');
+      //var fileData = undefined;
+      fileInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            console.log(reader.result);
+            var fileData = reader.result;
+            document.getElementById('fileup').innerHTML = fileData;
+          }
+          reader.readAsDataURL(file);
+          // this file needs to sent to index.html
+          //console.log(file);
+          document.getElementById('fileup').innerHTML = fileData;
+          //console.log(reader.result);
+          // this file is in base64 format but needs to be sent to index.html
+      });
+  </script>
 
 
 
@@ -76,6 +100,8 @@
           // const origin = prompt("Enter the origin of your post");
           // const description = prompt("Enter the description of your post");
           console.log("Inside submit post AHHAHHAHAHAHAHA");
+          document.getElementById("fileData").innerHTML = x;
+          console.log("Title: " +x);
           const title = document.getElementById("title").value;
           const author_id = "{{ author_id }}";
           const source = "source"
