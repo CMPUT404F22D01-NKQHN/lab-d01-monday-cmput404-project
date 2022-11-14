@@ -134,7 +134,7 @@ class ReadCommentSerializer(serializers.ModelSerializer):
         return obj.likes.count()
 
     def get_id(self, obj: Comment):
-        host = os.environ.get("HOSTNAME", "http://localhost:8000")
+        host = os.environ.get("HOSTNAME_APP", "http://localhost:8000")
         return f"{host}/authors/{int(obj.author.id)}/posts/{int(obj.post_id)}/comments/{int(obj.id)}"
 
     class Meta:
