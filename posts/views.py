@@ -298,10 +298,7 @@ class InboxAPIView(GenericAPIView):
             author = Author.objects.get(id=int(author_id))
             print(request.user.id)
             assert author.id == request.user.id
-            try:
-                inbox = Inbox.objects.get(author=author)
-            except Inbox.DoesNotExist:
-                inbox = Inbox.objects.create(author=author)
+            inbox, _ = Inbox.objects.get_or_create(author=author)
             items = self.paginate_queryset(inbox.items.order_by("-published").all(), request)
             obj = {
                 "items": items,
@@ -320,7 +317,7 @@ class InboxAPIView(GenericAPIView):
             author = Author.objects.get(id=int(author_id))
             request.data["item_id"] = int(request.data["item_id"])
             AddInboxItemSerializer().create(request.data, request.user.id, author.id)
-            inbox = Inbox.objects.get(author=author)
+            inbox, _ = Inbox.objects.get_or_create(author=author)
             return Response(ReadInboxSerializer(inbox).data)
         except AssertionError:
             return Response(status=403, data={"error": "You are not authorized to view this page."})
@@ -328,7 +325,7 @@ class InboxAPIView(GenericAPIView):
         try:
             author = Author.objects.get(id=int(author_id))
             assert author.id == request.user.id
-            inbox = Inbox.objects.get(author=author)
+            inbox, _ = Inbox.objects.get_or_create(author=author)
             inbox.items.all().delete()
             return Response(ReadInboxSerializer(inbox).data)
         except AssertionError:
