@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+{% for author_notif in author_inbox %}
+    <p>Item: {{author_notif}}</p>
+{% endfor %}
+{% endblock %}
+

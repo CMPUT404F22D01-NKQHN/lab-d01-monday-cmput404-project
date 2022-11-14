@@ -108,3 +108,41 @@ def profile(request):
 
     
     return render(request, 'profile/profile.html', context)
+
+#view for author inbox
+# {
+#     "type": "inbox",
+#     "items": [],
+#     "author": "http://localhost:8000/authors/{AUTHOR_ID}}"
+# }
+@login_required(login_url='/login/')
+def inbox(request):
+    author = Author.objects.all()
+    author_id = int(request.user.id)
+    print(author_id)
+    #simulating forwarding all cookies on authenticated webview and passing them forward (could be problematic)
+    cookies = "; ".join([f"{key}={value}" for key, value in request.COOKIES.items()])
+    inboxItems = requests.get(request.build_absolute_uri('/authors/'+str(author_id)+'/inbox'), headers={
+                'Content-Type': 'application/json',   
+                'X-CSRFToken': request.COOKIES['csrftoken'],
+                "Cookie": cookies
+                
+            })
+            
+            
+    print("URL", request.build_absolute_uri('/authors/'+str(author_id)+'/inbox'))
+    author_inbox = []
+    # for item in inboxItems.json()["items"]:
+    #     temp_dict = {}
+    #     if item["unlisted"] == "false":
+    #         temp_dict["displayName"] = item["author"]["displayName"]
+    #         for k, v in item.items():
+    #             if k != "author":
+    #                 temp_dict[k] = v
+    #     author_inbox.append(temp_dict)
+    print(inboxItems.json())
+    for item in author_inbox:
+        print(item)
+    #default page size is 5 and give option to change pages
+    context = {'author_inbox' : author_inbox}
+    return render(request, 'inbox/inbox.html', context)

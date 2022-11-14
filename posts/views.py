@@ -296,6 +296,7 @@ class InboxAPIView(GenericAPIView):
     def get(self, request, author_id):
         try:
             author = Author.objects.get(id=int(author_id))
+            print(request.user.id)
             assert author.id == request.user.id
             try:
                 inbox = Inbox.objects.get(author=author)
