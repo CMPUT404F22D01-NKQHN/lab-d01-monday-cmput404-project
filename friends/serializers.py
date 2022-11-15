@@ -12,7 +12,7 @@ class CreateFriendRequestSerializer(serializers.Serializer):
         friend_request = FriendRequest.objects.create(sender_id=sender_id, accepter_id=int(accepter_id))
         # Add the friend request to the accepter's inbox
         accepter = Author.objects.get(id=accepter_id)
-        inbox = Inbox.objects.get(author=accepter)
+        inbox, _ = Inbox.objects.get_or_create(author=accepter)
         from posts.serializers import AddInboxItemSerializer
         AddInboxItemSerializer(inbox).create(
             {

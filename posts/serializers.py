@@ -277,12 +277,8 @@ class AddInboxItemSerializer(serializers.ModelSerializer):
         data = {**validated_data, "author": creator}
         inbox_item = InboxItem.objects.create(**data)
         author = Author.objects.get(id=author_id)
-        if Inbox.objects.filter(author=author).exists():
-            inbox = Inbox.objects.get(author=author)
-            inbox.items.add(inbox_item)
-        else:
-            inbox = Inbox.objects.create(author=author)
-            inbox.items.add(inbox_item)
+        inbox, _ = Inbox.objects.get_or_create(author=author)
+        inbox.items.add(inbox_item)
         return inbox_item
 
     class Meta:
