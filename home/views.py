@@ -132,17 +132,15 @@ def inbox(request):
             
     print("URL", request.build_absolute_uri('/authors/'+str(author_id)+'/inbox'))
     author_inbox = []
-    # for item in inboxItems.json()["items"]:
-    #     temp_dict = {}
-    #     if item["unlisted"] == "false":
-    #         temp_dict["displayName"] = item["author"]["displayName"]
-    #         for k, v in item.items():
-    #             if k != "author":
-    #                 temp_dict[k] = v
-    #     author_inbox.append(temp_dict)
-    print(inboxItems.json())
-    for item in author_inbox:
-        print(item)
+    for item in inboxItems.json()["items"]:
+        temp_dict = {}
+        # if item["unlisted"] == "false":
+        #     temp_dict["displayName"] = item["author"]["displayName"]
+        for k, v in item.items():
+            if k != "author":
+                temp_dict[k] = v
+        author_inbox.append(temp_dict)
+    print(author_inbox)
     #default page size is 5 and give option to change pages
     context = {'author_inbox' : author_inbox}
     return render(request, 'inbox/inbox.html', context)

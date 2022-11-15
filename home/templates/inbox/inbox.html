@@ -1,7 +1,28 @@
 {% extends "base.html" %}
-{% block content %}
-{% for author_notif in author_inbox %}
-    <p>Item: {{author_notif}}</p>
-{% endfor %}
-{% endblock %}
+<!-- {% block content %} -->
+<html>
+    <body>
 
+
+        {% for author_notif in author_inbox %}
+            {% if author_notif.type == "Follow" %}
+            <h4>Item Type: {{author_notif.type}}</h4>
+            <p>{{author_notif.actor.display_name}} wants to follow you!</p>
+            <button type="button" onclick="acceptFollowRequest('{{author_notif.actor.id}}', '{{author_notif.object.id}}')">Accept</button> 
+
+            {% comment %} {% elif author_notif.type == %} {% endcomment %}
+            {% endif %}
+        {% endfor %}
+        
+
+
+
+
+        <script>
+            function acceptFollowRequest(senderID, accepterID){
+                console.log(senderID, accepterID)
+            }
+        </script>
+    </body>
+</html>
+<!-- {% endblock %} -->
