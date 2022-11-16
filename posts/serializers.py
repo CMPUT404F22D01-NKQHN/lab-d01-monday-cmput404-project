@@ -1,5 +1,3 @@
-import base64
-from tkinter import E
 import uuid
 from rest_framework import serializers
 from authors.models import Author
