@@ -20,11 +20,14 @@
         <!-- <li>Unlisted: {{author_post.unlisted}}</li>
         <li>Github: {{author_post.author.github}}</li> -->
         <img src={{author_post.author.profileImage}} alt="" width="50">
-        <li>Content: {{author_post.content}}</li>
         <p id = "fileup"></p>
         <!-- <li>Visibility: {{author_post.visibility}}</li> -->
         <li>Content-Type: {{author_post.contentType}}</li>
-        <li>Content: {{author_post.content}}</li>
+        {% if author_post.contentType == "text/plain" %}
+            <li>Content: {{author_post.content}}</li>
+        {% elif author_post.contentType == "image/png;base64" %}
+            <li>Content: <img src="{{author_post.content}}" alt="" width="50"></li>
+        {% endif %}
         <li>Likes: {{author_post.likes}}</li>
         <li>Count: {{author_post.count}}</li> 
         <!-- <li>comment source: {{author_post.commentsSrc}}</li> -->
