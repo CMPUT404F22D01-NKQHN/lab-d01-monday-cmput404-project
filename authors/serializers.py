@@ -26,11 +26,8 @@ class AuthorSerializer(serializers.ModelSerializer):
     def get_type(self, model: Author) -> str:
         return "author"
 
-    def get_host(self, model: Author) -> str:
-        return os.environ.get("HOSTNAME_APP", "http://localhost:8000")
-
     def get_id(self, model: Author) -> str:
-        return f"{self.get_host(model)}/authors/{int(model.id)}"
+        return f"{model.host}/authors/{int(model.id)}"
 
     def get_img(self, model: Author) -> str:
         if model.profileImage == "":
