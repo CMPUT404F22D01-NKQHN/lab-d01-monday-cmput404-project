@@ -20,7 +20,7 @@ AUTH_USER_MODEL = 'authors.Author'
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'qdyoedctje(zv!0n^!sf-o0=i09l0=j)klh%-i!ui8-dl-hych'
+SECRET_KEY = os.environ.get('SECRET_KEY','qdyoedctje(zv!0n^!sf-o0=i09l0=j)klh%-i!ui8-dl-hych')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
