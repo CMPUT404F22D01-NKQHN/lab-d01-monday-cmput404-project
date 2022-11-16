@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
@@ -44,6 +45,7 @@ class Author(AbstractUser):
     followers = models.ManyToManyField('Author', blank = True)
     objects = AuthorManager()
     liked = models.ManyToManyField('posts.Like', blank = True)
+    host = models.TextField(max_length = 500, default = os.environ.get('HOSTNAME', 'http://localhost:8000'), editable = False)
     def __str__(self):
         return self.display_name   
 

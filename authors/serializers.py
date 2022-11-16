@@ -9,7 +9,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField("get_type")
     display_name = serializers.CharField(max_length=100)
     github = serializers.CharField(max_length=100, required=False)
-    host = serializers.SerializerMethodField("get_host")
+    host = serializers.CharField(max_length=500)
     id = serializers.SerializerMethodField("get_id")
     url = serializers.SerializerMethodField("get_id")
     profileImage = serializers.SerializerMethodField("get_img")
