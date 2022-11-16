@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import django_on_heroku
 from pathlib import Path
 import os
 
@@ -136,3 +136,4 @@ LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 CORS_ALLOW_ALL_ORIGINS = True
 MEDIA_URL = '/media/'
+django_on_heroku.settings(locals())
