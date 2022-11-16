@@ -190,7 +190,7 @@
           const visibility = "PUBLIC";
           const contentType = document.getElementById("postType").value;
           console.log("contentType: " + contentType);
-          const content = document.getElementById(contentType).value;
+          let content = document.getElementById(contentType).value;
           //wait 2 seconds
           
           // if (contentType == "text/markdown"){
@@ -199,9 +199,9 @@
           // else if (contentType == "plain/text"){
           //   const content = document.getElementById("text/markdown").value;
           // }
-          // else if (contentType == "image/png;base64"){
-          //   const content = document.getElementById("uploadImage");
-          // }
+          if (contentType == "image/png;base64"){
+            content = document.getElementById('fileup').innerHTML;
+          }
           console.log("content: " + content);
 
           const data = {

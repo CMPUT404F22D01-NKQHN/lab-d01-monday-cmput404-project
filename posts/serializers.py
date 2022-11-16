@@ -80,10 +80,12 @@ class CreatePostSerializer(serializers.ModelSerializer):
         ]:
             # convert base 64 encoded data["img"] to png file
             id = uuid.UUID(bytes=os.urandom(16))
-            name = os.path.join("images", f"{author_id}_{id}.png")
+            name = os.path.join("./media","files", f"{author_id}_{id}.png")
             # Make media folder if it doesn't exist
-            if not os.path.exists("images"):
-                os.makedirs("images")
+            if not os.path.exists("media"):
+                os.makedirs("media")
+            if not os.path.exists("media/files"):
+                os.makedirs("media/files")
 
             with open(name, "w") as f:
                 f.write(data["content"])

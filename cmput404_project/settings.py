@@ -135,5 +135,4 @@ STATIC_URL = '/static/'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 CORS_ALLOW_ALL_ORIGINS = True
-MEDIA_URL = '/media/'
 django_on_heroku.settings(locals(), test_runner=False)
