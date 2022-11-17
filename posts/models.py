@@ -4,6 +4,7 @@ from django.db import models
 import uuid
 from authors.models import Author
 import enum
+from cmput404_project.storage_backends import MediaStorage
 
 
     # text/markdown -- common mark
@@ -25,7 +26,7 @@ class Post(models.Model):
     unlisted = models.BooleanField(default = False)
     contentType = models.CharField(max_length = 500, choices = [(tag.name, tag.value) for tag in enum_content_types], default = "text/plain")
     content = models.CharField(max_length = 500, blank = True)
-    file = models.FileField(upload_to = 'files/', blank = True)
+    file = models.FileField(upload_to='files/', blank = True, null = True, storage=MediaStorage())
     visibility = models.TextField(max_length = 200)
     author = models.ForeignKey('authors.Author', on_delete=models.DO_NOTHING)
     categories = models.ManyToManyField('posts.Category', blank = True)
