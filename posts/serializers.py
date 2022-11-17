@@ -7,6 +7,8 @@ from friends.serializers import FriendRequestSerializer
 from .models import Inbox, InboxItem, Post, Comment, Like
 from drf_spectacular.utils import extend_schema_field
 import os
+from cmput404_project.storage_backends import MediaStorage
+import tempfile
 
 
 class UpdatePostSerializer(serializers.Serializer):
@@ -80,16 +82,21 @@ class CreatePostSerializer(serializers.ModelSerializer):
         ]:
             # convert base 64 encoded data["img"] to png file
             id = uuid.UUID(bytes=os.urandom(16))
-            name = os.path.join("./media","files", f"{author_id}_{id}.png")
-            # Make media folder if it doesn't exist
-            if not os.path.exists("media"):
-                os.makedirs("media")
-            if not os.path.exists("media/files"):
-                os.makedirs("media/files")
-
-            with open(name, "w") as f:
-                f.write(data["content"])
+            name = os.path.join("files", f"{author_id}_{id}.png")
+            if os.environ.get("BUCKETEER_AWS_SECRET_ACCESS_KEY", None):
+                # Create temp file
+                temp = tempfile.NamedTemporaryFile()
+                temp.write(data["content"].encode("utf-8"))
+                media_file = MediaStorage()
+                media_file.save(name, temp)
+            else:
+                name = os.path.join("./media", name)
+                # Ensure directory exists
+                os.makedirs(os.path.dirname(name), exist_ok=True)
+                with open(name, "w") as f:
+                    f.write(data["content"])
             data["content"] = ""
+
             data["file"] = name
 
         post = Post.objects.create(**data)
@@ -269,7 +276,18 @@ class ReadPostSerializer(serializers.ModelSerializer):
             "image/png;base64",
             "image/jpeg;base64",
         ]:
-            return model.file.read().decode("utf-8")
+            if os.environ.get("BUCKETEER_AWS_SECRET_ACCESS_KEY", False):
+                try:
+                    return model.file.read().decode("utf-8")
+                except:
+                    try:
+                        file = open(model.file.name, "rb")
+                        return file.read().decode("utf-8")
+                    except:
+                        return "File not found"
+            else:
+                file = open(model.file.name, "rb")
+                return file.read().decode("utf-8")
         else:
             return model.content
 
