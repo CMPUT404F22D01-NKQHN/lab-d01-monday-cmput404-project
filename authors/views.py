@@ -40,7 +40,7 @@ class AuthorsAPIView(generics.GenericAPIView):
         )
 
     def get_queryset(self):
-        return Author.objects.all()
+        return Author.objects.filter(is_another_server=False)
 
     def paginate_queryset(self, queryset, request):
         return self.pagination_class().paginate_queryset(queryset, request, view=self)
