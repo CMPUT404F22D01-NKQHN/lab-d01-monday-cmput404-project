@@ -139,6 +139,8 @@ def like_post(request, post_id):
         return Response(ReadLikeSerializer(like).data)
     except AssertionError:
         return Response(status=403)
+    except Post.DoesNotExist:
+        return Response(status=404, data={"error": "Post not found"})
 
 def like_comment(request, comment_id):
     try:
@@ -154,6 +156,8 @@ def like_comment(request, comment_id):
         return Response(ReadLikeSerializer(like).data)
     except AssertionError:
         return Response(status=403)
+    except Comment.DoesNotExist:
+        return Response(status=404, data={"error": "Comment not found"})
 
 def get_likes_on_post(request, post_id):
     try:
@@ -183,14 +187,20 @@ def get_likes_on_comment(request, comment_id):
     except AssertionError:
         return Response(status=403)
 
-def delete_like(request):
+def delete_like(request, post_id, comment_id=None):
     try:
-        like = Like.objects.get(id=int(request.data["like_id"]))
-        assert like.sender.id == request.user.id
+        like = None
+        if not comment_id:
+            like = Like.objects.get(sender=request.user,liked_id=int(post_id))
+        else:
+            like = Like.objects.get(sender=request.user,liked_id=int(comment_id))
+        assert like.sender.id == request.user.id, "User ID does not match author ID"
         like.delete()
         return Response(status=204)
     except AssertionError:
-        return Response(status=403)
+        return Response(status=403, data={"error": "User ID does not match author ID"})
+    except Like.DoesNotExist:
+        return Response(status=404, data={"error": "Like not found"})
 
 class PostAPI(GenericAPIView):
     def get_serializer_class(self):
@@ -228,6 +238,8 @@ class LikesListAPIView(GenericAPIView):
             return like_comment(request, comment_id)
         else:
             return like_post(request, post_id)
+    def delete(self, request, author_id, post_id, comment_id=None):
+        return delete_like(request, post_id, comment_id)
     def get_queryset(self):
         return []
 class PostListAPI(GenericAPIView):
@@ -331,6 +343,10 @@ class InboxAPIView(GenericAPIView):
             assert author.id == request.user.id
             inbox, _ = Inbox.objects.get_or_create(author=author)
             inbox.items.all().delete()
-            return Response(ReadInboxSerializer(inbox).data)
+            obj = {
+                "items": inbox.items.order_by("-published").all(),
+                "author": author,
+            }
+            return Response(ReadInboxSerializer(obj).data)
         except AssertionError:
             return Response(status=403, data={"error": "You are not authorized to view this page."})
