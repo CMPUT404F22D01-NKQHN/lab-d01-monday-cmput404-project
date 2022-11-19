@@ -9,6 +9,7 @@ from drf_spectacular.utils import extend_schema_field
 import os
 from cmput404_project.storage_backends import MediaStorage
 import tempfile
+from nodes.models import Node
 
 
 class UpdatePostSerializer(serializers.Serializer):
@@ -65,7 +66,11 @@ class CreatePostSerializer(serializers.ModelSerializer):
     content = serializers.CharField()
 
     def create(self, data, author_id):
-        assert data["visibility"] in ["PUBLIC", "FRIENDS", "PRIVATE"], "Invalid visibility"
+        assert data["visibility"] in [
+            "PUBLIC",
+            "FRIENDS",
+            "PRIVATE",
+        ], "Invalid visibility"
         assert data["contentType"] in [
             "text/markdown",
             "text/plain",
@@ -103,23 +108,36 @@ class CreatePostSerializer(serializers.ModelSerializer):
         post = Post.objects.create(**data)
         # Add inbox item for all followers
         data = ReadPostSerializer(post).data
-        for follower in author.followers.all():
-            AddInboxItemSerializer().create(data, follower.id)
-            # TODO: Refactor to send inbox items to remote servers
-            # res = requests.post(
-            #     f"{follower.host}/{follower.id}/inbox",
-            #     json = {
-            #         "type": "post",
-            #         "actor": AuthorSerializer(author).data,
-            #         "post": ReadPostSerializer(post).data,
-            #     },
-            # )
+        if post.visibility != "PRIVATE" and not post.unlisted:
+            for follower in author.followers.all():
+                if Node.objects.filter(proxy_users=follower).exists():
+                    node = Node.objects.get(proxy_users=follower)
+                    api_url = node.api_url
+                    username = node.username
+                    password = node.password
+                    requests.post(
+                        f"{api_url}/authors/{follower.id}/inbox",
+                        json=data,
+                        headers={"Authorization": f"Basic {username}:{password}",
+                                "Content-Type": "application/json"},
+                                 
+                    )
+                else:
+                    AddInboxItemSerializer().create(data, follower.id)
 
         return post
 
     class Meta:
         model = Post
-        exclude = ("id", "published", "categories", "comments", "author", "likes", "file")
+        exclude = (
+            "id",
+            "published",
+            "categories",
+            "comments",
+            "author",
+            "likes",
+            "file",
+        )
 
 
 class CreateCommentSerializer(serializers.ModelSerializer):

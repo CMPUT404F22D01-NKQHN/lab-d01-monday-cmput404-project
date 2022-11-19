@@ -41,7 +41,7 @@ def home(request):
     #posts = posts.values('title', 'author', 'id', 'published')
     context = {
         "author_list" : sorted_posts,
-        "author_id": int(request.user.id),
+        "author_id": request.user.id,
         "title": "Home",
     }
     # Not context
@@ -50,7 +50,7 @@ def home(request):
 @login_required(login_url='/login/')
 def profile(request):
     author = Author.objects.all()
-    author_id = int(request.user.id)
+    author_id = request.user.id
     posts = requests.get(request.build_absolute_uri('/authors/'+str(author_id)+'/posts'))
     #print(posts.json())
     # Get authors posts from post.json().items() using a for loop    
@@ -118,7 +118,7 @@ def profile(request):
 @login_required(login_url='/login/')
 def inbox(request):
     author = Author.objects.all()
-    author_id = int(request.user.id)
+    author_id = request.user.id
     print(author_id)
     #simulating forwarding all cookies on authenticated webview and passing them forward (could be problematic)
     cookies = "; ".join([f"{key}={value}" for key, value in request.COOKIES.items()])

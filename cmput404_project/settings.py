@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'friends.apps.FriendsConfig',
     'posts.apps.PostsConfig',
     'home.apps.HomeConfig',
+    'nodes.apps.NodesConfig',
     'corsheaders',
     'storages',
     'rest_framework.authtoken'
