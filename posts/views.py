@@ -308,7 +308,6 @@ class InboxAPIView(GenericAPIView):
     def get(self, request, author_id):
         try:
             author = Author.objects.get(id=int(author_id))
-            print(request.user.id)
             assert author.id == request.user.id
             inbox, _ = Inbox.objects.get_or_create(author=author)
             items = self.paginate_queryset(inbox.items.order_by("-published").all(), request)

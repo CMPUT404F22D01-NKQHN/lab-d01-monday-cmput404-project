@@ -4,8 +4,6 @@ import uuid
 from rest_framework import serializers
 from authors.models import Author
 from authors.serializers import AuthorSerializer
-from friends.models import FriendRequest
-from friends.serializers import FriendRequestSerializer
 from .models import Inbox, InboxItem, Post, Comment, Like
 from drf_spectacular.utils import extend_schema_field
 import os
