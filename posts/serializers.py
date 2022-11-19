@@ -115,13 +115,17 @@ class CreatePostSerializer(serializers.ModelSerializer):
                     api_url = node.api_url
                     username = node.username
                     password = node.password
-                    requests.post(
-                        f"{api_url}/authors/{follower.id}/inbox",
-                        json=data,
-                        headers={"Authorization": f"Basic {username}:{password}",
-                                "Content-Type": "application/json"},
-                                 
-                    )
+                    try:
+                        requests.post(
+                            f"{api_url}/authors/{follower.id}/inbox",
+                            json=data,
+                            headers={"Authorization": f"Basic {username}:{password}",
+                                    "Content-Type": "application/json"},
+                                    
+                        )
+                    except Exception as e:
+                        print(f"Failed to send post to {follower.id} on {node.api_url}")
+                        print(e)
                 else:
                     AddInboxItemSerializer().create(data, follower.id)
 
