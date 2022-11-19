@@ -39,7 +39,7 @@
             <!-- Double for loop through author_post and then author_post.commentsSrc -->
             {% for comment in author_post.commentsSrc %}
                 <li>Author: {{comment.author.display_name}}</li>
-                <li>Comment: {{comment.content}}</li>
+                <li>Comment: {{comment.comment}}</li>
                 <li>Comment Likes: {{comment.likes}}</li>
                 <li>Published: {{comment.published}}</li>
             {% endfor %}
@@ -90,21 +90,6 @@
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
       
       <script>
-        function getCookie(name) {
-          var cookieValue = null;
-          if (document.cookie && document.cookie !== '') {
-              var cookies = document.cookie.split(';');
-              for (var i = 0; i < cookies.length; i++) {
-                  var cookie = jQuery.trim(cookies[i]);
-                  // Does this cookie string begin with the name we want?
-                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                      break;
-                  }
-              }
-          }
-          return cookieValue;
-      }
 
         function newCommentYOLO(){
           console.log("create comment");
@@ -115,13 +100,13 @@
 
           const data = {
               "post_id": post_id_var,
-              "content": content,
+              "comment": content,
               "author_id": author_id
             }
           const options = {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/json',   
               'X-CSRFToken': '{{ csrf_token }}'
             },
             body: JSON.stringify(data)
@@ -133,7 +118,7 @@
         
       </script>
 
-{% endblock %}
+{% endblock content %}
 
 
 <!-- Today:
