@@ -26,16 +26,12 @@ class PostTestCase(TestCase):
     def test_get_post(self):
         author = create_author("test", "test", "test", "test")
         post = create_post(author)
-        response = self.client.get(
-            "/authors/" + author.id + "/posts/" + post.id
-        )
+        response = self.client.get("/authors/" + author.id + "/posts/" + post.id)
         self.assertEqual(response.status_code, 200)
 
     def test_get_post_dne(self):
         author = create_author("test", "test", "test", "test")
-        response = self.client.get(
-            "/authors/" + author.id + "/posts/1"
-        )
+        response = self.client.get("/authors/" + author.id + "/posts/1")
         self.assertEqual(response.status_code, 404)
 
     def test_get_post_unauthorized(self):
@@ -43,9 +39,7 @@ class PostTestCase(TestCase):
         post = create_post(author, POST_DATA_2)
         author2 = create_author("test2", "test2", "test2", "test2")
         self.client.force_login(author2)
-        response = self.client.get(
-            "/authors/" + author.id + "/posts/" + post.id
-        )
+        response = self.client.get("/authors/" + author.id + "/posts/" + post.id)
         self.assertEqual(response.status_code, 403)
 
     def test_update_post(self):
@@ -89,9 +83,7 @@ class PostTestCase(TestCase):
         author = create_author("test", "test", "test", "test")
         post = create_post(author)
         self.client.force_login(author)
-        response = self.client.delete(
-            "/authors/" + author.id + "/posts/" + post.id
-        )
+        response = self.client.delete("/authors/" + author.id + "/posts/" + post.id)
         self.assertEqual(response.status_code, 204)
 
     def test_delete_post_unauthorized(self):
@@ -99,9 +91,7 @@ class PostTestCase(TestCase):
         post = create_post(author)
         author2 = create_author("test2", "test2", "test2", "test2")
         self.client.force_login(author2)
-        response = self.client.delete(
-            "/authors/" + author.id + "/posts/" + post.id
-        )
+        response = self.client.delete("/authors/" + author.id + "/posts/" + post.id)
         self.assertEqual(response.status_code, 403)
 
     def test_get_posts_by_author_follower(self):
@@ -145,7 +135,7 @@ class PostTestCase(TestCase):
         image.close()
         post_data = POST_DATA.copy()
         post_data["contentType"] = "image/png;base64"
-        post_data["content"] = base64_image.decode("utf-8")
+        post_data["content"] = f"data:image/png;base64,{base64_image.decode('utf-8')}"
         response = self.client.post(
             "/authors/" + author.id + "/posts",
             post_data,
@@ -162,11 +152,9 @@ class PostTestCase(TestCase):
         response = self.client.get(response_data["content"])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.content.replace(b'"', b""),
-            base64_image.replace(b'"', b""),
+            response.content, open("posts/test_image/good.png", "rb").read()
         )
         # Check the image is cached
         response = self.client.get(response_data["content"])
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.headers["Cache-Control"], "max-age=86400")
+        self.assertEqual(response.headers["Cache-Control"], "max-age=86400")

@@ -292,7 +292,7 @@ class AddInboxItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InboxItem
-        exclude = ["author"]
+        fields = '__all__'
 
 
 class ReadInboxSerializer(serializers.ModelSerializer):
