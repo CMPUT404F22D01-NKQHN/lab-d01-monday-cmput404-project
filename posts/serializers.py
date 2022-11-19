@@ -119,9 +119,10 @@ class CreatePostSerializer(serializers.ModelSerializer):
                         requests.post(
                             f"{api_url}/authors/{follower.id}/inbox",
                             json=data,
-                            headers={"Authorization": f"Basic {username}:{password}",
-                                    "Content-Type": "application/json"},
-                                    
+                            headers={
+                                "Authorization": f"Basic {username}:{password}",
+                                "Content-Type": "application/json",
+                            },
                         )
                     except Exception as e:
                         print(f"Failed to send post to {follower.id} on {node.api_url}")
@@ -296,7 +297,7 @@ class AddInboxItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InboxItem
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ReadInboxSerializer(serializers.ModelSerializer):
