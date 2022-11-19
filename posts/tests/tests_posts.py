@@ -6,7 +6,7 @@ class PostTestCase(TestCase):
         author = create_author("test", "test", "test", "test")
         self.client.force_login(author)
         response = self.client.post(
-            "/authors/" + str(int(author.id)) + "/posts",
+            "/authors/" + author.id + "/posts",
             POST_DATA,
             content_type="application/json",
         )
@@ -17,7 +17,7 @@ class PostTestCase(TestCase):
         author2 = create_author("test2", "test2", "test2", "test2")
         self.client.force_login(author2)
         response = self.client.post(
-            "/authors/" + str(int(author.id)) + "/posts",
+            "/authors/" + author.id + "/posts",
             POST_DATA,
             content_type="application/json",
         )
@@ -27,14 +27,14 @@ class PostTestCase(TestCase):
         author = create_author("test", "test", "test", "test")
         post = create_post(author)
         response = self.client.get(
-            "/authors/" + str(int(author.id)) + "/posts/" + str(int(post.id))
+            "/authors/" + author.id + "/posts/" + post.id
         )
         self.assertEqual(response.status_code, 200)
 
     def test_get_post_dne(self):
         author = create_author("test", "test", "test", "test")
         response = self.client.get(
-            "/authors/" + str(int(author.id)) + "/posts/" + str(int(1))
+            "/authors/" + author.id + "/posts/1"
         )
         self.assertEqual(response.status_code, 404)
 
@@ -44,7 +44,7 @@ class PostTestCase(TestCase):
         author2 = create_author("test2", "test2", "test2", "test2")
         self.client.force_login(author2)
         response = self.client.get(
-            "/authors/" + str(int(author.id)) + "/posts/" + str(int(post.id))
+            "/authors/" + author.id + "/posts/" + post.id
         )
         self.assertEqual(response.status_code, 403)
 
@@ -59,7 +59,7 @@ class PostTestCase(TestCase):
             "description": "new description",
         }
         response = self.client.put(
-            "/authors/" + str(int(author.id)) + "/posts/" + str(int(post.id)),
+            "/authors/" + author.id + "/posts/" + post.id,
             update_data,
             content_type="application/json",
         )
@@ -79,7 +79,7 @@ class PostTestCase(TestCase):
             "description": "new description",
         }
         response = self.client.put(
-            "/authors/" + str(int(author.id)) + "/posts/" + str(int(post.id)),
+            "/authors/" + author.id + "/posts/" + post.id,
             update_data,
             content_type="application/json",
         )
@@ -90,7 +90,7 @@ class PostTestCase(TestCase):
         post = create_post(author)
         self.client.force_login(author)
         response = self.client.delete(
-            "/authors/" + str(int(author.id)) + "/posts/" + str(int(post.id))
+            "/authors/" + author.id + "/posts/" + post.id
         )
         self.assertEqual(response.status_code, 204)
 
@@ -100,7 +100,7 @@ class PostTestCase(TestCase):
         author2 = create_author("test2", "test2", "test2", "test2")
         self.client.force_login(author2)
         response = self.client.delete(
-            "/authors/" + str(int(author.id)) + "/posts/" + str(int(post.id))
+            "/authors/" + author.id + "/posts/" + post.id
         )
         self.assertEqual(response.status_code, 403)
 
@@ -113,7 +113,7 @@ class PostTestCase(TestCase):
         author.save()
 
         self.client.force_login(author2)
-        response = self.client.get("/authors/" + str(int(author.id)) + "/posts")
+        response = self.client.get("/authors/" + author.id + "/posts")
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
 
@@ -125,7 +125,7 @@ class PostTestCase(TestCase):
         create_post(author, POST_DATA_2)
         author2 = create_author("test2", "test2", "test2", "test2")
         self.client.force_login(author2)
-        response = self.client.get("/authors/" + str(int(author.id)) + "/posts")
+        response = self.client.get("/authors/" + author.id + "/posts")
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(len(response_data["items"]), 1)
@@ -133,7 +133,7 @@ class PostTestCase(TestCase):
     def test_get_posts_by_author_dne(self):
         author = create_author("test", "test", "test", "test")
         self.client.force_login(author)
-        response = self.client.get("/authors/" + str(int(1)) + "/posts")
+        response = self.client.get("/authors/1/posts")
         self.assertEqual(response.status_code, 404)
 
     def test_create_image_post(self):
@@ -147,16 +147,26 @@ class PostTestCase(TestCase):
         post_data["contentType"] = "image/png;base64"
         post_data["content"] = base64_image.decode("utf-8")
         response = self.client.post(
-            "/authors/" + str(int(author.id)) + "/posts",
+            "/authors/" + author.id + "/posts",
             post_data,
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(response_data["contentType"], "image/png;base64")
-        self.assertEqual(response_data["content"], base64_image.decode("utf-8"))
         # Get the post and check the image
         response = self.client.get(response_data["id"])
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
-        self.assertEqual(response_data["content"], base64_image.decode("utf-8"))
+        # Get the image from the url in the content
+        response = self.client.get(response_data["content"])
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.content.replace(b'"', b""),
+            base64_image.replace(b'"', b""),
+        )
+        # Check the image is cached
+        response = self.client.get(response_data["content"])
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.headers["Cache-Control"], "max-age=86400")

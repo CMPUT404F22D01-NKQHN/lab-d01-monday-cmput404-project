@@ -27,7 +27,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         return "author"
 
     def get_id(self, model: Author) -> str:
-        return f"{model.host}/authors/{int(model.id)}"
+        return f"{model.host}/authors/{model.id}"
 
     def get_img(self, model: Author) -> str:
         if model.profileImage == "":
