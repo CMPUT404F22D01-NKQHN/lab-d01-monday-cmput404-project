@@ -1,3 +1,4 @@
+import base64
 import os
 from rest_framework.response import Response
 from django.utils.decorators import method_decorator
@@ -17,6 +18,19 @@ from .serializers import (
 )
 from drf_spectacular.utils import extend_schema
 from rest_framework.generics import GenericAPIView
+
+from rest_framework.renderers import BaseRenderer
+
+
+class ImageRenderer(BaseRenderer):
+    # https://www.django-rest-framework.org/api-guide/renderers/
+    media_type = "image/*"
+    format = "image/*"
+    charset = None
+    render_style = "binary"
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        return data
 
 
 def get_post(request, post_id="", author_id=""):
@@ -229,6 +243,8 @@ class PostListAPI(GenericAPIView):
 
 
 class ImageAPI(GenericAPIView):
+    renderer_classes = [ImageRenderer]
+
     @method_decorator(cache_page(60 * 60 * 24))
     def get(self, request, author_id, post_id):
         try:
@@ -241,22 +257,25 @@ class ImageAPI(GenericAPIView):
 
             if os.environ.get("BUCKETEER_AWS_SECRET_ACCESS_KEY", False):
                 try:
-                    return Response(
-                        post.file.read(), content_type=post.contentType
+                    binary_image = base64.b64decode(
+                        post.file.read().decode("utf-8").split(",")[1]
                     )
+                    return Response(binary_image, content_type=post.contentType)
                 except:
                     try:
                         file = open(post.file.name, "rb")
-                        return Response(
-                            file.read(), content_type=post.contentType
+                        binary_image = base64.b64decode(
+                            file.read().decode("utf-8").split(",")[1]
                         )
+                        return Response(binary_image, content_type=post.contentType)
                     except:
                         return "File not found"
             else:
                 file = open(post.file.name, "rb")
-                return Response(
-                    file.read(), content_type=post.contentType
+                binary_image = base64.b64decode(
+                    file.read().decode("utf-8").split(",")[1]
                 )
+                return Response(binary_image, content_type=post.contentType)
         except AssertionError:
             return Response(status=403)
         except Post.DoesNotExist:
