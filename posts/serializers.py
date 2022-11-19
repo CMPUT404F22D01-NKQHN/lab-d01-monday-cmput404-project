@@ -73,7 +73,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
             "image/png;base64",
             "image/jpeg;base64",
         ], "Invalid content-type"
-        author = Author.objects.get(id=int(author_id))
+        author = Author.objects.get(id=author_id)
         data["author"] = author
         if data["contentType"] in [
             "application/base64",
@@ -101,7 +101,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
         post = Post.objects.create(**data)
         # Add inbox item for all followers
-        data = {"item": ReadPostSerializer(post).data}
+        data = ReadPostSerializer(post).data
         for follower in author.followers.all():
             AddInboxItemSerializer().create(data, follower.id)
             # TODO: Refactor to send inbox items to remote servers
@@ -113,7 +113,6 @@ class CreatePostSerializer(serializers.ModelSerializer):
             #         "post": ReadPostSerializer(post).data,
             #     },
             # )
-            
 
         return post
 
@@ -123,36 +122,37 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
 
 class CreateCommentSerializer(serializers.ModelSerializer):
-    content = serializers.CharField()
+    comment = serializers.CharField()
     contentType = serializers.CharField()
 
-    def create(self, data, author, post, reply_to=None):
+    def create(self, data, author, post):
         comment = Comment.objects.create(
-            content=data["content"],
+            comment=data["comment"],
             author=author,
             post_id=post.id,
-            reply_to=reply_to,
             contentType=data.get("contentType", "text/plain"),
         )
         post.comments.add(comment)
-        if reply_to:
-            reply_to = Comment.objects.get(id=reply_to)
-            reply_to.replies.add(comment)
-            reply_to.save()
         post.save()
         # Add inbox item to original author
-        data = {"item": ReadCommentSerializer(comment).data}
+        data = ReadCommentSerializer(comment).data
         AddInboxItemSerializer().create(
             data,
             post.author.id,
         )
-        
 
         return comment
 
     class Meta:
         model = Comment
-        exclude = ("id", "published", "replies", "likes", "reply_to", "author")
+        exclude = ("id", "published", "likes", "author")
+
+
+class CommentInboxItemSerializer(serializers.Serializer):
+    type = serializers.CharField()
+    author = serializers.JSONField()
+    comment = serializers.CharField()
+    post_id = serializers.CharField()
 
 
 class ReadCommentSerializer(serializers.ModelSerializer):
@@ -165,86 +165,31 @@ class ReadCommentSerializer(serializers.ModelSerializer):
         return "comment"
 
     def get_author(self, obj):
-        return AuthorSerializer(obj.author).data
+        return obj.author
 
     def get_likes(self, obj: Comment):
         return obj.likes.count()
 
     def get_id(self, obj: Comment):
-        host = obj.author.host
-        return f"{host}/authors/{int(obj.author.id)}/posts/{int(obj.post_id)}/comments/{int(obj.id)}"
+        host = obj.author["id"]
+        return f"{host}/posts/{obj.post_id}/comments/{obj.id}"
 
     class Meta:
         model = Comment
-        exclude = ("replies", "reply_to")
+        fields = "__all__"
 
 
-class CreateLikeSerializer(serializers.ModelSerializer):
-    def create(self, sender, accepter, is_comment, liked_id):
-        if is_comment:
-            assert Comment.objects.filter(
-                id=liked_id
-            ).exists(), "Comment does not exist"
-        else:
-            assert Post.objects.filter(id=liked_id).exists(), "Post does not exist"
-
-        like = Like.objects.create(
-            sender=sender, accepter=accepter, is_comment=is_comment, liked_id=liked_id
-        )
-        if is_comment:
-            comment = Comment.objects.get(id=liked_id)
-            comment.likes.add(like)
-        else:
-            post = Post.objects.get(id=liked_id)
-            post.likes.add(like)
-        sender.liked.add(like)
-        # Add inbox item to original author
-        data = {"item": ReadLikeSerializer(like).data}
-        AddInboxItemSerializer().create(
-            data,
-            author_id=accepter.id,
-        )
-        return like
-
-    class Meta:
-        model = Like
-        exclude = (
-            "id",
-            "sender",
-            "accepter",
-        )
-
-
-class ReadLikeSerializer(serializers.ModelSerializer):
-    sender = serializers.SerializerMethodField("get_sender")
-    accepter = serializers.SerializerMethodField("get_accepter")
-    liked_id = serializers.CharField()
-    object = serializers.SerializerMethodField("get_object")
-    summary = serializers.SerializerMethodField("get_summary")
+class LikeSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField("get_type")
+    author = serializers.JSONField()
+    object = serializers.URLField()
 
-    def get_sender(self, obj):
-        return AuthorSerializer(obj.sender).data
-
-    def get_accepter(self, obj):
-        return AuthorSerializer(obj.accepter).data
-
-    def get_object(self, model: Like):
-        if model.is_comment:
-            post = Post.objects.filter(comments=model.liked_id).first()
-            return f"{model.accepter.id}/{post.id}/comment/{model.liked_id}"
-        else:
-            return f"{model.accepter.id}/{model.liked_id}"
-
-    def get_summary(self, model: Like):
-        return str(model)
-
-    def get_type(self, model: Like):
+    def get_type(self, obj):
         return "like"
 
     class Meta:
         model = Like
-        fields = "__all__"
+        exclude = ("id", "is_comment", "published")
 
 
 class ReadPostSerializer(serializers.ModelSerializer):
@@ -270,7 +215,7 @@ class ReadPostSerializer(serializers.ModelSerializer):
 
     def get_id(self, model: Post):
         author_id = AuthorSerializer(model.author).data["id"]
-        return f"{author_id}/posts/{int(model.id)}"
+        return f"{author_id}/posts/{model.id}"
 
     def get_type(self, model):
         return "post"
@@ -303,7 +248,7 @@ class ReadPostSerializer(serializers.ModelSerializer):
         return model.comments.count()
 
     def get_comments_list(self, model: Post):
-        comments = model.comments.filter(reply_to=None).order_by("-published")[:5]
+        comments = model.comments.order_by("-published")[:5]
         return ReadCommentSerializer(comments, many=True).data
 
     class Meta:
@@ -330,7 +275,8 @@ class AddInboxItemSerializer(serializers.ModelSerializer):
     item = serializers.JSONField()
 
     def create(self, validated_data, author_id):
-        inbox_item = InboxItem.objects.create(**validated_data)
+        data = {"item": validated_data}
+        inbox_item = InboxItem.objects.create(**data)
         author = Author.objects.get(id=author_id)
         inbox, _ = Inbox.objects.get_or_create(author=author)
         inbox.items.add(inbox_item)
@@ -352,12 +298,11 @@ class ReadInboxSerializer(serializers.ModelSerializer):
     def get_author(self, obj):
         return AuthorSerializer(obj["author"]).data.get("url")
 
-    def get_items(self, obj)->List:
+    def get_items(self, obj) -> List:
         # Read the inbox items for the given author and convert them to the correct format
         items = []
         for item in obj["items"]:
-            items.append(
-                item.item)
+            items.append(item.item)
         return items
 
     class Meta:

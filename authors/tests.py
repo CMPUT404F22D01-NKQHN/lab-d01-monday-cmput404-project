@@ -33,7 +33,26 @@ class AuthorTestCase(TestCase):
         res = self.client.get("/authors/")
         self.assertEqual(res.status_code, 200)
         self.assertEqual(len(res.data), 2)
-        self.assertEqual(res.data["items"][0]["display_name"], "test")
+    
+    def test_get_single(self):
+        self.client.force_login(self.test1)
+        res = self.client.get("/authors/" + self.test1.id)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(self.test1.id in res.data["id"])
+        
+    def test_update(self):
+        self.client.force_login(self.test1)
+        res = self.client.post(
+            "/authors/" + self.test1.id,
+            {
+                "display_name": "testing",
+                "github": "testing",
+                "profileImage": "testing",
+            })
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data["display_name"], "testing")
+        self.assertEqual(res.data["github"], "testing")
+        self.assertEqual(res.data["profileImage"], "testing")
 
     def test_user_manager(self):
         test1 = Author.objects.create_user(

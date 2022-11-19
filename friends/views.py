@@ -15,7 +15,7 @@ class FollowerListAPIView(GenericAPIView):
         return FollowersSerializer
 
     def get(self, request, author_id):
-        author = Author.objects.get(id=int(author_id))
+        author = Author.objects.get(id=author_id)
         serializer = FollowersSerializer(author)
         return Response(serializer.data)
 

@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 import uuid
+from cmput404_project.utilities import gen_id
 # Create your models here.
 
 class AuthorManager(BaseUserManager):
@@ -36,7 +37,7 @@ class AuthorManager(BaseUserManager):
 
 
 class Author(AbstractUser):
-    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False) 
+    id = models.CharField(primary_key = True, default = gen_id, editable = False, max_length = 100)
     display_name = models.TextField(max_length=200, editable = True)
     github = models.TextField(max_length = 200, default = '', blank = True)
     profileImage = models.TextField(max_length = 200, default = '', blank = True)
@@ -45,7 +46,7 @@ class Author(AbstractUser):
     REQUIRED_FIELDS = ['email', 'display_name', 'password']
     followers = models.ManyToManyField('Author', blank = True)
     objects = AuthorManager()
-    liked = models.ManyToManyField('posts.Like', blank = True)
+    liked = models.ManyToManyField('posts.Like', blank = True, related_name = 'liked')
     host = models.TextField(max_length = 500, default = os.environ.get("HOST_URL", "http://localhost:8000"), editable = False)
     def __str__(self):
         return self.display_name   

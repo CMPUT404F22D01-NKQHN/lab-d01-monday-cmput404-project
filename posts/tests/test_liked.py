@@ -1,3 +1,5 @@
+from authors.serializers import AuthorSerializer
+from posts.serializers import ReadPostSerializer
 from .utils import *
 
 
@@ -10,10 +12,14 @@ class LikedTestCase(TestCase):
         self.client.force_login(self.author2)
         response = self.client.post(
             "/authors/"
-            + str(int(self.author.id))
-            + "/posts/"
-            + str(int(post.id))
-            + "/likes"
+            + self.author.id
+            + "/inbox",
+            {
+                "type": "like",
+                "object": ReadPostSerializer(post).data.get("id"),
+                "author": AuthorSerializer(self.author2).data,
+            },
+            content_type="application/json",
         )
 
         return response
@@ -22,6 +28,6 @@ class LikedTestCase(TestCase):
         for i in range(5):
             post = create_post(self.author)
             self.author_2_like(post)
-        response = self.client.get("/authors/" + str(int(self.author2.id)) + "/liked")
+        response = self.client.get("/authors/" + self.author2.id + "/liked")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 5)

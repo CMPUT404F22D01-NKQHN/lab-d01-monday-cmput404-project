@@ -1,7 +1,8 @@
 from django.urls import path
 
 from posts.views import PostAPI, PostListAPI,\
-    LikedListAPIView, InboxAPIView, CommentListAPIView, LikesListAPIView
+    LikedListAPIView, CommentListAPIView, LikesListAPIView
+from posts.inbox_view import InboxAPIView
 from . import views
 from friends.views import FollowerListAPIView, FollowerAPIView
 
