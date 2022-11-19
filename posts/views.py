@@ -1,5 +1,7 @@
+import os
 from rest_framework.response import Response
-
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from authors.models import Author
 from authors.serializers import AuthorSerializer
 from cmput404_project.utilities import CustomPagination
@@ -224,6 +226,41 @@ class PostListAPI(GenericAPIView):
 
     def paginate_queryset(self, queryset, request):
         return self.pagination_class().paginate_queryset(queryset, request, view=self)
+
+
+class ImageAPI(GenericAPIView):
+    @method_decorator(cache_page(60 * 60 * 24))
+    def get(self, request, author_id, post_id):
+        try:
+            post = Post.objects.get(id=post_id)
+            assert (
+                post.visibility == "PUBLIC"
+                or post.author.id == request.user.id
+                or post.author.followers.filter(id=request.user.id).exists()
+            )
+
+            if os.environ.get("BUCKETEER_AWS_SECRET_ACCESS_KEY", False):
+                try:
+                    return Response(
+                        post.file.read(), content_type=post.contentType
+                    )
+                except:
+                    try:
+                        file = open(post.file.name, "rb")
+                        return Response(
+                            file.read(), content_type=post.contentType
+                        )
+                    except:
+                        return "File not found"
+            else:
+                file = open(post.file.name, "rb")
+                return Response(
+                    file.read(), content_type=post.contentType
+                )
+        except AssertionError:
+            return Response(status=403)
+        except Post.DoesNotExist:
+            return Response(status=404, data={"error": "Post not found"})
 
 
 class CommentListAPIView(GenericAPIView):

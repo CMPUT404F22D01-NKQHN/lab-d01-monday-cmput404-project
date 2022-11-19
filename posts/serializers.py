@@ -65,10 +65,11 @@ class CreatePostSerializer(serializers.ModelSerializer):
     content = serializers.CharField()
 
     def create(self, data, author_id):
-        assert data["visibility"] in ["PUBLIC", "FRIENDS"], "Invalid visibility"
+        assert data["visibility"] in ["PUBLIC", "FRIENDS", "PRIVATE"], "Invalid visibility"
         assert data["contentType"] in [
             "text/markdown",
             "text/plain",
+            "text/html",
             "application/base64",
             "image/png;base64",
             "image/jpeg;base64",
@@ -118,7 +119,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        exclude = ("id", "published", "categories", "comments", "author", "likes")
+        exclude = ("id", "published", "categories", "comments", "author", "likes", "file")
 
 
 class CreateCommentSerializer(serializers.ModelSerializer):
@@ -226,18 +227,7 @@ class ReadPostSerializer(serializers.ModelSerializer):
             "image/png;base64",
             "image/jpeg;base64",
         ]:
-            if os.environ.get("BUCKETEER_AWS_SECRET_ACCESS_KEY", False):
-                try:
-                    return model.file.read().decode("utf-8")
-                except:
-                    try:
-                        file = open(model.file.name, "rb")
-                        return file.read().decode("utf-8")
-                    except:
-                        return "File not found"
-            else:
-                file = open(model.file.name, "rb")
-                return file.read().decode("utf-8")
+            return f"{self.get_id(model)}/image"
         else:
             return model.content
 
@@ -253,7 +243,7 @@ class ReadPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = "__all__"
+        exclude = ("file",)
 
 
 class ReadAuthorsPostsSerializer(serializers.Serializer):

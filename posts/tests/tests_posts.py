@@ -154,9 +154,19 @@ class PostTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(response_data["contentType"], "image/png;base64")
-        self.assertEqual(response_data["content"], base64_image.decode("utf-8"))
         # Get the post and check the image
         response = self.client.get(response_data["id"])
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
-        self.assertEqual(response_data["content"], base64_image.decode("utf-8"))
+        # Get the image from the url in the content
+        response = self.client.get(response_data["content"])
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.content.replace(b'"', b""),
+            base64_image.replace(b'"', b""),
+        )
+        # Check the image is cached
+        response = self.client.get(response_data["content"])
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.headers["Cache-Control"], "max-age=86400")
