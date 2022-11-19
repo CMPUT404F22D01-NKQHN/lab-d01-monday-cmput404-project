@@ -14,11 +14,10 @@ class CreateFriendRequestSerializer(serializers.Serializer):
         accepter = Author.objects.get(id=accepter_id)
         inbox, _ = Inbox.objects.get_or_create(author=accepter)
         from posts.serializers import AddInboxItemSerializer
-        AddInboxItemSerializer(inbox).create(
+        AddInboxItemSerializer().create(
             {
-                "item_type": "friend_request",
-                "item_id": str(sender_id)
-            }, sender_id=sender_id, author_id=accepter_id)
+                "item": FriendRequestSerializer(friend_request).data,
+            },author_id=accepter_id)
         return friend_request
 class AcceptFriendRequestSerializer(serializers.Serializer):
     friend_id = serializers.CharField()

@@ -70,8 +70,6 @@ item_types = enum.Enum('item_types', 'post comment like follow unfollow friendre
 class InboxItem(models.Model):
     # Can be a post, comment, friend request, or like
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
-    item_type = models.CharField(max_length = 20, choices = [(tag, tag.value) for tag in item_types])
-    item_id = models.UUIDField(editable = False)
-    author = models.ForeignKey('authors.Author', on_delete=models.CASCADE)
+    item = models.JSONField(default = dict)
     published = models.DateTimeField(auto_now_add=True)
     

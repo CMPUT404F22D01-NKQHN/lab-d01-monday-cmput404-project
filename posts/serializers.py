@@ -1,3 +1,5 @@
+from typing import List
+import requests
 import uuid
 from rest_framework import serializers
 from authors.models import Author
@@ -101,13 +103,19 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
         post = Post.objects.create(**data)
         # Add inbox item for all followers
-        data = {"item_type": "post", "item_id": post.id}
+        data = {"item": ReadPostSerializer(post).data}
         for follower in author.followers.all():
-            AddInboxItemSerializer().create(
-                data,
-                author_id=follower.id,
-                sender_id=author.id,
-            )
+            AddInboxItemSerializer().create(data, follower.id)
+            # TODO: Refactor to send inbox items to remote servers
+            # res = requests.post(
+            #     f"{follower.host}/{follower.id}/inbox",
+            #     json = {
+            #         "type": "post",
+            #         "actor": AuthorSerializer(author).data,
+            #         "post": ReadPostSerializer(post).data,
+            #     },
+            # )
+            
 
         return post
 
@@ -135,12 +143,12 @@ class CreateCommentSerializer(serializers.ModelSerializer):
             reply_to.save()
         post.save()
         # Add inbox item to original author
-        data = {"item_type": "comment", "item_id": comment.id}
+        data = {"item": ReadCommentSerializer(comment).data}
         AddInboxItemSerializer().create(
             data,
-            author_id=post.author.id,
-            sender_id=author.id,
+            post.author.id,
         )
+        
 
         return comment
 
@@ -193,11 +201,10 @@ class CreateLikeSerializer(serializers.ModelSerializer):
             post.likes.add(like)
         sender.liked.add(like)
         # Add inbox item to original author
-        data = {"item_type": "like", "item_id": like.id}
+        data = {"item": ReadLikeSerializer(like).data}
         AddInboxItemSerializer().create(
             data,
             author_id=accepter.id,
-            sender_id=sender.id,
         )
         return like
 
@@ -322,13 +329,10 @@ class ReadAuthorsPostsSerializer(serializers.Serializer):
 
 
 class AddInboxItemSerializer(serializers.ModelSerializer):
-    item_id = serializers.CharField()
-    item_type = serializers.CharField()
+    item = serializers.JSONField()
 
-    def create(self, validated_data, sender_id, author_id):
-        creator = Author.objects.get(id=sender_id)
-        data = {**validated_data, "author": creator}
-        inbox_item = InboxItem.objects.create(**data)
+    def create(self, validated_data, author_id):
+        inbox_item = InboxItem.objects.create(**validated_data)
         author = Author.objects.get(id=author_id)
         inbox, _ = Inbox.objects.get_or_create(author=author)
         inbox.items.add(inbox_item)
@@ -350,22 +354,12 @@ class ReadInboxSerializer(serializers.ModelSerializer):
     def get_author(self, obj):
         return AuthorSerializer(obj["author"]).data.get("url")
 
-    def get_items(self, obj):
+    def get_items(self, obj)->List:
         # Read the inbox items for the given author and convert them to the correct format
         items = []
         for item in obj["items"]:
-            if item.item_type == "post":
-                post = Post.objects.get(id=item.item_id)
-                items.append(ReadPostSerializer(post).data)
-            elif item.item_type == "comment":
-                comment = Comment.objects.get(id=item.item_id)
-                items.append(ReadCommentSerializer(comment).data)
-            elif item.item_type == "like":
-                like = Like.objects.get(id=item.item_id)
-                items.append(ReadLikeSerializer(like).data)
-            elif item.item_type == "friend_request":
-                follow = FriendRequest.objects.get(sender_id=item.item_id)
-                items.append(FriendRequestSerializer(follow).data)
+            items.append(
+                item.item)
         return items
 
     class Meta:

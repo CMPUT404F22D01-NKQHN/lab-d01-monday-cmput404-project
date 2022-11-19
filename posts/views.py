@@ -326,15 +326,13 @@ class InboxAPIView(GenericAPIView):
 
     def post(self, request, author_id):
         try:
+            # TODO: Currently it only adds any object to the inbox
+            # We need to check if the object is valid
+            # For example if it's a like, we need to add the like to the post
+            # If it's a friend request, we need to add the friend request to the author
             author = Author.objects.get(id=int(author_id))
-            request.data["item_id"] = int(request.data["item_id"])
-            AddInboxItemSerializer().create(request.data, request.user.id, author.id)
-            inbox, _ = Inbox.objects.get_or_create(author=author)
-            obj = {
-                "items": inbox.items.order_by("-published").all(),
-                "author": author,
-            }
-            return Response(ReadInboxSerializer(obj).data)
+            AddInboxItemSerializer().create(request.data, author.id)
+            return Response("Success", status=201)
         except AssertionError:
             return Response(status=403, data={"error": "You are not authorized to view this page."})
     def delete(self, request, author_id):
