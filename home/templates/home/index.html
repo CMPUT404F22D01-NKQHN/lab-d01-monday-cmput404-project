@@ -50,6 +50,9 @@
         <button type="button" id="newCommentButton" onclick="newCommentYOLO()">
             Comment
         </button>
+        <!-- Send follow request -->
+        <p hidden id = "author_id_var">{{author_post.author}}</p>
+        <button type="button" id="sendRequest" onclick="sendRequest(document.getElementById('author_id_var').textContent)">Send Request</button>
     {% endfor %}
 
     <script>
@@ -113,6 +116,50 @@
           }
           fetch(post_id_var+'/comments', options);
       }
+
+      function sendRequest(req_author_txt) {
+            const author_id = "{{ author_id }}";
+            const req_author = JSON.parse(req_author_txt.replace(/'/g, '"'));
+            const cur_author = JSON.parse("{{ cur_author }}".replace(/&#x27;/gi, '"'));
+            
+
+            // // TODO check if already following
+            // // POST to inbox to check
+            // const options2 = {
+            //   method: 'GET',
+            //   headers: {
+            //     'Content-Type': 'application/json',
+            //     'X-CSRFToken': '{{ csrf_token }}'
+            //   }
+            // }
+
+            // fetch(req_author.id + "/inbox", options2)
+            //   .then((response) => response.json())
+            //   .then((data) => console.log(data));
+
+            // send request to author's inbox TODO need to change it to match when viewing someone else's profile
+            const summary = cur_author.displayName + " wants to follow " + req_author.displayName;
+            const data = {
+              "type": "Follow",
+              // PERSON A FOLLOWING
+              "summary": summary,
+              "actor": cur_author,
+              // PERSON B BEING FOLLOWED
+              "object": req_author
+            
+            }
+            console.log(data);
+            const options = {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+              },
+              body: JSON.stringify(data)
+            }
+            console.log("SEND REQUEST TO: " + req_author.id + "/inbox")
+            fetch(req_author.id + "/inbox", options)
+          }
 
         
         

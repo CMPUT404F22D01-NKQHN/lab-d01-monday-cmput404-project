@@ -3,10 +3,7 @@
     
 
     <!-- <div class = "container">   -->
-
-    <!-- Send follow request -->
-    <button type="button" id="sendRequest" onclick="sendRequest()">Send Request</button>
-    
+   
     <!-- Create a title from author_post and then paragraphs of all its attributes -->
         
     
@@ -51,66 +48,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         
         <script>
-          function sendRequest() {
-            
-            const author_id = "{{ author_id }}";
-            // TODO check if already following
-
-            // POST to inbox to check
-            const options2 = {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-              }
-            }
-            fetch("http://127.0.0.1:8000/authors/"+author_id+"/inbox", options2)
-              .then((response) => response.json())
-              .then((data) => console.log(data));
-
-            // send request to author's inbox TODO need to change it to match when viewing someone else's profile
-            console.log("SEND REQUEST");
-            const summary = "{{cur_author.display_name}}" + " wants to follow " + "B"; // TODO: fill in author names
-            const data = {
-              // our api
-              "accepter_id": "281182298499991543245792212121280352280",
-
-              // specs?
-              // "type": "Follow",
-              // "summary": summary,
-              // "actor": {
-              //   "type": "author",
-              //   "id": "http://127.0.0.1:8000/authors/" + author_id,
-              //   "url": "http://127.0.0.1:8000/authors/" + author_id,
-              //   "host": "http://127.0.0.1:8000/",
-              //   "displayName" : "{{cur_author.display_name}}",
-              //   "github": "{{cur_author.github}}",
-              //   "profileImage": "{{cur_author.profileImage}}"
-              // },
-              // // PERSON B BEING FOLLOWED
-              // "object": {
-              //   "type": "author",
-              //   "id": "http://127.0.0.1:8000/authors/" + author_id,
-              //   "url": "http://127.0.0.1:8000/authors/" + author_id,
-              //   "host": "http://127.0.0.1:8000/",
-              //   "displayName" : "{{cur_author.display_name}}",
-              //   "github": "{{cur_author.github}}",
-              //   "profileImage": "{{cur_author.profileImage}}"
-              // }
-            }
-            console.log(data);
-            const options = {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-              },
-              body: JSON.stringify(data)
-            }
-            fetch("http://127.0.0.1:8000/friends/create-friend-request/", options)
-            // fetch("http://127.0.0.1:8000/authors/"+author_id+"/inbox", options)
-          }
-
           function showForm() {
         
 

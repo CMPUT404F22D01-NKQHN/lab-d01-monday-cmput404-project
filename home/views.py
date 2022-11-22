@@ -43,6 +43,7 @@ def home(request):
     context = {
         "author_list" : sorted_posts,
         "author_id": request.user.id,
+        "cur_author": serializers.AuthorSerializer(request.user).data,
         "title": "Home",
     }
     # Not context
@@ -99,7 +100,7 @@ def profile(request):
 
     context = {
         "author_list" : sorted_posts,
-        "author_id": int(request.user.id),
+        "author_id": request.user.id,
         "cur_author": serializers.AuthorSerializer(request.user).data,
         "title" : "Profile",
     }
