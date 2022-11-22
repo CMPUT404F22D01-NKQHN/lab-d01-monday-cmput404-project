@@ -42,7 +42,7 @@ def home(request):
     #posts = posts.values('title', 'author', 'id', 'published')
     context = {
         "author_list" : sorted_posts,
-        "author_id": int(request.user.id),
+        "author_id": request.user.id,
         "title": "Home",
     }
     # Not context
@@ -51,13 +51,7 @@ def home(request):
 @login_required(login_url='/login/')
 def profile(request):
     author = Author.objects.all()
-    author_id = int(request.user.id)
-
-    # friend request to author of profile being viewed
-
-
-
-
+    author_id = request.user.id
     posts = requests.get(request.build_absolute_uri('/authors/'+str(author_id)+'/posts'))
     #print(posts.json())
     # Get authors posts from post.json().items() using a for loop    
@@ -121,3 +115,39 @@ def profile(request):
 
     
     return render(request, 'profile/profile.html', context)
+
+#view for author inbox
+# {
+#     "type": "inbox",
+#     "items": [],
+#     "author": "http://localhost:8000/authors/{AUTHOR_ID}}"
+# }
+@login_required(login_url='/login/')
+def inbox(request):
+    author = Author.objects.all()
+    author_id = request.user.id
+    print(author_id)
+    #simulating forwarding all cookies on authenticated webview and passing them forward (could be problematic)
+    cookies = "; ".join([f"{key}={value}" for key, value in request.COOKIES.items()])
+    inboxItems = requests.get(request.build_absolute_uri('/authors/'+str(author_id)+'/inbox'), headers={
+                'Content-Type': 'application/json',   
+                'X-CSRFToken': request.COOKIES['csrftoken'],
+                "Cookie": cookies
+                
+            })
+            
+            
+    print("URL", request.build_absolute_uri('/authors/'+str(author_id)+'/inbox'))
+    author_inbox = []
+    for item in inboxItems.json()["items"]:
+        temp_dict = {}
+        # if item["unlisted"] == "false":
+        #     temp_dict["displayName"] = item["author"]["displayName"]
+        for k, v in item.items():
+            if k != "author":
+                temp_dict[k] = v
+        author_inbox.append(temp_dict)
+    print(author_inbox)
+    #default page size is 5 and give option to change pages
+    context = {'author_inbox' : author_inbox}
+    return render(request, 'inbox/inbox.html', context)

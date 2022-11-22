@@ -9,16 +9,14 @@ from rest_framework import generics
 
 class AuthorAPIView(generics.GenericAPIView):
     def get(self, request, author_id):
-        author = Author.objects.get(id=int(author_id))
+        author = Author.objects.get(id=author_id)
         return Response(AuthorSerializer(author).data)
 
     @extend_schema(request=UpdateAuthorSerializer, responses=AuthorSerializer)
     def post(self, request, author_id):
         try:
-            assert int(request.user.id) == int(
-                author_id
-            ), "User ID does not match author ID"
-            author = Author.objects.get(id=int(author_id))
+            assert request.user.id == author_id, "User ID does not match author ID"
+            author = Author.objects.get(id=author_id)
             update = UpdateAuthorSerializer(data=request.data)
             if update.is_valid():
                 UpdateAuthorSerializer().update(author, request.data)
@@ -40,7 +38,7 @@ class AuthorsAPIView(generics.GenericAPIView):
         )
 
     def get_queryset(self):
-        return Author.objects.all()
+        return Author.objects.filter(is_another_server=False).order_by("id")
 
     def paginate_queryset(self, queryset, request):
         return self.pagination_class().paginate_queryset(queryset, request, view=self)

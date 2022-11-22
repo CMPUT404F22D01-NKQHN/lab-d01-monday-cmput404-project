@@ -1,32 +1,65 @@
 from django.test import TestCase
 from .models import Author, AuthorManager
+from posts.tests.utils import create_author
+
 
 class AuthorTestCase(TestCase):
     def setUp(self):
-        Author.objects.create(display_name = 'test', email = 'test1', password = 'test1', username = 'test1')
-        Author.objects.create(display_name = 'test2', email = 'test2', password = 'test2', username = 'test2')
+        self.test1 = create_author("test", "test1", "test1", "test1")
+        self.test2 = create_author("test2", "test2", "test2", "test2")
+        self.test_server = Author.objects.create(
+            display_name="server",
+            email="server",
+            password="server",
+            username="server",
+            is_another_server=True,
+        )
 
-    def test_author(self):
-        test1 = Author.objects.get(display_name = 'test')
-        test2 = Author.objects.get(display_name = 'test2')
-        self.assertEqual(test1.display_name, 'test')
-        self.assertEqual(test2.display_name, 'test2')
-        
     def test_duplicate_fail(self):
         try:
-            test1 = Author.objects.create(display_name = 'test', email = 'test1', password = 'test1', username = 'test1')
-            test2 = Author.objects.create(display_name = 'test', email = 'test1', password = 'test1', username = 'test1')
+            test1 = Author.objects.create(
+                display_name="test", email="test1", password="test1", username="test1"
+            )
+            test2 = Author.objects.create(
+                display_name="test", email="test1", password="test1", username="test1"
+            )
         except:
             pass
         else:
             self.fail("Duplicate author created")
-    
+
     def test_get_all(self):
-        all_authors = Author.objects.all()
-        self.assertEqual(len(all_authors), 2)
+        self.client.force_login(self.test1)
+        res = self.client.get("/authors/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(res.data), 2)
+    
+    def test_get_single(self):
+        self.client.force_login(self.test1)
+        res = self.client.get("/authors/" + self.test1.id)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(self.test1.id in res.data["id"])
         
+    def test_update(self):
+        self.client.force_login(self.test1)
+        res = self.client.post(
+            "/authors/" + self.test1.id,
+            {
+                "display_name": "testing",
+                "github": "testing",
+                "profileImage": "testing",
+            })
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data["displayName"], "testing")
+        self.assertEqual(res.data["github"], "testing")
+        self.assertEqual(res.data["profileImage"], "testing")
+
     def test_user_manager(self):
-        test1 = Author.objects.create_user(display_name = 'test', email = 'test1', password = 'test1', username = 'normal')
-        test2 = Author.objects.create_superuser(display_name = 'test2', email = 'test2', password = 'test2', username = 'super')
+        test1 = Author.objects.create_user(
+            display_name="test", email="test1", password="test1", username="normal"
+        )
+        test2 = Author.objects.create_superuser(
+            display_name="test2", email="test2", password="test2", username="super"
+        )
         self.assertTrue(not test1.is_staff)
         self.assertTrue(test2.is_staff)
