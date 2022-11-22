@@ -9,7 +9,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField("get_type")
     display_name = serializers.CharField(max_length=100)
     github = serializers.CharField(max_length=100, required=False)
-    host = serializers.SerializerMethodField("get_host")
+    host = serializers.CharField(max_length=500)
     id = serializers.SerializerMethodField("get_id")
     url = serializers.SerializerMethodField("get_id")
     profileImage = serializers.SerializerMethodField("get_img")
@@ -26,11 +26,8 @@ class AuthorSerializer(serializers.ModelSerializer):
     def get_type(self, model: Author) -> str:
         return "author"
 
-    def get_host(self, model: Author) -> str:
-        return os.environ.get("HOSTNAME", "http://localhost:8000")
-
     def get_id(self, model: Author) -> str:
-        return f"{self.get_host(model)}/authors/{int(model.id)}"
+        return f"{model.host}/authors/{model.id}"
 
     def get_img(self, model: Author) -> str:
         if model.profileImage == "":
