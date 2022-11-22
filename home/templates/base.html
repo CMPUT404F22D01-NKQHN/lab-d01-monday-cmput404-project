@@ -1,15 +1,21 @@
+{%load static%}
 <!DOCTYPE html>
-<html>
+<html id = "page">
     <head>
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport"
               content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link rel="stylesheet" type="text/css" href="{% static 'css/home/base.css' %}">
+        <!-- <script src="{% static 'js/home/base.js' %}"></script> -->
         <!-- Bootstrap CSS -->
-        <link rel="stylesheet"
+        <!-- <link rel="stylesheet"
               href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
               integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-              crossorigin="anonymous">
+              crossorigin="anonymous"> -->
+
+        
         <!-- <link rel="stylesheet" href="index.css"> -->
         <title>{{title}}</title>
     </head>
@@ -57,25 +63,6 @@
                                 <!-- If the user selects image/png;base64 create a button to upload image/png;base64 -->
                                 <input type="file"  accept="image/png;base64, image/jpeg;base64, image/png"  id="image/png;base64" name="uploadImage">
                                 
-                                <!-- Create a script for the image upload button to convert the image to base64 and then display it in the text area -->
-                                <!-- <script>
-                                    // https://pqina.nl/blog/convert-a-file-to-a-base64-string-with-javascript/
-                                    var fileInput = document.getElementById('image/png;base64');
-                                    fileInput.addEventListener('change', function(e) {
-                                        const file = e.target.files[0];
-                                        const reader = new FileReader();
-                                        reader.onloadend = () => {
-                                           //console.log(reader.result);
-                                        }
-                                        reader.readAsDataURL(file);
-                                        // this file needs to sent to index.html
-                                       // console.log(file);
-                                        let fileData = file;
-                                        // this file is in base64 format but needs to be sent to index.html
-                                    });
-                                </script> -->
-
-                                <!-- If the user selects text/markdown create a text area for text/markdown -->
                                 <textarea id="text/markdown" name="text/markdown" rows="4" cols="50">
                                 </textarea>
 
@@ -98,22 +85,6 @@
                                     });
                                 </script>
 
-                                <!-- <label for="Content Type">Choose Content Type</label>
-                                <select name="contentType" id="contentType" onchange="contentForm()">
-                                  <option value="imageForm">Image</option>
-                                  <option value="commonMarkForm">CommonMark</option>
-                                </select>   
-                                
-                                <form action="/action_page.php" name="imageForm" id="imageForm" style="display:none">
-                                    <label for="img">Select image:</label>
-                                    <input type="file" id="img" name="img" accept="image/*">
-                                    <input type="submit">
-                                </form>
-                                    
-                                <form name="commonMarkForm" id="commonMarkForm" style="display:none">
-                                    <p>This is your commonmark</p>
-                                </form> -->
-
                                 <label for="unlisted"><b>Unlisted</b></label>
                                 <input type="checkbox" placeholder="Enter Unlisted" name="unlisted" required>
 
@@ -126,7 +97,7 @@
 
                                 <button type="submit" class="btn" onclick ="submitPost()">Create Post</button>
                               <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-                          </div>
+                        </div>
 
                     <button type="button"
                           id="postButton"
@@ -156,9 +127,11 @@
     </body>
     <script>
         document.getElementById("postForm").style.display = "none";
+        const author_id = "{{ author_id }}"
+        //module.exports = author_id;
         function openForm() {
-          document.getElementById("postForm").style.display = "block";
-          document.getElementById("postButton").style.display = "none";
+            document.getElementById("postForm").style.display = "block";
+            document.getElementById("postButton").style.display = "none";
         }
         
         function closeForm() {
