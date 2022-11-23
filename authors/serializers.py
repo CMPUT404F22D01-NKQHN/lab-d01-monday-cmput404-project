@@ -7,7 +7,7 @@ from drf_spectacular.utils import extend_schema_field
 
 class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField("get_type")
-    display_name = serializers.CharField(max_length=100)
+    displayName = serializers.SerializerMethodField("get_display_name")
     github = serializers.CharField(max_length=100, required=False)
     host = serializers.CharField(max_length=500)
     id = serializers.SerializerMethodField("get_id")
@@ -16,6 +16,9 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Author.objects.create(**validated_data)
+    
+    def get_display_name(self, model: Author) -> str:
+        return model.display_name
 
     def update(self, instance, validated_data):
         instance.display_name = validated_data.get(
@@ -37,7 +40,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ("type", "display_name", "github", "host", "id", "url", "profileImage")
+        fields = ("type", "displayName", "github", "host", "id", "url", "profileImage")
 
 
 class ReadAuthorsSerializer(serializers.Serializer):
