@@ -23,6 +23,7 @@ class InboxTestCase(TestCase):
         response = self.client.get("/authors/" + self.author2.id + "/inbox")
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
+        # print(response_data)
         self.assertEqual(len(response_data["items"]), 1)
         self.assertEqual(response_data["items"][0]["type"], "post")
 
@@ -67,7 +68,7 @@ class InboxTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
-        self.assertEqual(len(response_data), 1)
+        self.assertEqual(len(response_data["comments"]), 1)
 
     def test_add_like_post(self):
         post = create_post(self.author)
