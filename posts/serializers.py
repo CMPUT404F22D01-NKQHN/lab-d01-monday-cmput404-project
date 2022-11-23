@@ -282,6 +282,32 @@ class ReadAuthorsPostsSerializer(serializers.Serializer):
 
     class Meta:
         fields = ("type", "items")
+        
+        
+class ReadPostCommentsSerializer(serializers.Serializer):
+    type = serializers.SerializerMethodField("get_type")
+    comments = serializers.SerializerMethodField("get_comments")
+    id = serializers.SerializerMethodField("get_id")
+    post = serializers.SerializerMethodField("get_post")
+    size = serializers.SerializerMethodField("get_size")
+    page = serializers.SerializerMethodField("get_page")
+    def get_type(self, _):
+        return "comments"
+
+    @extend_schema_field(serializers.ListSerializer(child=ReadCommentSerializer()))
+    def get_comments(self, data):
+        return data["comments"]
+
+    def get_id(self, data):
+        return data["post_id"]+"/comments"
+    def get_post(self, data):
+        return data["post_id"]
+    def get_size(self, data):
+        return data["size"]
+    def get_page(self, data):
+        return data["page"]
+    class Meta:
+        fields = ("type", "comments")
 
 
 class AddInboxItemSerializer(serializers.ModelSerializer):

@@ -22,7 +22,10 @@ class FollowerListAPIView(GenericAPIView):
 
 class FollowerAPIView(GenericAPIView):
     def get_serializer_class(self):
-        return AuthorSerializer
+        if self.request.method == "GET":
+            return AuthorSerializer
+        else:
+            return None
 
     def put(self, request, author_id, follower_id):
         """

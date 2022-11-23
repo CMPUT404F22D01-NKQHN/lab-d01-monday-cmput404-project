@@ -11,6 +11,7 @@ from .serializers import (
     CreateCommentSerializer,
     ReadAuthorsPostsSerializer,
     ReadCommentSerializer,
+    ReadPostCommentsSerializer,
     ReadPostSerializer,
     CreatePostSerializer,
     LikeSerializer,
@@ -146,15 +147,20 @@ def get_all_comments_by_post(self, request, post_id):
             or post.author.id == request.user.id
             or post.author.followers.filter(id=request.user.id).exists()
         ), "Post is not commentable"
-        return Response(
-            ReadCommentSerializer(
+        data = {
+            "post_id": ReadPostSerializer(post).data["id"],
+            "comments": ReadCommentSerializer(
                 self.paginate_queryset(
                     Comment.objects.filter(post_id=post_id).order_by("-published"),
                     request,
                 ),
-                many=True,
-            ).data
-        )
+                many=True,).data,
+            "page": int(request.GET.get("page", 1)),
+            "size": int(request.GET.get("size", 20))
+            }
+        return Response(ReadPostCommentsSerializer(data).data)
+            
+        
     except AssertionError as e:
         return Response(status=403, data={"error": str(e)})
 
@@ -217,6 +223,9 @@ class LikesListAPIView(GenericAPIView):
             return get_likes_on_comment(request, comment_id)
         else:
             return get_likes_on_post(request, post_id)
+        
+    def get_queryset(self):
+        return []
 
 
 class PostListAPI(GenericAPIView):
@@ -316,7 +325,8 @@ class LikedListAPIView(GenericAPIView):
     def get(self, request, author_id):
         try:
             author = Author.objects.get(id=author_id)
-            assert author.id == request.user.id
+            # assert author.id == request.user.id
+            # TODO: Do we need to show different liked posts for different users?
             likes = LikeSerializer(author.liked, many=True).data
             return Response(likes)
         except AssertionError:
