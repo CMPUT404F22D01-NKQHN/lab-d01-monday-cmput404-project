@@ -38,6 +38,7 @@ class NodeSerializer(serializers.ModelSerializer):
 
 
 class ReadNodeSerializer(serializers.ModelSerializer):
+    nickname = serializers.CharField(required=True)
     api_url = serializers.URLField(required=True)
     username = serializers.CharField(required=True)
     proxy_users = serializers.SerializerMethodField("get_proxy_users")
@@ -51,4 +52,4 @@ class ReadNodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Node
-        fields = ("api_url", "username", "proxy_users","team_account")
+        fields = ("api_url", "username", "proxy_users","team_account","nickname")

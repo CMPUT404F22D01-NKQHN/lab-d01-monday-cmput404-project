@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from authors import serializers
 from django.http import HttpResponse
 
+from django.shortcuts import redirect
+
 # Create your views here.
 import json
 
@@ -52,8 +54,11 @@ def profile(request):
     cookies = "; ".join([f"{key}={value}" for key, value in request.COOKIES.items()])
     posts = requests.get(
         request.build_absolute_uri("/authors/" + str(author_id) + "/posts"),
-        headers={"Content-Type": "application/json", "X-CSRFToken": request.COOKIES["csrftoken"],
-            "Cookie": cookies},
+        headers={
+            "Content-Type": "application/json",
+            "X-CSRFToken": request.COOKIES["csrftoken"],
+            "Cookie": cookies,
+        },
     )
     print(posts)
     # print(posts.json())
@@ -161,11 +166,36 @@ def inbox(request):
 
 @login_required(login_url="/login/")
 def followers(request):
-    page = int(request.GET.get("page", 1))
-    size = int(request.GET.get("size", 5))
-    all_users = requests.get(
-        request.build_absolute_uri("/authors/?page=" + str(page) + "&size=" + str(size))
-    ).json()["items"]
+    server_opts = (
+        requests.get(request.build_absolute_uri("/nodes/")).json().get("nodes", [])
+    )
+    servers = {server["nickname"]: server["api_url"] for server in server_opts}
+    # If no page query param or if page and size are not integers, redirect to page 1
+    if (
+        "page" not in request.GET
+        or "size" not in request.GET
+        or not request.GET["page"].isdigit()
+        or not request.GET["size"].isdigit()
+    ):
+        return redirect("/followers?page=1&size=5")
+    page = int(request.GET.get("page"))
+    size = int(request.GET.get("size"))
+
+    server = request.GET.get("server", "local")
+    if server not in servers and server != "local":
+        server = "local"
+        return redirect(f"/followers?page={page}&size={size}&server={server}")
+    servers["local"] = request.build_absolute_uri("/")
+    authors_res = requests.get(
+        servers[server] + "authors/?page=" + str(page) + "&size=" + str(size)
+    )
+    try:
+        authors_res = authors_res.json()
+        assert "items" in authors_res
+    except:
+        print("Error: ", authors_res)
+        authors_res = {}
+    all_users = authors_res.get("items", [])
     author_followers = requests.get(
         request.build_absolute_uri("/authors/" + str(request.user.id) + "/followers")
     ).json()["items"]
@@ -173,9 +203,14 @@ def followers(request):
         "all_users": all_users,
         "author_followers": author_followers,
         "author_url": serializers.AuthorSerializer(request.user).data["id"],
+        "page": page,
+        "size": size,
+        "server": server,
+        "server_opts": [{"nickname": k, "api_url": v} for k, v in servers.items()],
     }
 
     return render(request, "followers/index.html", context)
+
 
 def user(request, author_id):
     try:
@@ -184,9 +219,15 @@ def user(request, author_id):
         ).json()
     except:
         return HttpResponse(status=404)
-    
+
     is_follower = request.user.followers.filter(id=author_id).exists()
-    
-    
-    
-    return render(request, "user/index.html", {"user_info": user_info, "author_id": AuthorSerializer(request.user).data["id"], "is_follower": is_follower})
+
+    return render(
+        request,
+        "user/index.html",
+        {
+            "user_info": user_info,
+            "author_id": AuthorSerializer(request.user).data["id"],
+            "is_follower": is_follower,
+        },
+    )
