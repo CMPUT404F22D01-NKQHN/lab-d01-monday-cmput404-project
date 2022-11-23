@@ -47,12 +47,16 @@
           
           
         </li>
-        <button type="button" id="newCommentButton" onclick="newCommentYOLO()">
+        <button type="button" id="newCommentButton" onclick="newComment()">
             Comment
         </button>
         <!-- Send follow request -->
         <p hidden id = "author_id_var">{{author_post.author}}</p>
         <button type="button" id="sendRequest" onclick="sendRequest(document.getElementById('author_id_var').textContent)">Send Request</button>
+
+        <button type="button" id="newLikeButton" onclick="newLike()">
+            Like (button doesnt work right now)
+        </button>
     {% endfor %}
 
     <script>
@@ -94,7 +98,7 @@
       
       <script>
 
-        function newCommentYOLO(){
+        function newComment(){
           console.log("create comment");
           var post_id_var = document.getElementById('post_id_var').textContent;
           console.log(post_id_var);
@@ -162,6 +166,21 @@
           }
 
         
+      // NEED TO CHECK THIS BUTTON DOES NOT WORK RIGHT NOW
+        function newLike(){
+          var post_id_var = document.getElementById('post_id_var').textContent;
+          console.log(post_id_var);
+          const author_id = "{{ author_id }}";
+
+          const options = {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',   
+              'X-CSRFToken': '{{ csrf_token }}'
+            },
+          }
+          fetch(post_id_var+'/likes', options);
+      }
         
       </script>
 
