@@ -1,6 +1,7 @@
 import re
 from django.shortcuts import render
 from authors.models import Author
+from authors.serializers import AuthorSerializer
 from posts.models import Post
 from datetime import datetime
 import requests
@@ -52,8 +53,12 @@ def home(request):
 @login_required(login_url='/login/')
 def profile(request):
     author = Author.objects.all()
+    x = AuthorSerializer(request.user).data
+    print(x)
     author_id = request.user.id
+
     posts = requests.get(request.build_absolute_uri('/authors/'+str(author_id)+'/posts'))
+    print(posts)
     #print(posts.json())
     # Get authors posts from post.json().items() using a for loop    
     # for key, value in posts.json().items():

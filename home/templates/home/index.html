@@ -7,7 +7,6 @@
       <input type="text" id="content" name="content" value="Type content here...">
       <input type="description" id="description" name="description" value="Type description here...">
     </form> -->
-    <script>var dataFile = '';</script>
     <div class = "container">  
     {% for author_post in author_list %}
         <h3>Title: {{author_post.title}}</h3>
@@ -20,7 +19,6 @@
         <!-- <li>Unlisted: {{author_post.unlisted}}</li>
         <li>Github: {{author_post.author.github}}</li> -->
         <img src={{author_post.author.profileImage}} alt="" width="50">
-        <p id = "fileup"></p>
         <!-- <li>Visibility: {{author_post.visibility}}</li> -->
         <li>Content-Type: {{author_post.contentType}}</li>
         {% if author_post.contentType == "text/plain" %}
@@ -59,7 +57,7 @@
         </button>
     {% endfor %}
 
-    <script>
+    <!-- <script>
       // https://pqina.nl/blog/convert-a-file-to-a-base64-string-with-javascript/
       var fileInput = document.getElementById('image/png;base64');
       //var fileData = undefined;
@@ -78,7 +76,7 @@
           //console.log(reader.result);
           // this file is in base64 format but needs to be sent to index.html
       });
-  </script>
+  </script> -->
 
 
 
