@@ -1,5 +1,8 @@
-
 function deletePost(post_id_var) {
+  const post_id = post_id_var.split("/").pop();
+  const author_id = post_id_var.split("/").slice(-3)[0];
+  const url = "./authors/" + author_id + "/posts/" + post_id;
+
   const options = {
     method: 'DELETE',
     headers: {
@@ -9,7 +12,7 @@ function deletePost(post_id_var) {
   }
   // create an alert to confirm the deletion
   if (confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
-    fetch(post_id_var, options);
+    fetch(url, options);
     location.reload();
   }
 }
