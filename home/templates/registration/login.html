@@ -1,38 +1,46 @@
 {% extends "login-base.html" %}
-
 {% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/login/login.css' %}">
+<div class = "page">
+    {% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+    {% endif %}
 
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
-
-{% if next %}
+    {% if next %}
     {% if user.is_authenticated %}
     <p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
+        please login with an account that has access.</p>
     {% else %}
-    <p>Please login to see this page.</p>
+    <p class="page-title">Social Media Project</p>
     {% endif %}
-{% endif %}
+    {% endif %}
 
-<form method="post" action="{% url 'login' %}">
-{% csrf_token %}
-<table>
-<tr>
-    <td>{{ form.username.label_tag }}</td>
-    <td>{{ form.username }}</td>
-</tr>
-<tr>
-    <td>{{ form.password.label_tag }}</td>
-    <td>{{ form.password }}</td>
-</tr>
-</table>
+    <div class="login-container">
+        <h1 class="login-title">Welcome, Please Log In</h1>
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <table class="login-info">
+                <tr>
+                    <td class="user-field">{{ form.username.label_tag }}</td>
+                    <td class="user-input">{{ form.username }}</td>
+                </tr>
+                <tr>
+                    <td class="pw-field">{{ form.password.label_tag }}</td>
+                    <td class="pw-input">{{ form.password }}</td>
+                </tr>
+            </table>
 
-<input type="submit" value="login">
-<input type="hidden" name="next" value="{{ next }}">
-</form>
+            <button type="submit" class="login-btn" value="login">
+                Login
+                <input type="hidden" name="next" value="{{ next }}">
+        </form>
+    </div>
 
-{# Assumes you set up the password_reset view in your URLconf #}
-<p><a href="{% url 'password_reset' %}">Lost password?</a></p>
+
+    {# Assumes you set up the password_reset view in your URLconf #}
+    <p class="lost-pw"><a href="{% url 'password_reset' %}">Forgot Password</a></p>
+</div>
+
 
 {% endblock %}

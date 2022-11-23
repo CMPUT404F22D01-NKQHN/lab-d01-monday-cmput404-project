@@ -1,6 +1,6 @@
 {%load static%}
 <!DOCTYPE html>
-<html id = "page">
+<html>
     <head>
         <!-- Required meta tags -->
         <meta charset="utf-8">
@@ -8,6 +8,7 @@
               content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <link rel="stylesheet" type="text/css" href="{% static 'css/home/base.css' %}">
+        <p hidden id = "author_id">{{author_id}}</p>
 
         
         
@@ -98,7 +99,7 @@
                                     <option value="private">Private</option>
                                 </select>
 
-                                <button type="submit" class="btn" onclick ="submitPost()">Create Post</button>
+                                <button type="submit" class="btn" onclick ="submitPost(document.getElementById('author_id').textContent)">Create Post</button>
                               <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
                         </div>
 
@@ -130,7 +131,7 @@
     </body>
     <script>
         document.getElementById("postForm").style.display = "none";
-        const author_id = "{{ author_id }}"
+        //const author_id = "{{ author_id }}"
         //module.exports = author_id;
         function openForm() {
             document.getElementById("postForm").style.display = "block";
@@ -142,7 +143,7 @@
             document.getElementById("postButton").style.display = "block";
         }
 
-        function submitPost(){
+        function submitPost(id){
           // have access to the form element, can make visible/popup
           // console.log(form);
           // console.log("I AM HERE");
@@ -157,7 +158,8 @@
           console.log("Inside submit post AHHAHHAHAHAHAHA");
           //document.getElementById("fileData").innerHTML = x;
           const title = document.getElementById("title").value;
-          const author_id = "{{ author_id }}";
+          const author_id = id;
+          console.log(author_id);
           const source = "source"
           const origin = "origin"
           const description = document.getElementById("description").value;
@@ -217,6 +219,7 @@
         export default author_id2;
 
     </script> -->
+    <!-- <script src="{% static 'js/home/base.js' %}"></script> -->
 
 
 
