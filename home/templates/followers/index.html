@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h3>Manage Followers</h3>
+    <hr>
+    {% for follower in author_followers %}
+        <div class="follower">
+            <img src="{{ follower.profileImage }}"
+                 width="50"
+                 height="50"
+                 class="rounded-circle"/>
+            <p>{{ follower.displayName }}</p>
+            <button class="btn btn-danger"
+                    onclick="removeFollower('{{ author_url }}','{{ follower.uuid }}')">Remove Follower</button>
+        </div>
+    {% endfor %}
+    {% if author_followers|length == 0 %}
+        <p>You have no followers</p>
+    {% endif %}
+    
+    <br>
+    <h3>All Users</h3>
+    <hr>
+    {% for user in all_users %}
+        <div class="user d-flex justify-content-between">
+            <img src="{{ user.profileImage }}"
+                 width="50"
+                 height="50"
+                 class="rounded-circle"/>
+            <p>Display name: {{ user.displayName }}</p>
+            <p>Host: {{ user.host }}</p>
+            <button type="button"
+                    id="sendRequest"
+                    class="btn"
+                    onclick="sendRequest('{{ user.id }}','{{ author_url }}')">
+                Send Follow Request
+            </button>
+        </div>
+        <br>
+    {% endfor %}
+    </div>
+{% endblock content %}

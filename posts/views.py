@@ -333,3 +333,24 @@ class LikedListAPIView(GenericAPIView):
             return Response(
                 status=403, data={"error": "You are not authorized to view this page."}
             )
+
+class CommentAPIView(GenericAPIView):
+    def get_serializer_class(self):
+        return ReadCommentSerializer
+
+    def get(self, request, author_id, post_id, comment_id):
+        try:
+            comment = Comment.objects.get(id=comment_id)
+            post_id = comment.post_id
+            post = Post.objects.get(id=post_id)
+            assert (
+                post.visibility == "PUBLIC"
+                or post.author.id == request.user.id
+                or post.author.followers.filter(id=request.user.id).exists()
+            )
+            comment = ReadCommentSerializer(comment).data
+            return Response(comment)
+        except AssertionError:
+            return Response(status=403)
+        except Comment.DoesNotExist:
+            return Response(status=404, data={"error": "Comment not found"})
