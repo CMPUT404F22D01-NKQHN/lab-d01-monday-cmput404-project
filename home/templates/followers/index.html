@@ -1,42 +1,83 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <h3>Manage Followers</h3>
-    <hr>
-    {% for follower in author_followers %}
-        <div class="follower">
-            <img src="{{ follower.profileImage }}"
-                 width="50"
-                 height="50"
-                 class="rounded-circle"/>
-            <p>{{ follower.displayName }}</p>
-            <button class="btn btn-danger"
-                    onclick="removeFollower('{{ author_url }}','{{ follower.uuid }}')">Remove Follower</button>
-        </div>
-    {% endfor %}
-    {% if author_followers|length == 0 %}
-        <p>You have no followers</p>
-    {% endif %}
-    
-    <br>
-    <h3>All Users</h3>
-    <hr>
-    {% for user in all_users %}
-        <div class="user d-flex justify-content-between">
-            <img src="{{ user.profileImage }}"
-                 width="50"
-                 height="50"
-                 class="rounded-circle"/>
-            <p>Display name: {{ user.displayName }}</p>
-            <p>Host: {{ user.host }}</p>
-            <button type="button"
-                    id="sendRequest"
-                    class="btn"
-                    onclick="sendRequest('{{ user.id }}','{{ author_url }}')">
-                Send Follow Request
-            </button>
-        </div>
+    <div class="container">
+        <h3>Manage Followers</h3>
+        <hr>
+        {% for follower in author_followers %}
+            <div class="follower">
+                <img src="{{ follower.profileImage }}"
+                     width="50"
+                     height="50"
+                     class="rounded-circle"/>
+                <p>{{ follower.displayName }}</p>
+                <button class="btn btn-danger"
+                        onclick="removeFollower('{{ author_url }}','{{ follower.uuid }}')">
+                    Remove Follower
+                </button>
+            </div>
+        {% endfor %}
+        {% if author_followers|length == 0 %}<p>You have no followers</p>{% endif %}
         <br>
-    {% endfor %}
-    </div>
+        <h3>All Users</h3>
+        <label for="server-select">Server:</label>
+        <select class="custom-select col-3" id="server-select"
+            onchange="changeServer(this.value)">
+        >
+            {% for server_opt in server_opts %}
+                <option value="{{ server_opt.nickname }}"
+                        {% if server_opt.nickname == server %} selected{% endif %}/>
+                    {{ server_opt.nickname }}
+                </option>
+            {% endfor %}
+        </select>
+        <hr>
+        {% for user in all_users %}
+            <div class="user d-flex justify-content-between">
+                <img src="{{ user.profileImage }}"
+                     width="50"
+                     height="50"
+                     class="rounded-circle"/>
+                <p>Display name: {{ user.displayName }}</p>
+                <p>Host: {{ user.host }}</p>
+                <button type="button"
+                        id="sendRequest"
+                        class="btn"
+                        onclick="sendRequest('{{ user.id }}','{{ author_url }}')">
+                    Send Follow Request
+                </button>
+            </div>
+            <br>
+        {% endfor %}
+        {% if all_users|length == 0 %}<p>No more users to follow</p>{% endif %}
+        <ul class="pagination">
+            <li class="page-item">
+                {% if page > 1 %}<a class="page-link" onclick="paginate(true)">Previous</a>{% endif %}
+            </li>
+        </li>
+        {% if all_users|length > 0 %}
+            <li class="page-item">
+                <a class="page-link" onclick="paginate(false)">Next</a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+</div>
+<script>
+        function paginate(back) {
+            let page = "{{ page }}";
+            page = parseInt(page);
+            if(back) {
+                window.location.href = "./followers?page=" + (page - 1) +"&size="+"{{ size }}&server="+"{{ server }}";
+            }
+            else {
+                window.location.href = "./followers?page=" + (page + 1) +"&size="+"{{ size }}&server="+"{{ server }}";
+            }
+        }
+
+        function changeServer(server) {
+            window.location.href = "./followers?page=1&size="+"{{ size }}"+"&server="+server;
+        }
+
+
+</script>
 {% endblock content %}

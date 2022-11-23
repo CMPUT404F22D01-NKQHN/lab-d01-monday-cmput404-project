@@ -3,6 +3,7 @@ from authors.models import Author
 
 # Create your models here.
 class Node(models.Model):
+    nickname = models.CharField(max_length=200, default="nickname")
     api_url = models.URLField(primary_key=True)
     username = models.CharField(max_length=100)
     password = models.CharField(max_length=100)

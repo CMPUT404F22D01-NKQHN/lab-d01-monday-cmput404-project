@@ -150,12 +150,14 @@ async function sendRequest(object_id, author_id) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie("csrftoken")
+      'X-CSRFToken': getCookie("csrftoken"),
+      "Authorization": "Basic " + btoa("team1and2:team1and2")
+      // TODO: Refactor this to pass credentials in the backend, and use the local server as a proxy
     },
     body: JSON.stringify(data)
   }
-  console.log("SEND REQUEST TO: " + object_obj.id + "/inbox")
-  fetch(object_obj.id + "/inbox", options).then((response) => alert("Request sent!"));
+  console.log("SEND REQUEST TO: " + object_obj.id + "/inbox/")
+  fetch(object_obj.id + "/inbox/", options).then((response) => alert("Request sent!")).catch((error) => alert("Error: " + error));
 }
 
 async function removeFollower(author_url, follow_id) {
