@@ -174,4 +174,4 @@ class NodesTests(TestCase):
             f"/authors/{self.local_author.id}/posts/{post_id}/comments"
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(len(response.json()["comments"]), 1)

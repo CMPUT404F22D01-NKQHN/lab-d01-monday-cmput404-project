@@ -3,7 +3,7 @@
     
 
     <!-- <div class = "container">   -->
-    
+   
     <!-- Create a title from author_post and then paragraphs of all its attributes -->
         
     
@@ -48,6 +48,43 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         
         <script>
+          function showForm() {
+        
+
+
+            const title = prompt("Enter the title of your post");
+            const content = prompt("Enter the content of your post");
+            const source = prompt("Enter the source of your post");
+            const origin = prompt("Enter the origin of your post");
+            const description = prompt("Enter the description of your post");
+            const unlisted = true;
+            const author_id = "{{ author_id }}";
+            const visibility = "PUBLIC";
+            const contentType ="text/plain";
+            location.reload();
+            const data = {
+              "title": title,
+              "source": source,
+              "origin": origin,
+              "description": description,
+              "unlisted": unlisted,
+              "visibility": visibility,
+              "contentType": contentType,
+              "content": content
+            }
+            const options = {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+              },
+              body: JSON.stringify(data)
+            }
+            fetch('http://127.0.0.1:8000/authors/'+author_id+'/posts', options);
+            //refresh the page
+            
+          }
+
           function deletePost(post_id_var){
             const author_id = "{{ author_id }}";
             // var id = document.getElementById("post_id_var").value;

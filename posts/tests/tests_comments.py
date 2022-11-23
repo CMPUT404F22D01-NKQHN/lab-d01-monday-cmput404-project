@@ -31,6 +31,6 @@ class CommentsTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
-        self.assertEqual(len(response_data), 1)
-        self.assertEqual(response_data[0]["comment"], "This is a comment")
+        self.assertEqual(len(response_data["comments"]), 1)
+        self.assertEqual(response_data["comments"][0]["comment"], "This is a comment")
 
