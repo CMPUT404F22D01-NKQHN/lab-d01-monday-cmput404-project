@@ -36,8 +36,25 @@
 
         <script>
             function acceptFollowRequest(senderID, accepterID){
-                console.log(senderID, accepterID)
+                console.log(senderID, accepterID);
+                
+                const data = {
+                    "author_id": accepterID,
+                    "follower_id": senderID
+                }
+
+                const options = {
+                    method: 'PUT',
+                    headers: {
+                    'Content-Type': 'application/json',   
+                    'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(data)
+                }
+
+                fetch(post_id_var+'/comments', options);
             }
+
         </script>
     </body>
 </html>
