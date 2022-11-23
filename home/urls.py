@@ -7,4 +7,6 @@ urlpatterns = [
   path('profile', views.profile, name='profile'),
   path('', include('django.contrib.auth.urls')),
   path('inbox', views.inbox, name='inbox'),
+  path('followers', views.followers, name='followers'),
+  path('user/<str:author_id>', views.user, name='user'),
 ]

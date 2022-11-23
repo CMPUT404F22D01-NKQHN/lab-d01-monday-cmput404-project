@@ -1,156 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
-    
-
-    <!-- <div class = "container">   -->
-   
+  <div class = "container">
+    <h3>My details</h3>
+    <hr>
+    <div class = "row">
+      <div class = "col-md-4">
+        <img id="prfile" width="100" class="rounded-circle"/>
+        <br>
+        <br>
+        <button id="edit-profile" class="btn btn-primary"
+        onclick="editProfile('{{ author_id }}')">Edit Profile</button>
+      </div>
+      <div class = "col-md-8">
+        <label>Name:</label>
+        <h4 id="user-display-name">Display Name</h4>
+        <label>Github:</label>
+        <h4 id="user-github">No github account</h4>
+        
+      </div>
+    </div>
+    <br>
+    <h3>Posts by me</h3>
+    <hr>
     <!-- Create a title from author_post and then paragraphs of all its attributes -->
-        
-    
     {% for author_post in author_list %}
-        <h3>Title: {{author_post.title}}</h3>
-        <li>By: {{author_post.display_name}}</li>
-        <li>Type: {{author_post.type}}</li>
-        <li>Source: {{author_post.source}}</li>
-        <li>Origin: {{author_post.origin}}</li>
-        <li>Published Date: {{author_post.published}}</li>
-        <li>Description: {{author_post.description}}</li>
-        <li>Unlisted: {{author_post.unlisted}}</li>
-        <li>Github: {{author_post.github}}</li>
-        <img src={{author_post.profileImage}} alt="" width="50">
-        <li>Visibility: {{author_post.visibility}}</li>
-        <li>Content-Type: {{author_post.contentType}}</li>
-        <li>Likes: {{author_post.likes}}</li>
-        <li>Count: {{author_post.count}}</li>
-        <li>comment source: {{author_post.commentsSrc}}</li>
-        <li>Categories: {{author_post.categories}}</li>
-        <li>Comments: {{author_post.comments}}</li>
-        <!-- <li id = "post_id_var">{{author_post.id}}</li> -->
-        <p hidden id = "post_id_var">{{author_post.id}}</p>
-        
-        <button type="button" id="deletePost" onclick="deletePost(document.getElementById('post_id_var').textContent)">Delete</button>
-        <button type="button" id="editPost" onclick="editPost(document.getElementById('post_id_var').textContent)">Edit</button> 
+      {% include "post/post.html" with author_post=author_post editable=True %}
+      <br>
     {% endfor %}
-    
-        
-
-    <!-- <div class="card" style="width: 18rem;">
-        <p>Title: {{ author_post.title }}</p>
-        <p>Github: {{ author_post.github }}</p>
-        <p>Display Name: {{ author_post.display_name }}</p> -->
-
-    
-    
-        <!-- Optional JavaScript -->
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-        
-        <script>
-          function showForm() {
-        
-
-
-            const title = prompt("Enter the title of your post");
-            const content = prompt("Enter the content of your post");
-            const source = prompt("Enter the source of your post");
-            const origin = prompt("Enter the origin of your post");
-            const description = prompt("Enter the description of your post");
-            const unlisted = true;
-            const author_id = "{{ author_id }}";
-            const visibility = "PUBLIC";
-            const contentType ="text/plain";
-            location.reload();
-            const data = {
-              "title": title,
-              "source": source,
-              "origin": origin,
-              "description": description,
-              "unlisted": unlisted,
-              "visibility": visibility,
-              "contentType": contentType,
-              "content": content
+    <script>
+      
+          window.onload = async function() {
+            const user = await fetch('{{author_id}}').then(res => res.json());
+            document.getElementById('user-display-name').innerText = user.displayName;
+            if (user.github) {
+              document.getElementById('user-github').innerText = user.github;
             }
-            const options = {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-              },
-              body: JSON.stringify(data)
-            }
-            fetch('http://127.0.0.1:8000/authors/'+author_id+'/posts', options);
-            //refresh the page
-            
+            document.getElementById('prfile').src = user.profileImage;
+
           }
 
-          function deletePost(post_id_var){
-            const author_id = "{{ author_id }}";
-            // var id = document.getElementById("post_id_var").value;
-            console.log(post_id_var);
-            // post_id = post_id_var[0].innerText;
-            // const post_id = id;
-            // console.log(id);
-            // create an alert to confirm the deletion
-            
-
-            const options = {
-              method: 'DELETE',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-              }
-            }
-            // create an alert to confirm the deletion
-            if (confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
-              fetch(post_id_var, options);
-              location.reload();
-            }
-          }
-
-          function editPost(post_id_var){
-
-            // extract the post id from the post_id_var
-            const post_id = post_id_var.split("/").pop();
-            // extract author_id from post_id_var given http://localhost:8000/authors/b1aa5d08243c4bc4bf69bb220c09aa9f/posts/ca6df392b72941d8b9ca393331c5a554
-            const author_id = post_id_var.split("/").slice(-3)[0];
-
-            // to use relative path do ./authors/<author_id>/posts/<post_id>
-            post_id_var = "./authors/" + author_id + "/posts/" + post_id;
-            console.log(post_id_var);
-
-            
-            const title = prompt("Enter the title of your post");
-            const content = prompt("Enter the content of your post");
-            const source = prompt("Enter the source of your post");
-            const origin = prompt("Enter the origin of your post");
-            const description = prompt("Enter the description of your post");
-            const unlisted = true;
-            const visibility = "PUBLIC";
-            const contentType ="text/plain";
-            const data = {
-              "title": title,
-              "source": source,
-              "origin": origin,
-              "description": description,
-              "unlisted": unlisted,
-              "visibility": visibility,
-              "contentType": contentType,
-              "content": content
-            }
-            
-            const options = {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-              },
-              body: JSON.stringify(data)
-            }
-            fetch(post_id_var, options);
-            location.reload();
-          }
-          
-        </script>
-{% endblock %}
+    </script>
+  {% endblock %}
+</div>

@@ -11,6 +11,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     github = serializers.CharField(max_length=100, required=False)
     host = serializers.CharField(max_length=500)
     id = serializers.SerializerMethodField("get_id")
+    uuid = serializers.SerializerMethodField("get_uuid")
     url = serializers.SerializerMethodField("get_id")
     profileImage = serializers.SerializerMethodField("get_img")
 
@@ -31,6 +32,8 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     def get_id(self, model: Author) -> str:
         return f"{model.host}/authors/{model.id}"
+    def get_uuid(self, model: Author) -> str:
+        return model.id
 
     def get_img(self, model: Author) -> str:
         if model.profileImage == "":
@@ -40,7 +43,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ("type", "displayName", "github", "host", "id", "url", "profileImage")
+        fields = ("type", "displayName", "github", "host", "id", "url", "profileImage","uuid")
 
 
 class ReadAuthorsSerializer(serializers.Serializer):

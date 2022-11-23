@@ -1,0 +1,84 @@
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ author_post.title }}</h3>
+        <div class="card-options">
+            <p>Posted by: <a href="/user/{{ author_post.author.uuid }}">{{ author_post.author.displayName }}</a></p>
+            <strong>Likes: {{ author_post.likes }}</strong>
+        </div>
+    </div>
+    <br>
+    <div class="card-body">
+        {% if author_post.contentType == "image/png;base64" %}
+            <img src="{{ author_post.content }}" alt="" width="100"/>
+        {% else %}
+            <textarea rows="4" cols="50" readonly>{{author_post.content}}</textarea>
+        {% endif %}
+        <br>
+        <button type="button"
+                class="btn"
+                data-toggle="collapse"
+                data-target="#show-more{{ author_post.id }}">
+            <i>show more</i>
+        </button>
+        <div id="show-more{{ author_post.id }}" class="collapse">
+            <div class="card card-body">
+                <li>By: {{ author_post.author.displayName }}</li>
+                <li>Type: {{ author_post.type }}</li>
+                <li>Source: {{ author_post.source }}</li>
+                <li>Origin: {{ author_post.origin }}</li>
+                <li>Published Date: {{ author_post.published }}</li>
+                <li>Description: {{ author_post.description }}</li>
+                <li>Unlisted: {{ author_post.unlisted }}</li>
+                <li>Visibility: {{ author_post.visibility }}</li>
+            </div>
+        </div>
+        <br>
+        {% if not editable %}
+            <br>
+            <strong>Comments: {{ author_post.count }}</strong>
+            <br>
+            <br>
+            <div>
+                {% for comment in author_post.commentsSrc %}
+                    <div class="card card-body">
+                        <p>Author: {{ comment.author.displayName }}</p>
+                        <p>Comment: {{ comment.comment }}</p>
+                        <p>Comment Likes: {{ comment.likes }}</p>
+                        <p>Published: {{ comment.published }}</p>
+                        <button 
+                        type="button"
+                    class="btn-sm col-1 btn-primary"
+                    id="newLikeButton"
+                    onclick="newLike('{{ author_id }}','{{ comment.id }}')">
+                Like
+            </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <br>
+        {% if editable %}
+            <button type="button"
+                    id="editButton"
+                    class="btn btn-warning"
+                    onclick="editPost('{{ author_post.id }}')">Edit</button>
+            <button type="button"
+                    id="deleteButton"
+                    class="btn btn-danger"
+                    onclick="deletePost('{{ author_post.id }}')">
+                Delete
+            </button>
+        {% else %}
+            <button type="button"
+                    id="newCommentButton"
+                    class="btn"
+                    onclick="newComment('{{ author_id }}','{{ author_post.id }}')">Comment</button>
+            <button type="button"
+                    class="btn btn-primary"
+                    id="newLikeButton"
+                    onclick="newLike('{{ author_id }}','{{ author_post.id }}')">
+                Like
+            </button>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <h3>User Details</h3>
+        <p>Displayname: {{ user_info.displayName }}</p>
+        {% if is_follower %}
+        <button class="btn btn-danger"
+                    onclick="removeFollower('{{ author_id }}','{{ user.uuid }}')">Remove Follower</button>
+        {% elif user_info.id != author_id %}
+            <button type="button"
+                    id="sendRequest"
+                    class="btn"
+                    onclick="sendRequest('{{ user_info.id }}','{{ author_id }}')">
+                Send Follow
+            </button>
+        {% endif %}
+        
+    </div>
+{% endblock %}
