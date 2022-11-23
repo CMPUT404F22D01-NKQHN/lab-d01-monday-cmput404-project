@@ -1,7 +1,13 @@
 from .utils import *
 
 
-class LikeTestCase(TestCase):
+class LikesTestCase(TestCase):
     # TODO: Redo
-    pass
+    def test_likes(self):
+        author1 = create_author("author1", "author1", "author1", "author1")
+        author2 = create_author("author2", "author2", "author2", "author2")
+        post = create_post(author1)
+        
+        
+        
         

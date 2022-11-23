@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from authors.models import Author
 from cmput404_project.utilities import CustomPagination
 from friends.serializers import FriendRequestSerializer
+from posts.openapi_examples import *
 from .models import Inbox, Like, Post, Comment
 from .serializers import (
     AddInboxItemSerializer,
@@ -13,6 +14,7 @@ from .serializers import (
 from nodes.models import Node
 from rest_framework.generics import GenericAPIView
 import requests
+from drf_spectacular.utils import extend_schema, OpenApiExample
 
 
 def handle_comment_inbox(request):
@@ -49,13 +51,16 @@ def handle_comment_inbox(request):
 
 
 class InboxAPIView(GenericAPIView):
-    def get_serializer_class(self):
-        if self.request.method == "GET":
-            return ReadInboxSerializer
-        elif self.request.method == "POST":
-            return AddInboxItemSerializer
-        return ReadInboxSerializer
-
+    @extend_schema(
+        responses=ReadInboxSerializer,
+        examples=[
+            OpenApiExample(
+                "Inbox",
+                value=INBOX_EXAMPLE,
+            )
+        ],
+        description="Get the inbox of the current user",
+    )
     def get(self, request, author_id):
         try:
             author = Author.objects.get(id=author_id)
@@ -79,6 +84,24 @@ class InboxAPIView(GenericAPIView):
 
     pagination_class = CustomPagination
 
+    @extend_schema(
+        responses=AddInboxItemSerializer,
+        examples=[
+            OpenApiExample(
+                "Follower example",
+                value=INBOX_ADD_FOLLOW_EXAMPLE,
+            ),
+            OpenApiExample(
+                "Like example",
+                value=INBOX_ADD_LIKE_EXAMPLE,
+            ),
+            OpenApiExample(
+                "Comment example",
+                value=INBOX_ADD_COMMENT_EXAMPLE,
+            ),
+        ],
+        description="Add an item to the inbox of the current user",
+    )
     def post(self, request, author_id):
         try:
             author = Author.objects.get(id=author_id)
