@@ -6,6 +6,7 @@ from datetime import datetime
 import requests
 from django.contrib.auth.decorators import login_required 
 import json
+from authors import serializers
 # Create your views here.
 
 def login(request):
@@ -42,6 +43,7 @@ def home(request):
     context = {
         "author_list" : sorted_posts,
         "author_id": request.user.id,
+        "cur_author": serializers.AuthorSerializer(request.user).data,
         "title": "Home",
     }
     # Not context
@@ -90,10 +92,16 @@ def profile(request):
     # sort posts newest to oldest
     sorted_posts = sorted(author_posts, key =lambda x: datetime.strptime(x["published"], "%Y-%m-%dT%H:%M:%S.%f%z"))
     sorted_posts.reverse()
-    print(sorted_posts)
+    # print(sorted_posts)
+
+    # author = requests.get(request.build_absolute_uri('/authors/'+str(author_id)))
+    # print("USER:", author.json())
+    # print("USER:", serializers.AuthorSerializer(request.user).data)
 
     context = {
         "author_list" : sorted_posts,
+        "author_id": request.user.id,
+        "cur_author": serializers.AuthorSerializer(request.user).data,
         "title" : "Profile",
     }
 
