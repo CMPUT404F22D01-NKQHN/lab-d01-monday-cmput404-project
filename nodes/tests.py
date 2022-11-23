@@ -36,7 +36,7 @@ class NodesTests(TestCase):
         remote_author_json = {
             "id": "http://remote_author.com/author/something",
             "host": "http://remote_author.com",
-            "display_name": "this_other_author",
+            "displayName": "this_other_author",
         }
 
         follow_req = {
@@ -98,7 +98,7 @@ class NodesTests(TestCase):
         remote_author_json = {
             "id": "http://remote_author.com/author/something",
             "host": "http://remote_author.com",
-            "display_name": "this_other_author",
+            "displayName": "this_other_author",
         }
 
         # Create a post
@@ -141,7 +141,7 @@ class NodesTests(TestCase):
         remote_author_json = {
             "id": "http://remote_author.com/author/something",
             "host": "http://remote_author.com",
-            "display_name": "this_other_author",
+            "displayName": "this_other_author",
         }
 
         # Create a post

@@ -50,7 +50,7 @@ class AuthorTestCase(TestCase):
                 "profileImage": "testing",
             })
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data["display_name"], "testing")
+        self.assertEqual(res.data["displayName"], "testing")
         self.assertEqual(res.data["github"], "testing")
         self.assertEqual(res.data["profileImage"], "testing")
 

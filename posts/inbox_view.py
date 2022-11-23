@@ -115,7 +115,7 @@ class InboxAPIView(GenericAPIView):
                     foreign_author, _ = Author.objects.get_or_create(
                         id=foreign_author_id,
                         host=auth_obj["host"],
-                        display_name=auth_obj["display_name"],
+                        display_name=auth_obj["displayName"],
                     )
                     # Add foreign author to the proxy users field in the node
                     node = Node.objects.get(team_account=request.user)
