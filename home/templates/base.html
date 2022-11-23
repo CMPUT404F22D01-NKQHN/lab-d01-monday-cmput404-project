@@ -114,8 +114,8 @@
                                     <p>This is your commonmark</p>
                                 </form> -->
 
-                                <label for="unlisted"><b>Unlisted</b></label>
-                                <input type="checkbox" placeholder="Enter Unlisted" name="unlisted" required>
+                                <label  for="unlisted"><b>Unlisted</b></label>
+                                <input  id="unlisted" type="checkbox" name="unlisted">
 
                                 <!-- For Visibility make it a selection box with public and private as options and by default make it public -->
                                 <label for="visibility"><b>Visibility</b></label>
@@ -185,7 +185,7 @@
           const source = "source"
           const origin = "origin"
           const description = document.getElementById("description").value;
-          const unlisted = true;
+          const unlisted = document.getElementById("unlisted").checked;
           // const content = document.getElementById("content").value;
           const visibility = "PUBLIC";
           const contentType = document.getElementById("postType").value;

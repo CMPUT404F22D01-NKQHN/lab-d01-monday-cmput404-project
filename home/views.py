@@ -148,6 +148,7 @@ def inbox(request):
             if k != "author":
                 temp_dict[k] = v
         author_inbox.append(temp_dict)
+        
     print(author_inbox)
     #default page size is 5 and give option to change pages
     context = {'author_inbox' : author_inbox}

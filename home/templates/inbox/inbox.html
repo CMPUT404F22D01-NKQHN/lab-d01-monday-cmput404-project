@@ -5,13 +5,29 @@
 
 
         {% for author_notif in author_inbox %}
-            {% if author_notif.type == "Follow" %}
+
+        
+            {% if author_notif.type == "follow" %}
             <h4>Item Type: {{author_notif.type}}</h4>
             <p>{{author_notif.actor.display_name}} wants to follow you!</p>
             <button type="button" onclick="acceptFollowRequest('{{author_notif.actor.id}}', '{{author_notif.object.id}}')">Accept</button> 
 
-            {% comment %} {% elif author_notif.type == %} {% endcomment %}
+            {% elif author_notif.type == "post" %}
+            <h4>Item Type: {{author_notif.type}}</h4>
+            <p>{{author_notif.title}}</p>
+            <p>{{author_notif.description</p>
+
+            {% elif author_notif.type == "like"%}
+            <h4>Item Type: {{author_notif.type}}</h4>
+            <p>{{author_notif.actor.display_name}} liked your post!</p>
+
+            {% elif author_notif.type == "comment" %}
+            <h4>Item Type: {{author_notif.type}}</h4>
+            <p>Original Post: {{author_notif.title}}</p>
+            <p>{{author_notif.actor.display_name}}: Comment body</p>
             {% endif %}
+
+
         {% endfor %}
         
 
@@ -20,8 +36,22 @@
 
         <script>
             function acceptFollowRequest(senderID, accepterID){
-                console.log(senderID, accepterID)
+                
+                const author_id = accepterID.split('/').pop()
+                const follower_id = senderID.split('/').pop()
+                console.log(author_id, follower_id);
+                
+                const options = {
+                    method: 'PUT',
+                    headers: {
+                    'Content-Type': 'application/json',   
+                    'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }
+
+                fetch('./authors/'+ author_id+"/followers/"+follower_id, options);
             }
+
         </script>
     </body>
 </html>
