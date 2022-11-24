@@ -2,27 +2,70 @@
 <!-- {% block content %} -->
 <html>
     <body>
+        <div>
         {% for author_notif in author_inbox %}
             {% if author_notif.type == "follow" %}
-                <h4>Item Type: {{ author_notif.type }}</h4>
-                <p>{{ author_notif.actor.display_name }} wants to follow you!</p>
-                <button type="button"
-                        onclick="acceptFollowRequest('{{ author_notif.actor.id }}', '{{ author_notif.object.id }}')">
-                    Accept
-                </button>
+                <h5>New Follow Request </h5>
+                <span style="display: inline;">
+                    {{ author_notif.actor.displayName }} wants to follow you!
+                    <button type="button"
+                            onclick="acceptFollowRequest('{{ author_notif.actor.id }}', '{{ author_notif.object.id }}')">
+                        Accept
+                    </button>
+                </span>
+                
             {% elif author_notif.type == "post" %}
-                <h4>Item Type: {{ author_notif.type }}</h4>
-                <p>{{ author_notif.title }}</p>
-                <p>{{author_notif.description</p>
+                <h5 id="dateTime{{forloop.counter}}"> New Friend Post </h5>
+                <script type="text/javascript">
+                    timeAgo('{{ author_notif.published }}');
+
+                    function timeAgo(notifTime){
+                        const datePosted = new Date(notifTime);
+                        const dateCurrent = new Date()
+                        const diffTime = Math.abs(dateCurrent - datePosted);
+                        var diffDay = Math.ceil(diffTime / (1000 * 60 * 60));
+                        var hdwm = " hours ago";
+                        if (diffDay > 24){
+                            diffDay = Math.ceil(diffDay / 24);
+                            hdwm = " days ago";
+                        }
+                        
+                        document.getElementById('dateTime{{forloop.counter}}').innerHTML += "<span style='font-size:10px'>"+ diffDay + hdwm + "</span>";
+                    }
+                </script>
+                <h6>Title: {{ author_notif.title }}</h6>
+                <h6>Content: {{author_notif.content}}</h6>
+                <h6>Description: {{authis_notif.description}}</h6>
+
             {% elif author_notif.type == "like" %}
-                <h4>Item Type: {{ author_notif.type }}</h4>
-                <p>{{ author_notif.actor.display_name }} liked your post!</p>
+                <h5>New Like</h5>
+                <h6>{{ author_notif.summary }}!</h6>
+
             {% elif author_notif.type == "comment" %}
-                <h4>Item Type: {{ author_notif.type }}</h4>
-                <p>Original Post: {{ author_notif.title }}</p>
-                <p>{{ author_notif.actor.display_name }}: Comment body</p>
+                <h5 id="dateTime{{forloop.counter}}">New Comment </h5>
+                <script type="text/javascript">
+                    timeAgo('{{ author_notif.published }}');
+
+                    function timeAgo(notifTime){
+                        const datePosted = new Date(notifTime);
+                        const dateCurrent = new Date()
+                        const diffTime = Math.abs(dateCurrent - datePosted);
+                        var diffDay = Math.ceil(diffTime / (1000 * 60 * 60));
+                        var hdwm = " hours ago";
+                        if (diffDay > 24){
+                            diffDay = Math.ceil(diffDay / 24);
+                            hdwm = " days ago";
+                        }
+                        
+                        document.getElementById('dateTime{{forloop.counter}}').innerHTML += "<span style='font-size:10px'>"+ diffDay + hdwm + "</span>";
+                    }
+                </script>
+                <h6>Comment: {{ author_notif.comment }}</h6>
+                
             {% endif %}
+            <br>
         {% endfor %}
+        </div>
         <script>
             function acceptFollowRequest(senderID, accepterID){
                 
@@ -40,7 +83,7 @@
 
                 fetch('./authors/'+ author_id+"/followers/"+follower_id, options);
             }
-
+            
         </script>
     </body>
 </html>
