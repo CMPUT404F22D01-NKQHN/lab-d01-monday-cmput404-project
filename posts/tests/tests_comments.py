@@ -14,7 +14,7 @@ class CommentsTestCase(TestCase):
             + author.id
             + "/posts/"
             + post.id
-            + "/comments",
+            + "/comments/",
             comment_data,
             content_type="application/json",
         )
@@ -26,7 +26,7 @@ class CommentsTestCase(TestCase):
             + author.id
             + "/posts/"
             + post.id
-            + "/comments",
+            + "/comments/",
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 200)

@@ -51,6 +51,15 @@ def handle_comment_inbox(request):
 
 
 class InboxAPIView(GenericAPIView):
+    
+    
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return AddInboxItemSerializer
+        elif self.request.method == "DELETE":
+            return None
+        return ReadInboxSerializer
+    
     @extend_schema(
         responses=ReadInboxSerializer,
         examples=[
@@ -61,14 +70,6 @@ class InboxAPIView(GenericAPIView):
         ],
         description="Get the inbox of the current user",
     )
-    
-    def get_serializer_class(self):
-        if self.request.method == "POST":
-            return AddInboxItemSerializer
-        elif self.request.method == "DELETE":
-            return None
-        return ReadInboxSerializer
-    
     def get(self, request, author_id):
         try:
             author = Author.objects.get(id=author_id)
@@ -93,19 +94,22 @@ class InboxAPIView(GenericAPIView):
     pagination_class = CustomPagination
 
     @extend_schema(
-        responses=AddInboxItemSerializer,
+        responses=str,
         examples=[
             OpenApiExample(
                 "Follower example",
                 value=INBOX_ADD_FOLLOW_EXAMPLE,
+                request_only=True,
             ),
             OpenApiExample(
                 "Like example",
                 value=INBOX_ADD_LIKE_EXAMPLE,
+                request_only=True,
             ),
             OpenApiExample(
                 "Comment example",
                 value=INBOX_ADD_COMMENT_EXAMPLE,
+                request_only=True,
             ),
         ],
         description="Add an item to the inbox of the current user",

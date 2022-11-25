@@ -117,7 +117,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
                     password = node.password
                     try:
                         requests.post(
-                            f"{api_url}/authors/{follower.id}/inbox",
+                            f"{api_url}/authors/{follower.id}/inbox/",
                             json=data,
                             headers={
                                 "Authorization": f"Basic {username}:{password}",
@@ -301,7 +301,7 @@ class ReadPostCommentsSerializer(serializers.Serializer):
         return data["comments"]
 
     def get_id(self, data):
-        return data["post_id"]+"/comments"
+        return data["post_id"]+"/comments/"
     def get_post(self, data):
         return data["post_id"]
     def get_size(self, data):

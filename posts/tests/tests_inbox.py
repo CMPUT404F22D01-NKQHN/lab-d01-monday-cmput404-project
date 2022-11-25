@@ -14,13 +14,13 @@ class InboxTestCase(TestCase):
     def test_add_post(self):
         self.client.force_login(self.author)
         response = self.client.post(
-            "/authors/" + self.author.id + "/posts",
+            "/authors/" + self.author.id + "/posts/",
             POST_DATA,
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 200)
         self.client.force_login(self.author2)
-        response = self.client.get("/authors/" + self.author2.id + "/inbox")
+        response = self.client.get("/authors/" + self.author2.id + "/inbox/")
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         # print(response_data)
@@ -31,13 +31,13 @@ class InboxTestCase(TestCase):
         post = create_post(self.author)
         self.client.force_login(self.author2)
         response = self.client.post(
-            "/authors/" + self.author.id + "/posts/" + post.id + "/comments",
+            "/authors/" + self.author.id + "/posts/" + post.id + "/comments/",
             {"comment": "test comment"},
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 200)
         self.client.force_login(self.author)
-        response = self.client.get("/authors/" + self.author.id + "/inbox")
+        response = self.client.get("/authors/" + self.author.id + "/inbox/")
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(len(response_data["items"]), 1)
@@ -47,7 +47,7 @@ class InboxTestCase(TestCase):
         post = create_post(self.author)
         self.client.force_login(self.author2)
         response = self.client.post(
-            "/authors/" + self.author.id + "/inbox",
+            "/authors/" + self.author.id + "/inbox/",
             {
                 "type": "comment",
                 "post_id": post.id,
@@ -58,13 +58,13 @@ class InboxTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 201)
         self.client.force_login(self.author)
-        response = self.client.get("/authors/" + self.author.id + "/inbox")
+        response = self.client.get("/authors/" + self.author.id + "/inbox/")
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(len(response_data["items"]), 1)
         self.assertEqual(response_data["items"][0]["type"], "comment")
         response = self.client.get(
-            "/authors/" + self.author.id + "/posts/" + post.id + "/comments"
+            "/authors/" + self.author.id + "/posts/" + post.id + "/comments/"
         )
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
@@ -74,7 +74,7 @@ class InboxTestCase(TestCase):
         post = create_post(self.author)
         self.client.force_login(self.author2)
         response = self.client.post(
-            "/authors/" + self.author.id + "/inbox",
+            "/authors/" + self.author.id + "/inbox/",
             json.dumps(
                 {
                     "summary": "Lara Croft Likes your post",
@@ -95,14 +95,14 @@ class InboxTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 201)
         self.client.force_login(self.author)
-        response = self.client.get("/authors/" + self.author.id + "/inbox")
+        response = self.client.get("/authors/" + self.author.id + "/inbox/")
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(len(response_data["items"]), 1)
         self.assertEqual(response_data["items"][0]["type"], "like")
         # Check that the post has a like
         response = self.client.get(
-            "/authors/" + self.author.id + "/posts/" + post.id + "/likes"
+            "/authors/" + self.author.id + "/posts/" + post.id + "/likes/"
         )
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
@@ -114,14 +114,14 @@ class InboxTestCase(TestCase):
         post = create_post(author)
         self.client.force_login(author2)
         comment = self.client.post(
-            "/authors/" + author.id + "/posts/" + post.id + "/comments",
+            "/authors/" + author.id + "/posts/" + post.id + "/comments/",
             {"comment": "test comment"},
         )
         
         
         self.client.force_login(author2)
         response = self.client.post(
-            "/authors/" + author.id + "/inbox",
+            "/authors/" + author.id + "/inbox/",
             json.dumps(
                 {
                     "summary": "Lara Croft Likes your post",
@@ -142,14 +142,14 @@ class InboxTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 201)
         self.client.force_login(author)
-        response = self.client.get("/authors/" + author.id + "/inbox")
+        response = self.client.get("/authors/" + author.id + "/inbox/")
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(len(response_data["items"]), 2)
         self.assertEqual(response_data["items"][0]["type"], "like")
         # Check that the comment has a like
         response = self.client.get(
-             comment.json()["id"] + "/likes"
+             comment.json()["id"] + "/likes/"
         )
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
@@ -162,12 +162,12 @@ class InboxTestCase(TestCase):
         post = create_post(self.author)
 
         self.client.post(
-            "/authors/" + self.author.id + "/inbox",
+            "/authors/" + self.author.id + "/inbox/",
             ReadPostSerializer(post).data,
             content_type="application/json",
         )
         self.client.force_login(self.author)
-        response = self.client.get("/authors/" + self.author.id + "/inbox")
+        response = self.client.get("/authors/" + self.author.id + "/inbox/")
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(len(response_data["items"]), 1)
@@ -178,17 +178,17 @@ class InboxTestCase(TestCase):
         for i in range(10):
             post = create_post(self.author)
             self.client.post(
-                "/authors/" + self.author.id + "/inbox",
+                "/authors/" + self.author.id + "/inbox/",
                 ReadPostSerializer(post).data,
                 content_type="application/json",
             )
         self.client.force_login(self.author)
         response = self.client.get(
-            "/authors/" + self.author.id + "/inbox?page=1&size=10"
+            "/authors/" + self.author.id + "/inbox/?page=1&size=10"
         )
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(len(response_data["items"]), 10)
-        response = self.client.delete("/authors/" + self.author.id + "/inbox")
+        response = self.client.delete("/authors/" + self.author.id + "/inbox/")
         self.assertEqual(response.status_code, 200)
-        response = self.client.get("/authors/" + self.author.id + "/inbox")
+        response = self.client.get("/authors/" + self.author.id + "/inbox/")

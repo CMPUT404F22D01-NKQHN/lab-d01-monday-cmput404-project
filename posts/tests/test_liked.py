@@ -13,7 +13,7 @@ class LikedTestCase(TestCase):
         response = self.client.post(
             "/authors/"
             + self.author.id
-            + "/inbox",
+            + "/inbox/",
             {
                 "type": "like",
                 "object": ReadPostSerializer(post).data.get("id"),
@@ -28,6 +28,6 @@ class LikedTestCase(TestCase):
         for i in range(5):
             post = create_post(self.author)
             self.author_2_like(post)
-        response = self.client.get("/authors/" + self.author2.id + "/liked")
+        response = self.client.get("/authors/" + self.author2.id + "/liked/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 5)

@@ -49,7 +49,7 @@ class NodesTests(TestCase):
         # Create a follow request
         self.client.force_login(self.remote_team)
         response = self.client.post(
-            path=f"/authors/{self.local_author.id}/inbox",
+            path=f"/authors/{self.local_author.id}/inbox/",
             data=json.dumps(follow_req),
             content_type="application/json",
         )
@@ -62,7 +62,7 @@ class NodesTests(TestCase):
 
         # Check that the follow request was sent
         self.client.force_login(self.local_author)
-        response = self.client.get(f"/authors/{self.local_author.id}/inbox")
+        response = self.client.get(f"/authors/{self.local_author.id}/inbox/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()["items"]), 1)
         self.assertEqual(response.json()["items"][0]["type"], "follow")
@@ -79,11 +79,11 @@ class NodesTests(TestCase):
         with requests_mock.Mocker() as m:
             # Set up the mock
             m.post(
-                f"{self.node.api_url}/authors/{remote_author_json['id'].split('/')[-1]}/inbox",
+                f"{self.node.api_url}/authors/{remote_author_json['id'].split('/')[-1]}/inbox/",
             )
             self.client.force_login(self.local_author)
             response = self.client.post(
-                path=f"/authors/{self.local_author.id}/posts",
+                path=f"/authors/{self.local_author.id}/posts/",
                 data=json.dumps(POST_DATA),
                 content_type="application/json",
             )
@@ -104,7 +104,7 @@ class NodesTests(TestCase):
         # Create a post
         self.client.force_login(self.local_author)
         response = self.client.post(
-            path=f"/authors/{self.local_author.id}/posts",
+            path=f"/authors/{self.local_author.id}/posts/",
             data=json.dumps(POST_DATA),
             content_type="application/json",
         )
@@ -121,14 +121,14 @@ class NodesTests(TestCase):
         }
 
         response = self.client.post(
-            path=f"/authors/{self.local_author.id}/inbox",
+            path=f"/authors/{self.local_author.id}/inbox/",
             data=json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 201)
         self.client.force_login(self.local_author)
         response = self.client.get(
-            f"/authors/{self.local_author.id}/posts/{post_id}/likes"
+            f"/authors/{self.local_author.id}/posts/{post_id}/likes/"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
@@ -147,7 +147,7 @@ class NodesTests(TestCase):
         # Create a post
         self.client.force_login(self.local_author)
         response = self.client.post(
-            path=f"/authors/{self.local_author.id}/posts",
+            path=f"/authors/{self.local_author.id}/posts/",
             data=json.dumps(POST_DATA),
             content_type="application/json",
         )
@@ -164,14 +164,14 @@ class NodesTests(TestCase):
         }
         self.client.force_login(self.remote_team)
         response = self.client.post(
-            path=f"/authors/{self.local_author.id}/inbox",
+            path=f"/authors/{self.local_author.id}/inbox/",
             data=json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 201)
         self.client.force_login(self.local_author)
         response = self.client.get(
-            f"/authors/{self.local_author.id}/posts/{post_id}/comments"
+            f"/authors/{self.local_author.id}/posts/{post_id}/comments/"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()["comments"]), 1)
