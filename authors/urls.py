@@ -13,6 +13,7 @@ urlpatterns = [
     path("<str:author_id>/followers/<str:follower_id>", FollowerAPIView.as_view(), name="get_follower"),
     path("<str:author_id>/liked", LikedListAPIView.as_view(), name="author_liked"),
     path("<str:author_id>/inbox", InboxAPIView.as_view(), name="author_inbox"),
+    path("<str:author_id>/inbox/", InboxAPIView.as_view(), name="author_inbox"),
     path("<str:author_id>/posts/<str:post_id>", PostAPI.as_view(), name="post_crud"),
     path(
         "<str:author_id>/posts", PostListAPI.as_view(), name="post_list_crud"

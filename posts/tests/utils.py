@@ -2,23 +2,29 @@ import base64
 import json
 from authors.models import Author
 
-from posts.serializers import (
-    CreatePostSerializer,
-    CreateCommentSerializer
-)
+from posts.serializers import CreatePostSerializer, CreateCommentSerializer
 
 
 from django.test import TestCase
-from django.test import TestCase
+from snapshottest import TestCase as SnapshotTestCase
 
 
-def create_author(display_name, email, password, username):
-    return Author.objects.create(
-        display_name=display_name,
-        email=email,
-        password=password,
-        username=username,
-    )
+def create_author(display_name, email, password, username, id=None):
+    if id is None:
+        return Author.objects.create(
+            display_name=display_name,
+            email=email,
+            password=password,
+            username=username,
+        )
+    else:
+        return Author.objects.create(
+            display_name=display_name,
+            email=email,
+            password=password,
+            username=username,
+            id=id,
+        )
 
 
 POST_DATA = {

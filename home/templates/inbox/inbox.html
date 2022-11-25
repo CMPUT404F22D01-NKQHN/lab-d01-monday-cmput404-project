@@ -1,29 +1,45 @@
 {% extends "base.html" %}
-<!-- {% block content %} -->
-<html>
-    <body>
+{% block content %}
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <h2>My Inbox "Stream"</h2>
+            <button class="align-start btn btn-danger"
+                    id="btn-clear-inbox"
+                    onclick="clearInbox('{{ inbox_url }}')">
+                Clear Inbox
+            </button>
+        </div>
+        <br>
+        <br>
         {% for author_notif in author_inbox %}
             {% if author_notif.type == "follow" %}
-                <h4>Item Type: {{ author_notif.type }}</h4>
-                <p>{{ author_notif.actor.display_name }} wants to follow you!</p>
-                <button type="button"
-                        onclick="acceptFollowRequest('{{ author_notif.actor.id }}', '{{ author_notif.object.id }}')">
-                    Accept
-                </button>
+                {% include "followers/follow-request.html" with followreq=author_notif only %}
             {% elif author_notif.type == "post" %}
-                <h4>Item Type: {{ author_notif.type }}</h4>
-                <p>{{ author_notif.title }}</p>
-                <p>{{author_notif.description</p>
+                {% include "post/post-shared.html" with author_post=author_notif author_id=author_notif.author.uuid only %}
             {% elif author_notif.type == "like" %}
-                <h4>Item Type: {{ author_notif.type }}</h4>
-                <p>{{ author_notif.actor.display_name }} liked your post!</p>
+                <div class="card">
+                    <div class="card-header">
+                        <h5>New Like!</h5>
+                        <h6>{{ author_notif.summary }}!</h6>
+                    </div>
+                </div>
             {% elif author_notif.type == "comment" %}
-                <h4>Item Type: {{ author_notif.type }}</h4>
-                <p>Original Post: {{ author_notif.title }}</p>
-                <p>{{ author_notif.actor.display_name }}: Comment body</p>
+                <div class="card">
+                    <div class="card-header">
+                        <h5>New comment!</h5>
+                        <h6>Comment: {{ author_notif.comment }}</h6>
+                    </div>
+                </div>
             {% endif %}
+            <br>
         {% endfor %}
-        <script>
+        {% if author_inbox|length == 0 %}
+            <div class="alert alert-info text-center" role="alert">
+                <h3>No new notifications</h3>
+            </div>
+        {% endif %}
+    </div>
+    <script>
             function acceptFollowRequest(senderID, accepterID){
                 
                 const author_id = accepterID.split('/').pop()
@@ -38,10 +54,35 @@
                     }
                 }
 
-                fetch('./authors/'+ author_id+"/followers/"+follower_id, options);
+                fetch('./authors/'+ author_id+"/followers/"+follower_id, options).then(response => {
+                    if (response.status == 200){
+                        alert("Follow request accepted!");
+                    }
+                    else{
+                        alert("Something went wrong!");
+                    }
+                })
             }
-
-        </script>
-    </body>
-</html>
-<!-- {% endblock %} -->
+            function clearInbox(inboxUrl){
+                const options = {
+                    method: 'DELETE',
+                    headers: {
+                    'Content-Type': 'application/json',   
+                    'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }
+                const conf = confirm("Are you sure you want to clear your inbox?");
+                if (conf){
+                    fetch(inboxUrl, options).then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        } else{
+                            alert("Error clearing inbox");
+                        }
+                    });
+                }
+                
+            }
+            
+    </script>
+{% endblock %}

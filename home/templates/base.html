@@ -11,7 +11,6 @@
         <title>{{ title }}</title>
     </head>
     <body>
-        <!-- Create a navigation bar with the following buttons: Post, Authors, Logout, Profile, Inbox -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="/">Social Media Project</a>
             <button class="navbar-toggler"
@@ -26,7 +25,8 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        {% comment %} <a class="nav-link" href="">Post <span class="sr-only">(current)</span></a> {% endcomment %}
+                        <div class="form-popup" id="shareForm">
+                        </div>
                         <div class="form-popup" id="postForm">
                             <h1>Create Post</h1>
                             <label for="title">
@@ -68,7 +68,7 @@
                             </select>
                             <!-- If the user selects image/png;base64 create a button to upload image/png;base64 -->
                             <input type="file"
-                                   accept="image/png;base64, image/jpeg;base64, image/png"
+                                   accept="image/png, image/jpeg"
                                    id="image/png;base64"
                                    name="uploadImage">
                             <textarea id="text/markdown" name="text/markdown" rows="4" cols="50">
@@ -95,7 +95,7 @@
                             <label for="unlisted">
                                 <b>Unlisted</b>
                             </label>
-                            <input id="unlisted" type="checkbox" name="unlisted">
+                            <input id="unlisted" type="checkbox" name="unlisted"/>
                             <!-- For Visibility make it a selection box with public and private as options and by default make it public -->
                             <label for="visibility">
                                 <b>Visibility</b>
@@ -111,7 +111,7 @@
                                     Private
                                 </option>
                             </select>
-                            <button type="submit" class="btn" onclick ="submitPost()">Create Post</button>
+                            <button type="submit" class="btn" onclick="submitPost('{{ author_id }}')">Create Post</button>
                             <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
                         </div>
                         <button type="button"
@@ -134,93 +134,13 @@
                 </ul>
             </div>
         </nav>
-        <br>
+        <br/>
         <div id="content">
-            {% block content %}{% endblock %}
+            {% block content %}{% endblock content %}
         </div>
     </body>
     <script>
         document.getElementById("postForm").style.display = "none";
-        const author_id = "{{ author_id }}"
-        function openForm() {
-            document.getElementById("postForm").style.display = "block";
-            document.getElementById("postButton").style.display = "none";
-        }
-        
-        function closeForm() {
-            document.getElementById("postForm").style.display = "none";
-            document.getElementById("postButton").style.display = "block";
-        }
-
-        function submitPost(){
-          event.preventDefault();
-          const title = document.getElementById("title").value;
-          if (title == ""){
-            alert("Title cannot be empty");
-            return;
-          }
-          const author_id = "{{ author_id }}";
-          const source = "source"
-          const origin = "origin"
-          const description = document.getElementById("description").value;
-          if (description == ""){
-            alert("Description cannot be empty");
-            return;
-          }
-          const unlisted = document.getElementById("unlisted").checked;
-          const visibility = document.getElementById("visibility").value;
-          const contentType = document.getElementById("postType").value;
-          let content = document.getElementById(contentType).value;
-          let data = {
-            "title": title,
-            "description": description,
-            "source": source,
-            "origin": origin,
-            "unlisted": unlisted,
-            "visibility": visibility,
-            "contentType": contentType,
-            "content": content
-          }
-          
-          let options = {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',   
-              'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify(data)
-          }
-
-          if (contentType == "image/png;base64") {
-            // Read the file in base64
-            const file = document.getElementById("image/png;base64").files[0];
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            var read = false;
-            reader.onload =  () =>{
-                data.content = reader.result;
-                options.body = JSON.stringify(data);
-                fetch('./authors/'+author_id+'/posts', options).then(()=>{
-                    location.reload();
-                  })
-              };
-              reader.onerror = (error) =>{
-                alert("Error: " + error);
-              };
-               
-            
-          } else{
-            console.log("non-image data: " + JSON.stringify(data));
-            fetch('./authors/'+author_id+'/posts', options).then(()=>{
-                location.reload();
-              })
-          }
-          
-          
-
-
-        }
-  
    
     </script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
