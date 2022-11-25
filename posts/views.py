@@ -3,6 +3,7 @@ import os
 from rest_framework.response import Response
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from posts.openapi_examples import *
 from authors.models import Author
 from authors.serializers import AuthorSerializer
 from cmput404_project.utilities import CustomPagination
@@ -19,6 +20,7 @@ from .serializers import (
 )
 from drf_spectacular.utils import extend_schema
 from rest_framework.generics import GenericAPIView
+from drf_spectacular.utils import extend_schema, OpenApiExample
 
 from rest_framework.renderers import BaseRenderer
 
@@ -204,13 +206,37 @@ class PostAPI(GenericAPIView):
         elif self.request.method == "PUT":
             return UpdatePostSerializer
 
+    @extend_schema(
+        examples=[
+            OpenApiExample(
+                "Post",
+                value=POST_EXAMPLE,
+            )
+        ],
+        description="Get the post with a specific post id",
+    )
     def get(self, request, author_id, post_id):
+        """
+        Get the post
+        """
         return get_post(request, post_id)
 
+    @extend_schema(
+        examples=[
+            OpenApiExample(
+                "Post",
+                value=POST_EXAMPLE,
+            )
+        ],
+        description="Update a post",
+    )
     def put(self, request, author_id, post_id):
         return update_post(request, post_id)
 
     def delete(self, request, author_id, post_id):
+        """
+        Delete the post
+        """
         return delete_post(request, post_id)
 
 
@@ -218,6 +244,19 @@ class LikesListAPIView(GenericAPIView):
     def get_serializer_class(self):
         return LikeSerializer
 
+    @extend_schema(
+        examples=[
+            OpenApiExample(
+                "Post Likes",
+                value=LIKED_AUTHOR_EXAMPLE,
+            ),
+            OpenApiExample(
+                "Comment Likes",
+                value=LIKED_COMMENT_EXAMPLE,
+            )
+        ],
+        description="Get the likes of item",
+    )
     def get(self, request, author_id, post_id, comment_id=None):
         if comment_id:
             return get_likes_on_comment(request, comment_id)
@@ -235,6 +274,15 @@ class PostListAPI(GenericAPIView):
         elif self.request.method == "POST":
             return CreatePostSerializer
 
+    @extend_schema(
+        examples=[
+            OpenApiExample(
+                "Posts",
+                value=POST_EXAMPLE,
+            )
+        ],
+        description="Get list of posts from author",
+    )
     def get(self, request, author_id):
         return get_posts_by_author(self, request, author_id)
 
@@ -243,6 +291,13 @@ class PostListAPI(GenericAPIView):
     @extend_schema(
         request=CreatePostSerializer,
         responses=ReadPostSerializer,
+        examples=[
+            OpenApiExample(
+                "Posts",
+                value=POSTS_ADD_EXAMPLE,
+            )
+        ],
+        description="Add post to author's posts",
     )
     def post(self, request, author_id):
         return create_post(request, author_id)
@@ -254,8 +309,20 @@ class PostListAPI(GenericAPIView):
 class ImageAPI(GenericAPIView):
     renderer_classes = [ImageRenderer]
 
+    @extend_schema(
+        examples=[
+            OpenApiExample(
+                "Post with image",
+                value=POST_EXAMPLE,
+            )
+        ],
+        description="Get post's image",
+    )
     @method_decorator(cache_page(60 * 60 * 24))
     def get(self, request, author_id, post_id):
+        """
+        Gets the image of a post
+        """
         try:
             post = Post.objects.get(id=post_id)
             assert (
@@ -298,9 +365,27 @@ class CommentListAPIView(GenericAPIView):
         elif self.request.method == "POST":
             return CreateCommentSerializer
 
+    @extend_schema(
+        examples=[
+            OpenApiExample(
+                "Comments",
+                value=COMMENTS_EXAMPLE,
+            )
+        ],
+        description="Add a new comment on a post",
+    )
     def post(self, request, author_id, post_id):
         return comment_post(request, author_id, post_id)
 
+    @extend_schema(
+        examples=[
+            OpenApiExample(
+                "Comments",
+                value=COMMENTS_EXAMPLE,
+            )
+        ],
+        description="Get the comments on a post",
+    )
     def get(self, request, author_id, post_id):
         return get_all_comments_by_post(self, request, post_id)
 
@@ -322,6 +407,15 @@ class LikedListAPIView(GenericAPIView):
     def get_queryset(self):
         return []
 
+    @extend_schema(
+        examples=[
+            OpenApiExample(
+                "Liked",
+                value=LIKED_AUTHOR_EXAMPLE,
+            )
+        ],
+        description="Get the liked content of user",
+    )
     def get(self, request, author_id):
         try:
             author = Author.objects.get(id=author_id)
@@ -338,6 +432,15 @@ class CommentAPIView(GenericAPIView):
     def get_serializer_class(self):
         return ReadCommentSerializer
 
+    @extend_schema(
+        examples=[
+            OpenApiExample(
+                "Comments",
+                value=SINGLE_COMMENT_EXAMPLE,
+            )
+        ],
+        description="Get a comment from the comments on a post",
+    )
     def get(self, request, author_id, post_id, comment_id):
         try:
             comment = Comment.objects.get(id=comment_id)

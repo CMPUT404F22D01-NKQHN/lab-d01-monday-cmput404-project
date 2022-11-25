@@ -87,3 +87,185 @@ INBOX_ADD_LIKE_EXAMPLE = {
     },
     "object": "http://localhost:8000/authors/c221712d33284a50af2a4976a755d417/posts/e3219085711247f8b0bc3a8dc4550cd1",
 }
+
+LIKED_AUTHOR_EXAMPLE = {
+    "type":"liked",
+    "items":[
+        {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "summary": "Lara Croft Likes your post",         
+            "type": "Like",
+            "author":{
+                "type":"author",
+                "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "host":"http://127.0.0.1:5454/",
+                "displayName":"Lara Croft",
+                "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "github":"http://github.com/laracroft",
+                "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+            },
+            "object":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+        }
+    ]
+}
+
+LIKED_COMMENT_EXAMPLE = {
+    "type":"liked",
+    "items":[
+        {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "summary": "Lara Croft Likes your comment",         
+            "type": "Like",
+            "author":{
+                "type":"author",
+                "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "host":"http://127.0.0.1:5454/",
+                "displayName":"Lara Croft",
+                "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "github":"http://github.com/laracroft",
+                "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+            },
+            "object":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e/comments/asd29832103asdbh12b3h21b3h12b3"
+        }
+    ]
+}
+
+POST_EXAMPLE = {
+    "type":"post",
+    "title":"A post title about a post about web dev",
+    "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
+    "source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
+    "origin":"http://whereitcamefrom.com/posts/zzzzz",
+    "description":"This post discusses stuff -- brief",
+    "contentType":"text/plain",
+    "content":"Þā wæs on burgum Bēowulf Scyldinga",
+    "author": { 
+        "type":"author",
+        "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+        "host":"http://127.0.0.1:5454/",
+        "displayName":"Lara Croft",
+        "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+        "github": "http://github.com/laracroft",
+        "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+    },
+    "categories":["web","tutorial"],
+    "count": 1023,
+    "comments":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
+    "commentsSrc":{
+        "type":"comments",
+        "page":1,
+        "size":5,
+        "post":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
+        "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
+        "comments":[
+            {
+                "type":"comment",
+                "author":{
+                    "type":"author",
+                    # ID of the Author (UUID)
+                    "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+                    # url to the authors information
+                    "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+                    "host":"http://127.0.0.1:5454/",
+                    "displayName":"Greg Johnson",
+                    # HATEOS url for Github API
+                    "github": "http://github.com/gjohnson",
+                    # Image from a public domain
+                    "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+                },
+                "comment":"Sick Olde English",
+                "contentType":"text/markdown",
+                # ISO 8601 TIMESTAMP
+                "published":"2015-03-09T13:07:04+00:00",
+                # ID of the Comment (UUID)
+                "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
+            }
+        ]
+    },
+    "published":"2015-03-09T13:07:04+00:00",
+    "visibility":"PUBLIC",
+    "unlisted":"false"
+}
+
+POSTS_ADD_EXAMPLE = {
+    "type":"post",
+    "title":"A post title about a post about web dev",
+    "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
+    "source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
+    "origin":"http://whereitcamefrom.com/posts/zzzzz",
+    "description":"This post discusses stuff -- brief",
+    "contentType":"text/plain",
+    "content":"Þā wæs on burgum Bēowulf Scyldinga",
+    "author": { 
+        "type":"author",
+        "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+        "host":"http://127.0.0.1:5454/",
+        "displayName":"Lara Croft",
+        "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+        "github": "http://github.com/laracroft",
+        "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+    },
+    "categories":["web","tutorial"],
+    "count": 1023,
+    "comments":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
+    "commentsSrc":{},
+    "published":"2015-03-09T13:07:04+00:00",
+    "visibility":"PUBLIC",
+    "unlisted":"false"
+}
+
+SINGLE_COMMENT_EXAMPLE = {
+    "type":"comment",
+    "author":{
+        "type":"author",
+        # ID of the Author (UUID)
+        "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+        # url to the authors information
+        "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+        "host":"http://127.0.0.1:5454/",
+        "displayName":"Greg Johnson",
+        # HATEOS url for Github API
+        "github": "http://github.com/gjohnson",
+        # Image from a public domain
+        "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+    },
+    "comment":"Sick Olde English",
+    "contentType":"text/markdown",
+    # ISO 8601 TIMESTAMP
+    "published":"2015-03-09T13:07:04+00:00",
+    # ID of the Comment (UUID)
+    "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
+}
+
+COMMENTS_EXAMPLE = {
+    "type":"comments",
+    "page":1,
+    "size":5,
+    "post":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
+    "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
+    "comments":[
+        {
+            "type":"comment",
+            "author":{
+                "type":"author",
+                # ID of the Author (UUID)
+                "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+                # url to the authors information
+                "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+                "host":"http://127.0.0.1:5454/",
+                "displayName":"Greg Johnson",
+                # HATEOS url for Github API
+                "github": "http://github.com/gjohnson",
+                # Image from a public domain
+                "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+            },
+            "comment":"Sick Olde English",
+            "contentType":"text/markdown",
+            # ISO 8601 TIMESTAMP
+            "published":"2015-03-09T13:07:04+00:00",
+            # ID of the Comment (UUID)
+            "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
+        }
+    ]
+}
+      
