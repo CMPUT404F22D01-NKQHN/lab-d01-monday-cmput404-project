@@ -261,6 +261,9 @@ class InboxAPIView(GenericAPIView):
             )
 
     def delete(self, request, author_id):
+        """
+        Clear all content from the inbox
+        """
         try:
             author = Author.objects.get(id=author_id)
             assert author.id == request.user.id
