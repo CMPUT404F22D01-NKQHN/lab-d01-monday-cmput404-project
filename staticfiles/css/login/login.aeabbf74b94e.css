@@ -1,0 +1,110 @@
+/* Increase 'login-title' font size and display it in bold and in the middle of the page */
+/* make the font sans serif for the entire page */
+.page{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+
+.page-title {
+    background-color: #007bff;
+    color: #ffffff;
+    text-align: left;
+    /* make it thicker and bigger */
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+    
+}
+/* Move this to the middle of the page */
+.login-container{
+    margin: 0 auto;
+    width: 300px;
+    position: center;
+    border-radius:15px;
+}
+/* 'login-info' is a table that contains the username and password fields make it look nice let the user know that he is in the right place */
+.login-info {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    /* increase background size and make the edges of the table rounded */
+    background-size: 300px;
+    border-radius:15px;
+    /* put the text inside the field in the middle make it a little bit bigger */
+    text-align: center;
+    font-size: 15px;
+}
+.login-title{
+    text-align: left;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+}
+.user-field{
+    text-align: left;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+}
+.pw-field{
+    text-align: left;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+}
+.user-input{
+    text-align: left;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+}
+.pw-input{
+    text-align: left;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+}
+.login-btn{
+    text-align: left;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+    /* make it look cooler with rounded edges and shadows */
+    border-radius:15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    /* make it on the middle of the user-field and pw-field */
+    margin: 0 auto;
+    width: 300px;
+    position: center;
+    /* Make the text inside the button in the middle and make it bigger */
+    text-align: center;
+    /* make a cool hovering effect */
+    transition: 0.3s;
+    background-color: #007bff;
+    color: #ffffff;
+    
+}
+.login-btn:hover{
+    background-color: #0069d9;
+    color: #ffffff;
+    /* change the mouse to a hand when hovering over the button */
+    cursor: pointer;
+}
+.lost-pw{
+    text-align: left;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+    /* make it look cooler with rounded edges and shadows */
+    border-radius:15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    /* make it on the middle of the user-field and pw-field */
+    margin: 0 auto;
+    width: 300px;
+    position: center;
+    /* Make the text inside the button in the middle and make it bigger */
+    text-align: center;
+}

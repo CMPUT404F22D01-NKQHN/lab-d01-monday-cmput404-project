@@ -19,7 +19,7 @@ class AuthorAPIView(generics.GenericAPIView):
         ],
         description="Get an author")
     def get(self, request, author_id):
-        author = Author.objects.get(id=author_id)
+        author = Author.objects.get(id=author_id, proxy=False)
         return Response(AuthorSerializer(author).data)
 
     @extend_schema(
@@ -66,7 +66,7 @@ class AuthorsAPIView(generics.GenericAPIView):
         )
 
     def get_queryset(self):
-        return Author.objects.filter(is_another_server=False).order_by("id")
+        return Author.objects.filter(is_another_server=False, proxy=False).order_by("id")
 
     def paginate_queryset(self, queryset, request):
         return self.pagination_class().paginate_queryset(queryset, request, view=self)

@@ -141,13 +141,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 # https://stackoverflow.com/questions/12809416/django-static-files-404
-
+LOGIN_REDIRECT_URL = '/'
 STATIC_ROOT = ''
 
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ( os.path.join('static'), )
-
+TEST_RUNNER = 'snapshottest.django.TestRunner'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 CORS_ALLOW_ALL_ORIGINS = True
