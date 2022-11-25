@@ -6,6 +6,7 @@ from .serializers import (
 )
 
 from friends.openapi_examples import *
+from authors.openapi_examples import AUTHOR_SINGLE_EXAMPLE
 from authors.models import Author
 from rest_framework.generics import GenericAPIView
 from drf_spectacular.utils import extend_schema, OpenApiExample
@@ -42,7 +43,7 @@ class FollowerAPIView(GenericAPIView):
         examples=[
             OpenApiExample(
                 "Follower",
-                value=FOLLOW_REQUEST_EXAMPLE,
+                value=AUTHOR_SINGLE_EXAMPLE,
             )
         ],
         description="check if FOREIGN_AUTHOR_ID is a follower of AUTHOR_ID",

@@ -28,10 +28,10 @@ class AuthorAPIView(generics.GenericAPIView):
             examples=[
             OpenApiExample(
                 "Author",
-                value=AUTHOR_SINGLE_EXAMPLE,
+                value=AUTHOR_SINGLE_UPDATE_EXAMPLE,
             )
         ],
-        description="Add an author")
+        description="Update an author")
     def post(self, request, author_id):
         try:
             assert request.user.id == author_id, "User ID does not match author ID"

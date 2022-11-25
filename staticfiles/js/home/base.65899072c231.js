@@ -157,7 +157,7 @@ async function sendRequest(object_id, author_id) {
     },
     body: JSON.stringify(data)
   }
-  console.log("SEND REQUEST TO: " + object_obj.id + "/inbox")
+  console.log("SEND REQUEST TO: " + object_obj.id + "/inbox/")
   fetch("/authors/" + object_obj.uuid + "/inbox/", options).then((response) => {
     if (response.ok) {
       alert("Request sent!");
@@ -201,7 +201,7 @@ async function newLike(author_id, post_id, comment = false) {
     "object": post_id
 
   }
-  fetch("/authors/" + post_obj.author.uuid + "/inbox", {
+  fetch("/authors/" + post_obj.author.uuid + "/inbox/", {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -273,7 +273,7 @@ async function sharePost(author_id, post_url) {
       return;
     }
     Promise.all(selected.map((follower) => {
-      return fetch("/authors/" + follower + "/inbox", {
+      return fetch("/authors/" + follower + "/inbox/", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

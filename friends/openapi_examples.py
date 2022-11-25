@@ -1,5 +1,5 @@
 FOLLOW_REQUEST_EXAMPLE = {
-    "type": "Follow",      
+    "type": "follow",      
     "summary":"Greg wants to follow Lara",
     "actor":{
         "type":"author",

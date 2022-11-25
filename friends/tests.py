@@ -11,7 +11,7 @@ class FriendsTestCase(TestCase):
         self.client.force_login(author2)
         # Send a friend request
         res = self.client.post(
-            f"/authors/{author1.id}/inbox",
+            f"/authors/{author1.id}/inbox/",
             data={
                 "type": "follow",
                 "summary": "Friend request",
@@ -23,7 +23,7 @@ class FriendsTestCase(TestCase):
         self.assertEqual(res.status_code, 201)
         # # Check that the friend request was sent
         self.client.force_login(author1)
-        response = self.client.get(f"/authors/{author1.id}/inbox")
+        response = self.client.get(f"/authors/{author1.id}/inbox/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['items']), 1)
         self.assertEqual(response.json()['items'][0]["type"], "follow")
@@ -37,7 +37,7 @@ class FriendsTestCase(TestCase):
         self.assertEqual(res.status_code, 200)
         
         # Check that author 2 is now following author 1
-        response = self.client.get(f"/authors/{author1.id}/followers")
+        response = self.client.get(f"/authors/{author1.id}/followers/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()["items"]), 1)
         

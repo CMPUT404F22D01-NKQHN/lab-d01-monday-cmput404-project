@@ -37,4 +37,10 @@ AUTHOR_SINGLE_EXAMPLE = {
     # Image from a public domain
     "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
 }
+
+AUTHOR_SINGLE_UPDATE_EXAMPLE = {
+    "displayName":"Lara Croft",
+    "github": "http://github.com/laracroft",
+    "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+}
     

@@ -24,7 +24,7 @@ def home(request):
     all_posts = []
     for link in authors.json()["items"]:
         try:
-            author_posts = requests.get(link["id"] + "/posts")
+            author_posts = requests.get(link["id"] + "/posts/")
 
             print(author_posts)
             # get each pot from every author and add to posts
@@ -56,7 +56,7 @@ def profile(request):
     author_id = request.user.id
     cookies = "; ".join([f"{key}={value}" for key, value in request.COOKIES.items()])
     posts = requests.get(
-        request.build_absolute_uri("/authors/" + str(author_id) + "/posts"),
+        request.build_absolute_uri("/authors/" + str(author_id) + "/posts/"),
         headers={
             "Content-Type": "application/json",
             "X-CSRFToken": request.COOKIES["csrftoken"],
@@ -142,7 +142,7 @@ def inbox(request):
     # simulating forwarding all cookies on authenticated webview and passing them forward (could be problematic)
     cookies = "; ".join([f"{key}={value}" for key, value in request.COOKIES.items()])
     inboxItems = requests.get(
-        request.build_absolute_uri("/authors/" + str(author_id) + "/inbox"),
+        request.build_absolute_uri("/authors/" + str(author_id) + "/inbox/"),
         headers={
             "Content-Type": "application/json",
             "X-CSRFToken": request.COOKIES["csrftoken"],
@@ -150,7 +150,7 @@ def inbox(request):
         },
     )
 
-    print("URL", request.build_absolute_uri("/authors/" + str(author_id) + "/inbox"))
+    print("URL", request.build_absolute_uri("/authors/" + str(author_id) + "/inbox/"))
     author_inbox = []
     for item in inboxItems.json()["items"]:
         author_inbox.append(item)
@@ -159,7 +159,7 @@ def inbox(request):
     # default page size is 5 and give option to change pages
     context = {
         "author_inbox": author_inbox,
-        "inbox_url": "/authors/" + str(author_id) + "/inbox",
+        "inbox_url": "/authors/" + str(author_id) + "/inbox/",
     }
     return render(request, "inbox/inbox.html", context)
 
@@ -247,7 +247,7 @@ def user(request, author_id):
     try:
         authors_posts = requests.get(
             request.build_absolute_uri(
-                selected_server + "authors/" + str(author_id) + "/posts")).json()["items"]
+                selected_server + "authors/" + str(author_id) + "/posts/")).json()["items"]
         
     except:
         pass

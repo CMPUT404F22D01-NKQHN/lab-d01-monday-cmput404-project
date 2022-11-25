@@ -6,7 +6,7 @@ class PostTestCase(TestCase):
         author = create_author("test", "test", "test", "test")
         self.client.force_login(author)
         response = self.client.post(
-            "/authors/" + author.id + "/posts",
+            "/authors/" + author.id + "/posts/",
             POST_DATA,
             content_type="application/json",
         )
@@ -17,7 +17,7 @@ class PostTestCase(TestCase):
         author2 = create_author("test2", "test2", "test2", "test2")
         self.client.force_login(author2)
         response = self.client.post(
-            "/authors/" + author.id + "/posts",
+            "/authors/" + author.id + "/posts/",
             POST_DATA,
             content_type="application/json",
         )
@@ -103,7 +103,7 @@ class PostTestCase(TestCase):
         author.save()
 
         self.client.force_login(author2)
-        response = self.client.get("/authors/" + author.id + "/posts")
+        response = self.client.get("/authors/" + author.id + "/posts/")
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
 
@@ -115,7 +115,7 @@ class PostTestCase(TestCase):
         create_post(author, POST_DATA_2)
         author2 = create_author("test2", "test2", "test2", "test2")
         self.client.force_login(author2)
-        response = self.client.get("/authors/" + author.id + "/posts")
+        response = self.client.get("/authors/" + author.id + "/posts/")
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(len(response_data["items"]), 1)
@@ -123,7 +123,7 @@ class PostTestCase(TestCase):
     def test_get_posts_by_author_dne(self):
         author = create_author("test", "test", "test", "test")
         self.client.force_login(author)
-        response = self.client.get("/authors/1/posts")
+        response = self.client.get("/authors/1/posts/")
         self.assertEqual(response.status_code, 404)
 
     def test_create_image_post(self):
@@ -137,7 +137,7 @@ class PostTestCase(TestCase):
         post_data["contentType"] = "image/png;base64"
         post_data["content"] = f"data:image/png;base64,{base64_image.decode('utf-8')}"
         response = self.client.post(
-            "/authors/" + author.id + "/posts",
+            "/authors/" + author.id + "/posts/",
             post_data,
             content_type="application/json",
         )

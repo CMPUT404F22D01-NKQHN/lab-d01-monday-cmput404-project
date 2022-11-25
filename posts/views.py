@@ -225,7 +225,7 @@ class PostAPI(GenericAPIView):
         examples=[
             OpenApiExample(
                 "Post",
-                value=POST_EXAMPLE,
+                value=POSTS_ADD_EXAMPLE,
             )
         ],
         description="Update a post",
@@ -278,7 +278,7 @@ class PostListAPI(GenericAPIView):
         examples=[
             OpenApiExample(
                 "Posts",
-                value=POST_EXAMPLE,
+                value=POST_LIST_EXAMPLE,
             )
         ],
         description="Get list of posts from author",
@@ -369,7 +369,7 @@ class CommentListAPIView(GenericAPIView):
         examples=[
             OpenApiExample(
                 "Comments",
-                value=COMMENTS_EXAMPLE,
+                value=CREATE_COMMENT_EXAMPLE,
             )
         ],
         description="Add a new comment on a post",
