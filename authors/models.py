@@ -43,6 +43,7 @@ class Author(AbstractUser):
     profileImage = models.TextField(max_length = 200, default = '', blank = True)
     is_admin = models.BooleanField(default=False)
     is_another_server = models.BooleanField(default=False)
+    proxy = models.BooleanField(default=False)
     REQUIRED_FIELDS = ['email', 'display_name', 'password']
     followers = models.ManyToManyField('Author', blank = True)
     objects = AuthorManager()

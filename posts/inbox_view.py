@@ -61,6 +61,14 @@ class InboxAPIView(GenericAPIView):
         ],
         description="Get the inbox of the current user",
     )
+    
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return AddInboxItemSerializer
+        elif self.request.method == "DELETE":
+            return None
+        return ReadInboxSerializer
+    
     def get(self, request, author_id):
         try:
             author = Author.objects.get(id=author_id)
@@ -104,17 +112,44 @@ class InboxAPIView(GenericAPIView):
     )
     def post(self, request, author_id):
         try:
-            author = Author.objects.get(id=author_id)
+            author = None
+            try:
+                author = Author.objects.get(id=author_id)
+            except Author.DoesNotExist:
+                # Check if author exists on remote server
+                for node in Node.objects.all():
+                    try:
+                        response = requests.get(
+                            f"{node.api_url}authors/{author_id}")
+                        print("Checking remote server",f"{node.api_url}authors/{author_id}")
+                        if response.status_code == 200:
+                            author = Author.objects.create(
+                                id=author_id,
+                                host=node.api_url,
+                                display_name=response.json()["displayName"],
+                                proxy=True,
+                            )
+                            node.proxy_users.add(author)
+                            break
+                    except Exception as e:
+                        print(e)
+                        continue
+            if not author:
+                return Response(
+                    status=404,
+                    data={"error": "The author you are trying to add does not exist."},
+                )
             if Node.objects.filter(proxy_users=author).exists():
                 print("proxy user")
                 node = Node.objects.get(proxy_users=author)
-                api_url = node.url + "author/" + author_id + "/inbox/"
+                api_url = node.api_url + "authors/" + author_id + "/inbox/"
                 response = requests.post(
                     api_url,
                     data=request.data,
-                    content_type="application/json",
-                    headers={"Authorization": f"Basic {node.username}:{node.password}"},
+                    headers={"Authorization": f"Basic {node.username}:{node.password}", "Content-Type": "application/json"},
                 )
+                print(response.status_code)
+                print(api_url)
                 return Response(response.json(), status=response.status_code)
             if request.user.is_another_server:
                 """
@@ -139,6 +174,7 @@ class InboxAPIView(GenericAPIView):
                         id=foreign_author_id,
                         host=auth_obj["host"],
                         display_name=auth_obj["displayName"],
+                        proxy=True,
                     )
                     # Add foreign author to the proxy users field in the node
                     node = Node.objects.get(team_account=request.user)

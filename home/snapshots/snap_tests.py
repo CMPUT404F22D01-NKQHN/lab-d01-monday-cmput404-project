@@ -1,4 +1,13 @@
-{% load static %}
+# -*- coding: utf-8 -*-
+# snapshottest: v1 - https://goo.gl/zC4yUc
+from __future__ import unicode_literals
+
+from snapshottest import Snapshot
+
+
+snapshots = Snapshot()
+
+snapshots['UITestCase::test_home 1'] = '''
 <!DOCTYPE html>
 <html id = "page">
     <head>
@@ -7,8 +16,8 @@
               content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet"
               type="text/css"
-              href="{% static 'css/home/base.css' %}">
-        <title>{{ title }}</title>
+              href="/static/css/home/base.1511adcd216c.css">
+        <title>Home</title>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -111,7 +120,7 @@
                                     Private
                                 </option>
                             </select>
-                            <button type="submit" class="btn" onclick="submitPost('{{ author_id }}')">Create Post</button>
+                            <button type="submit" class="btn" onclick="submitPost(\'http://localhost:8000/authors/123\')">Create Post</button>
                             <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
                         </div>
                         <button type="button"
@@ -120,23 +129,33 @@
                                 onclick="openForm()">Create a Post</button>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'profile' %}">Profile</a> <!-- Here we can put the logged in user's name instead of "Profile" -->
+                        <a class="nav-link" href="/profile">Profile</a> <!-- Here we can put the logged in user\'s name instead of "Profile" -->
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'followers' %}">Followers</a>
+                        <a class="nav-link" href="/followers">Followers</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'inbox' %}">Inbox</a>
+                        <a class="nav-link" href="/inbox">Inbox</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        <a class="nav-link" href="/logout/">Logout</a>
                     </li>
                 </ul>
             </div>
         </nav>
         <br/>
         <div id="content">
-            {% block content %}{% endblock content %}
+            
+  <div class = "container">
+    <h2> All Posts on Server </h2>
+    <br>
+    
+    
+    <div class="alert alert-info text-center" role="alert">
+      <h2>There are no posts, try adding one!</h2>
+    </div>
+    
+  
         </div>
     </body>
     <script>
@@ -146,5 +165,6 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src={% static 'js/home/base.js' %}></script>
+    <script src=/static/js/home/base.65899072c231.js></script>
 </html>
+'''

@@ -1,72 +1,45 @@
 {% extends "base.html" %}
-<!-- {% block content %} -->
-<html>
-    <body>
-        <div>
+{% block content %}
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <h2>My Inbox "Stream"</h2>
+            <button class="align-start btn btn-danger"
+                    id="btn-clear-inbox"
+                    onclick="clearInbox('{{ inbox_url }}')">
+                Clear Inbox
+            </button>
+        </div>
+        <br>
+        <br>
         {% for author_notif in author_inbox %}
             {% if author_notif.type == "follow" %}
-                <h5>New Follow Request </h5>
-                <span style="display: inline;">
-                    {{ author_notif.actor.displayName }} wants to follow you!
-                    <button type="button"
-                            onclick="acceptFollowRequest('{{ author_notif.actor.id }}', '{{ author_notif.object.id }}')">
-                        Accept
-                    </button>
-                </span>
-                
+                {% include "followers/follow-request.html" with followreq=author_notif only %}
             {% elif author_notif.type == "post" %}
-                <h5 id="dateTime{{forloop.counter}}"> New Friend Post </h5>
-                <script type="text/javascript">
-                    timeAgo('{{ author_notif.published }}');
-
-                    function timeAgo(notifTime){
-                        const datePosted = new Date(notifTime);
-                        const dateCurrent = new Date()
-                        const diffTime = Math.abs(dateCurrent - datePosted);
-                        var diffDay = Math.ceil(diffTime / (1000 * 60 * 60));
-                        var hdwm = " hours ago";
-                        if (diffDay > 24){
-                            diffDay = Math.ceil(diffDay / 24);
-                            hdwm = " days ago";
-                        }
-                        
-                        document.getElementById('dateTime{{forloop.counter}}').innerHTML += "<span style='font-size:10px'>"+ diffDay + hdwm + "</span>";
-                    }
-                </script>
-                <h6>Title: {{ author_notif.title }}</h6>
-                <h6>Content: {{author_notif.content}}</h6>
-                <h6>Description: {{authis_notif.description}}</h6>
-
+                {% include "post/post-shared.html" with author_post=author_notif author_id=author_notif.author.uuid only %}
             {% elif author_notif.type == "like" %}
-                <h5>New Like</h5>
-                <h6>{{ author_notif.summary }}!</h6>
-
+                <div class="card">
+                    <div class="card-header">
+                        <h5>New Like!</h5>
+                        <h6>{{ author_notif.summary }}!</h6>
+                    </div>
+                </div>
             {% elif author_notif.type == "comment" %}
-                <h5 id="dateTime{{forloop.counter}}">New Comment </h5>
-                <script type="text/javascript">
-                    timeAgo('{{ author_notif.published }}');
-
-                    function timeAgo(notifTime){
-                        const datePosted = new Date(notifTime);
-                        const dateCurrent = new Date()
-                        const diffTime = Math.abs(dateCurrent - datePosted);
-                        var diffDay = Math.ceil(diffTime / (1000 * 60 * 60));
-                        var hdwm = " hours ago";
-                        if (diffDay > 24){
-                            diffDay = Math.ceil(diffDay / 24);
-                            hdwm = " days ago";
-                        }
-                        
-                        document.getElementById('dateTime{{forloop.counter}}').innerHTML += "<span style='font-size:10px'>"+ diffDay + hdwm + "</span>";
-                    }
-                </script>
-                <h6>Comment: {{ author_notif.comment }}</h6>
-                
+                <div class="card">
+                    <div class="card-header">
+                        <h5>New comment!</h5>
+                        <h6>Comment: {{ author_notif.comment }}</h6>
+                    </div>
+                </div>
             {% endif %}
             <br>
         {% endfor %}
-        </div>
-        <script>
+        {% if author_inbox|length == 0 %}
+            <div class="alert alert-info text-center" role="alert">
+                <h3>No new notifications</h3>
+            </div>
+        {% endif %}
+    </div>
+    <script>
             function acceptFollowRequest(senderID, accepterID){
                 
                 const author_id = accepterID.split('/').pop()
@@ -81,10 +54,35 @@
                     }
                 }
 
-                fetch('./authors/'+ author_id+"/followers/"+follower_id, options);
+                fetch('./authors/'+ author_id+"/followers/"+follower_id, options).then(response => {
+                    if (response.status == 200){
+                        alert("Follow request accepted!");
+                    }
+                    else{
+                        alert("Something went wrong!");
+                    }
+                })
+            }
+            function clearInbox(inboxUrl){
+                const options = {
+                    method: 'DELETE',
+                    headers: {
+                    'Content-Type': 'application/json',   
+                    'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }
+                const conf = confirm("Are you sure you want to clear your inbox?");
+                if (conf){
+                    fetch(inboxUrl, options).then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        } else{
+                            alert("Error clearing inbox");
+                        }
+                    });
+                }
+                
             }
             
-        </script>
-    </body>
-</html>
-<!-- {% endblock %} -->
+    </script>
+{% endblock %}

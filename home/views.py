@@ -23,12 +23,15 @@ def home(request):
     authors = requests.get(request.build_absolute_uri("/authors/"))
     all_posts = []
     for link in authors.json()["items"]:
-        author_posts = requests.get(link["id"] + "/posts")
+        try:
+            author_posts = requests.get(link["id"] + "/posts")
 
-        print(author_posts)
-        # get each pot from every author and add to posts
-        for post in author_posts.json()["items"]:
-            all_posts.append(post)
+            print(author_posts)
+            # get each pot from every author and add to posts
+            for post in author_posts.json()["items"]:
+                all_posts.append(post)
+        except:
+            pass
 
     # sort posts newest to oldest
     sorted_posts = sorted(
@@ -38,7 +41,7 @@ def home(request):
     sorted_posts.reverse()
     context = {
         "author_list": sorted_posts,
-        "author_id": request.user.id,
+        "author_id": AuthorSerializer(request.user).data["id"],
         "title": "Home",
     }
     # Not context
@@ -150,17 +153,14 @@ def inbox(request):
     print("URL", request.build_absolute_uri("/authors/" + str(author_id) + "/inbox"))
     author_inbox = []
     for item in inboxItems.json()["items"]:
-        temp_dict = {}
-        # if item["unlisted"] == "false":
-        #     temp_dict["displayName"] = item["author"]["displayName"]
-        for k, v in item.items():
-            if k != "author":
-                temp_dict[k] = v
-        author_inbox.append(temp_dict)
+        author_inbox.append(item)
 
     print(author_inbox)
     # default page size is 5 and give option to change pages
-    context = {"author_inbox": author_inbox}
+    context = {
+        "author_inbox": author_inbox,
+        "inbox_url": "/authors/" + str(author_id) + "/inbox",
+    }
     return render(request, "inbox/inbox.html", context)
 
 
@@ -213,13 +213,46 @@ def followers(request):
 
 
 def user(request, author_id):
+    server = request.GET.get("server", "local")
+    server_opts = (
+        requests.get(request.build_absolute_uri("/nodes/")).json().get("nodes", [])
+    )
+    servers = {server["nickname"]: server["api_url"] for server in server_opts}
+    servers["local"] = request.build_absolute_uri("/")
+    selected_server = servers.get(server, None)
+    if selected_server is None:
+        return HttpResponse("Invalid server", status=400)
     try:
         user_info = requests.get(
-            request.build_absolute_uri("/authors/" + str(author_id))
+            request.build_absolute_uri(selected_server + "authors/" + str(author_id))
         ).json()
+        if user_info.get("host") != request.build_absolute_uri("/"):
+            print("Redirecting to", user_info.get("host"))
+            raise Exception("User not found")
     except:
-        return HttpResponse(status=404)
-
+        found = False
+        for server in servers.values():
+            try:
+                user_info = requests.get(
+                    request.build_absolute_uri(server + "authors/" + str(author_id))
+                ).json()
+                selected_server = server
+                found = True
+                break
+            except:
+                continue
+        if not found:
+            return HttpResponse("User not found", status=404)
+    authors_posts = []
+    try:
+        authors_posts = requests.get(
+            request.build_absolute_uri(
+                selected_server + "authors/" + str(author_id) + "/posts")).json()["items"]
+        
+    except:
+        pass
+    
+    
     is_follower = request.user.followers.filter(id=author_id).exists()
 
     return render(
@@ -229,5 +262,6 @@ def user(request, author_id):
             "user_info": user_info,
             "author_id": AuthorSerializer(request.user).data["id"],
             "is_follower": is_follower,
+            "authors_posts": authors_posts,
         },
     )

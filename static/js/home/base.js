@@ -110,7 +110,9 @@ function editPost(post_id_var) {
 
 function newComment(author_id, post_id) {
   const content = prompt("Enter the content of your comment");
-
+  if (content === null) {
+    return;
+  }
   const data = {
     "post_id": post_id,
     "comment": content,
@@ -150,14 +152,21 @@ async function sendRequest(object_id, author_id) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie("csrftoken"),
-      "Authorization": "Basic " + btoa("team1and2:team1and2")
+      'X-CSRFToken': getCookie("csrftoken")
       // TODO: Refactor this to pass credentials in the backend, and use the local server as a proxy
     },
     body: JSON.stringify(data)
   }
-  console.log("SEND REQUEST TO: " + object_obj.id + "/inbox/")
-  fetch(object_obj.id + "/inbox/", options).then((response) => alert("Request sent!")).catch((error) => alert("Error: " + error));
+  console.log("SEND REQUEST TO: " + object_obj.id + "/inbox")
+  fetch("/authors/" + object_obj.uuid + "/inbox/", options).then((response) => {
+    if (response.ok) {
+      alert("Request sent!");
+    }
+    else {
+      alert("Error: " + response.status);
+    }
+  });
+
 }
 
 async function removeFollower(author_url, follow_id) {
@@ -169,14 +178,22 @@ async function removeFollower(author_url, follow_id) {
       'X-CSRFToken': getCookie("csrftoken")
     }
   }
-  fetch(author_url + "/followers/" + id, options).then((response) => location.reload());
+  fetch(author_url + "/followers/" + id, options).then((response) => {
+
+    if (response.ok) {
+      location.reload();
+    }
+    else {
+      alert("Error: " + response.status);
+    }
+  });
 
 }
 
-async function newLike(author_id, post_id) {
-  const author_obj = await fetch("./authors/" + author_id, { method: 'GET' }).then(response => response.json());
+async function newLike(author_id, post_id, comment = false) {
+  const author_obj = await fetch(author_id, { method: 'GET' }).then(response => response.json());
   const post_obj = await fetch(post_id, { method: 'GET' }).then(response => response.json());
-  const summary = author_obj.displayName + " likes your post";
+  const summary = author_obj.displayName + (comment ? " likes your comment" : " likes your post");
   const data = {
     "type": "like",
     "summary": summary,
@@ -184,13 +201,186 @@ async function newLike(author_id, post_id) {
     "object": post_id
 
   }
-  fetch(post_obj.author.id + "/inbox", {
+  fetch("/authors/" + post_obj.author.uuid + "/inbox", {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-CSRFToken': getCookie("csrftoken")
     },
     body: JSON.stringify(data)
-  }).then((response) => alert("Like sent!")).catch((error) => alert("Error: " + error));
+  }).then((response) => {
+    if (response.ok) {
+      alert("Like sent!");
+    }
+    else {
+      alert("Error: " + response.status);
+    }
+  })
+
+}
+
+async function sharePost(author_id, post_url) {
+  const author_obj = await fetch(author_id, { method: 'GET' }).then(response => response.json());
+  const post_obj = await fetch(post_url, { method: 'GET' }).then(response => response.json());
+  const summary = author_obj.displayName + " shared a post with you";
+  const data = { ...post_obj, "type": "post", "summary": summary, "author": author_obj, "object": post_url }
+  const followers = await fetch(author_id + "/followers", { method: 'GET' }).then(response => response.json());
+  if (followers.items.length == 0) {
+    alert("You have no followers to share with!");
+    return;
+  }
+  console.log(followers);
+  // Display a checkbox list of all followers
+  const followers_list = followers.items.map((follower) => {
+    return `<input type="checkbox" class="form-check-input" name="followers" value="${follower.uuid}">${follower.displayName}</input><br>`
+  });
+  const followers_html = `<h3>Select followers to share with</h3><form id="followers_form">${followers_list}
+  <br>
+  <div class="d-flex justify-content-around">
+  <button type="button" class="btn btn-danger" id="share-button-close">Close</button>
+  <button type="button" class="btn btn-primary" id="share-button-submit">Share</button>
+  </div>
+  </form>
+  
+  
+  
+  `;
+  document.getElementById("shareForm").innerHTML = followers_html;
+  document.getElementById("shareForm").style.display = "block";
+  const buttons = document.getElementsByClassName("share-button")
+  for (let i = 0; i < buttons.length; i++) {
+    buttons[i].style.display = "none";
+  }
+  document.getElementById("share-button-close").style.display = "block";
+  document.getElementById("share-button-close").addEventListener("click", () => {
+    document.getElementById("shareForm").style.display = "none";
+    for (let i = 0; i < buttons.length; i++) {
+      buttons[i].style.display = "block";
+    }
+    document.getElementById("shareForm").innerHTML = "";
+    document.getElementById("shareForm").style.display = "none";
+  });
+  document.getElementById("share-button-submit").addEventListener("click", () => {
+    const checkboxes = document.getElementsByName("followers");
+    const selected = [];
+    for (let i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i].checked) {
+        selected.push(checkboxes[i].value);
+      }
+    }
+    if (selected.length == 0) {
+      alert("No followers selected!");
+      return;
+    }
+    Promise.all(selected.map((follower) => {
+      return fetch("/authors/" + follower + "/inbox", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie("csrftoken")
+        },
+        body: JSON.stringify(data)
+      })
+    })).then((responses) => {
+      const check = responses.every((response) => response.ok);
+      if (check) {
+        alert("Post shared!");
+      }
+      else {
+        responses.forEach((response) => {
+          if (!response.ok) {
+            alert("Error: " + response.status);
+          }
+        }
+        )
+      }
+    })
+    document.getElementById("shareForm").style.display = "none";
+    for (let i = 0; i < buttons.length; i++) {
+      buttons[i].style.display = "block";
+    }
+    document.getElementById("shareForm").innerHTML = "";
+    document.getElementById("shareForm").style.display = "none";
+  });
+
+}
+
+
+const author_id = "{{ author_id }}"
+function openForm() {
+  document.getElementById("postForm").style.display = "block";
+  document.getElementById("postButton").style.display = "none";
+}
+
+function closeForm() {
+  document.getElementById("postForm").style.display = "none";
+  document.getElementById("postButton").style.display = "block";
+}
+
+function submitPost(author_id) {
+  event.preventDefault();
+  const title = document.getElementById("title").value;
+  if (title == "") {
+    alert("Title cannot be empty");
+    return;
+  }
+  const source = "source"
+  const origin = "origin"
+  const description = document.getElementById("description").value;
+  if (description == "") {
+    alert("Description cannot be empty");
+    return;
+  }
+  const unlisted = document.getElementById("unlisted").checked;
+  const visibility = document.getElementById("visibility").value;
+  const contentType = document.getElementById("postType").value;
+  let content = document.getElementById(contentType).value;
+  let data = {
+    "title": title,
+    "description": description,
+    "source": source,
+    "origin": origin,
+    "unlisted": unlisted,
+    "visibility": visibility,
+    "contentType": contentType,
+    "content": content
+  }
+
+  let options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie("csrftoken")
+    },
+    body: JSON.stringify(data)
+  }
+
+  if (contentType == "image/png;base64") {
+    // Read the file in base64
+    const file = document.getElementById("image/png;base64").files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    var read = false;
+    reader.onload = () => {
+      data.content = reader.result;
+      options.body = JSON.stringify(data);
+      fetch(author_id + '/posts', options).then(() => {
+        location.reload();
+      })
+    };
+    reader.onerror = (error) => {
+      alert("Error: " + error);
+    };
+
+
+  } else {
+    console.log("non-image data: " + JSON.stringify(data));
+    fetch(author_id + '/posts', options).then(() => {
+      location.reload();
+    })
+  }
+
+
+
 
 }

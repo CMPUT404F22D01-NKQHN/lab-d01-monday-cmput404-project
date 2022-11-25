@@ -128,6 +128,8 @@ class CreatePostSerializer(serializers.ModelSerializer):
                         print(f"Failed to send post to {follower.id} on {node.api_url}")
                         print(e)
                 else:
+                    data["summary"] = "New post from " + author.display_name
+                    data["object"] = data["id"]
                     AddInboxItemSerializer().create(data, follower.id)
 
         return post

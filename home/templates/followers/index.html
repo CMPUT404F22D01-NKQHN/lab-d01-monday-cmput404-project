@@ -20,46 +20,49 @@
         <br>
         <h3>All Users</h3>
         <label for="server-select">Server:</label>
-        <select class="custom-select col-3" id="server-select"
-            onchange="changeServer(this.value)">
-        >
+        <select class="custom-select col-3"
+                id="server-select"
+                onchange="changeServer(this.value)">
+            >
             {% for server_opt in server_opts %}
                 <option value="{{ server_opt.nickname }}"
                         {% if server_opt.nickname == server %} selected{% endif %}/>
-                    {{ server_opt.nickname }}
-                </option>
-            {% endfor %}
-        </select>
-        <hr>
-        {% for user in all_users %}
-            <div class="user d-flex justify-content-between">
-                <img src="{{ user.profileImage }}"
-                     width="50"
-                     height="50"
-                     class="rounded-circle"/>
-                <p>Display name: {{ user.displayName }}</p>
-                <p>Host: {{ user.host }}</p>
-                <button type="button"
-                        id="sendRequest"
-                        class="btn"
-                        onclick="sendRequest('{{ user.id }}','{{ author_url }}')">
-                    Send Follow Request
-                </button>
-            </div>
-            <br>
+                {{ server_opt.nickname }}
+            </option>
         {% endfor %}
-        {% if all_users|length == 0 %}<p>No more users to follow</p>{% endif %}
-        <ul class="pagination">
-            <li class="page-item">
-                {% if page > 1 %}<a class="page-link" onclick="paginate(true)">Previous</a>{% endif %}
-            </li>
+    </select>
+    <hr>
+    {% for user in all_users %}
+        <div class="row">
+            <img src="{{ user.profileImage }}"
+                 width="50"
+                 height="50"
+                 class="rounded-circle"/>
+            <p class="col-sm font-weight-bold align-middle">{{ user.displayName }}</p>
+            <p class="col-sm">Host: {{ user.host }}</p>
+            <button type="button"
+                    id="sendRequest"
+                    class="col-sm btn"
+                    onclick="sendRequest('{{ user.id }}','{{ author_url }}')">
+                Send Follow Request
+            </button>
+            <a class="col-sm" href="/user/{{ user.uuid }}">View Profile</a>
+        </div>
+        <hr>
+        <br>
+    {% endfor %}
+    {% if all_users|length == 0 %}<p>No more users to follow</p>{% endif %}
+    <ul class="pagination">
+        <li class="page-item">
+            {% if page > 1 %}<a class="page-link" onclick="paginate(true)">Previous</a>{% endif %}
         </li>
-        {% if all_users|length > 0 %}
-            <li class="page-item">
-                <a class="page-link" onclick="paginate(false)">Next</a>
-            </li>
-        {% endif %}
-    </ul>
+    </li>
+    {% if all_users|length > 0 %}
+        <li class="page-item">
+            <a class="page-link" onclick="paginate(false)">Next</a>
+        </li>
+    {% endif %}
+</ul>
 </div>
 </div>
 <script>
