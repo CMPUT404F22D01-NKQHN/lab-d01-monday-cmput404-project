@@ -117,7 +117,7 @@ async function newComment(author_id, post_id) {
   const author_obj = await fetch(author_id, { method: 'GET' }).then(response => response.json());
   const post_obj = await fetch(post_id, { method: 'GET' }).then(response => response.json());
   const summary = author_obj.displayName + " commented on your post";
-  const reciever_uuid = post_obj.author.id.split("/").pop();
+
   const data = {
     "type": "comment",
     "summary": summary,
@@ -133,7 +133,7 @@ async function newComment(author_id, post_id) {
     },
     body: JSON.stringify(data)
   }
-  fetch("/authors/" + reciever_uuid + "/inbox/", options).then(response => {
+  fetch("/authors/" + post_obj.author.uuid + "/inbox/", options).then(response => {
     if (response.ok) {
       location.reload();
     } else {
@@ -164,7 +164,6 @@ async function sendRequest(object_id, author_id) {
     },
     body: JSON.stringify(data)
   }
-  object_obj.uuid = object_obj.id.split("/").pop();
   console.log("SEND REQUEST TO: " + object_obj.id + "/inbox/")
   fetch("/authors/" + object_obj.uuid + "/inbox/", options).then((response) => {
     if (response.ok) {

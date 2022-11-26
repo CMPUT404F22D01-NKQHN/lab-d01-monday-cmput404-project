@@ -1,3 +1,4 @@
+import base64
 import json
 from rest_framework.response import Response
 
@@ -150,10 +151,11 @@ class InboxAPIView(GenericAPIView):
                 print("proxy user")
                 node = Node.objects.get(proxy_users=author)
                 api_url = node.api_url + "authors/" + author_id + "/inbox/"
+                creds = base64.b64encode(f"{node.username}:{node.password}".encode()).decode()
                 response = requests.post(
                     api_url,
                     data=json.dumps(request.data),
-                    headers={"Authorization": f"basic {node.username}:{node.password}", "Content-Type": "application/json"},
+                    headers={"Authorization": f"basic {creds}", "Content-Type": "application/json"},
                 )
                 print(response.status_code)
                 print(response.text)

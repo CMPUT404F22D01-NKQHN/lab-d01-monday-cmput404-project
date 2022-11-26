@@ -153,6 +153,10 @@ def inbox(request):
     print("URL", request.build_absolute_uri("/authors/" + str(author_id) + "/inbox/"))
     author_inbox = []
     for item in inboxItems.json()["items"]:
+        if "author" in item:
+            item["author"]["uuid"] = item["author"]["id"].split("/")[-1]
+        if "actor" in item:
+            item["actor"]["uuid"] = item["actor"]["id"].split("/")[-1]
         author_inbox.append(item)
 
     print(author_inbox)
@@ -199,6 +203,10 @@ def followers(request):
     author_followers = requests.get(
         request.build_absolute_uri("/authors/" + str(request.user.id) + "/followers")
     ).json()["items"]
+    for user in all_users:
+        user["uuid"] = user["id"].split("/")[-1]
+    for user in author_followers:
+        user["uuid"] = user["id"].split("/")[-1]
     context = {
         "all_users": all_users,
         "author_followers": author_followers,
@@ -252,6 +260,7 @@ def user(request, author_id):
     except:
         pass
     
+    user_info["uuid"] = user_info["id"].split("/")[-1]
     
     is_follower = request.user.followers.filter(id=author_id).exists()
 

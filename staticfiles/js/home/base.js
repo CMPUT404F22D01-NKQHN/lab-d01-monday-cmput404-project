@@ -108,15 +108,22 @@ function editPost(post_id_var) {
 }
 
 
-function newComment(author_id, post_id) {
+async function newComment(author_id, post_id) {
   const content = prompt("Enter the content of your comment");
   if (content === null) {
     return;
   }
+
+  const author_obj = await fetch(author_id, { method: 'GET' }).then(response => response.json());
+  const post_obj = await fetch(post_id, { method: 'GET' }).then(response => response.json());
+  const summary = author_obj.displayName + " commented on your post";
+  const reciever_uuid = post_obj.author.id.split("/").pop();
   const data = {
-    "post_id": post_id,
+    "type": "comment",
+    "summary": summary,
+    "author": author_obj,
+    "object": post_id,
     "comment": content,
-    "author_id": author_id
   }
   const options = {
     method: 'POST',
@@ -126,7 +133,7 @@ function newComment(author_id, post_id) {
     },
     body: JSON.stringify(data)
   }
-  fetch(post_id + '/comments/', options).then(response => {
+  fetch("/authors/" + reciever_uuid + "/inbox/", options).then(response => {
     if (response.ok) {
       location.reload();
     } else {
@@ -157,6 +164,7 @@ async function sendRequest(object_id, author_id) {
     },
     body: JSON.stringify(data)
   }
+  object_obj.uuid = object_obj.id.split("/").pop();
   console.log("SEND REQUEST TO: " + object_obj.id + "/inbox/")
   fetch("/authors/" + object_obj.uuid + "/inbox/", options).then((response) => {
     if (response.ok) {
@@ -364,7 +372,7 @@ function submitPost(author_id) {
     reader.onload = () => {
       data.content = reader.result;
       options.body = JSON.stringify(data);
-      fetch(author_id + '/posts', options).then(() => {
+      fetch(author_id + '/posts/', options).then(() => {
         location.reload();
       })
     };
@@ -375,7 +383,7 @@ function submitPost(author_id) {
 
   } else {
     console.log("non-image data: " + JSON.stringify(data));
-    fetch(author_id + '/posts', options).then(() => {
+    fetch(author_id + '/posts/', options).then(() => {
       location.reload();
     })
   }
