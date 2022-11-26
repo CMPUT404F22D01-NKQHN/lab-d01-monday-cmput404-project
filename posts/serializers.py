@@ -1,3 +1,5 @@
+import base64
+import json
 from typing import List
 import requests
 import uuid
@@ -113,14 +115,13 @@ class CreatePostSerializer(serializers.ModelSerializer):
                 if Node.objects.filter(proxy_users=follower).exists():
                     node = Node.objects.get(proxy_users=follower)
                     api_url = node.api_url
-                    username = node.username
-                    password = node.password
+                    creds = base64.b64encode(f"{node.username}:{node.password}".encode()).decode()
                     try:
                         requests.post(
-                            f"{api_url}/authors/{follower.id}/inbox/",
-                            json=data,
+                            f"{api_url}authors/{follower.id}/inbox/",
+                            json=json.dumps(data),
                             headers={
-                                "Authorization": f"Basic {username}:{password}",
+                                "Authorization": f"basic {creds}",
                                 "Content-Type": "application/json",
                             },
                         )
