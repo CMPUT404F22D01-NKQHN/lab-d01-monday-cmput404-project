@@ -108,15 +108,21 @@ function editPost(post_id_var) {
 }
 
 
-function newComment(author_id, post_id) {
+async function newComment(author_id, post_id) {
   const content = prompt("Enter the content of your comment");
   if (content === null) {
     return;
   }
+
+  const author_obj = await fetch(author_id, { method: 'GET' }).then(response => response.json());
+  const summary = author_obj.displayName + " commented on your post";
+
   const data = {
-    "post_id": post_id,
+    "type": "comment",
+    "summary": summary,
+    "author": author_obj,
+    "object": post_id,
     "comment": content,
-    "author_id": author_id
   }
   const options = {
     method: 'POST',
@@ -126,7 +132,7 @@ function newComment(author_id, post_id) {
     },
     body: JSON.stringify(data)
   }
-  fetch(post_id + '/comments/', options).then(response => {
+  fetch("/authors/" + post_obj.author.uuid + "/inbox/", options).then(response => {
     if (response.ok) {
       location.reload();
     } else {
