@@ -160,7 +160,7 @@ class NodesTests(TestCase):
             "type": "comment",
             "author": remote_author_json,
             "comment": "This is a comment",
-            "post_id": post_id,
+            "object": response.json()["id"],
         }
         self.client.force_login(self.remote_team)
         response = self.client.post(

@@ -23,7 +23,7 @@ def handle_comment_inbox(request):
     # If it is, add it to the post too
     post = None
     comment = None
-    parsed_id = request.data["post_id"].split("/")[-1]
+    parsed_id = request.data["object"].split("/")[-1]
     try:
         post = Post.objects.get(id=parsed_id)
     except Post.DoesNotExist:
@@ -42,6 +42,7 @@ def handle_comment_inbox(request):
             post_id=post.id,
         )
     except Exception as e:
+        print(e)
         return Response(
             status=400,
             data={"error": "The comment you are trying to add is invalid."},
@@ -186,7 +187,9 @@ class InboxAPIView(GenericAPIView):
                     node = Node.objects.get(team_account=request.user)
                     node.proxy_users.add(foreign_author)
             if request.data["type"].lower() == "comment":
-                handle_comment_inbox(request)
+                res = handle_comment_inbox(request)
+                if res:
+                    return res
 
             elif (
                 request.data["type"].lower() == "like"

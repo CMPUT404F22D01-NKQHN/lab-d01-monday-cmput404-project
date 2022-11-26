@@ -58,7 +58,7 @@ INBOX_ADD_FOLLOW_EXAMPLE = {
 
 INBOX_ADD_COMMENT_EXAMPLE = {
     "type": "comment",
-    "post_id": "9919c7bf6f9e45678bd352e6da647485",
+    "object": "http://localhost:8000/authors/1c2b7d7b1edc400dac34be6f19310dd0/posts/3a7378d339134fcb8140b2edba79d008",
     "comment": "test comment",
     "author": {
         "type": "author",
