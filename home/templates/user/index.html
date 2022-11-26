@@ -8,7 +8,7 @@
             <p>Host: {{ user_info.host }}</p>
             {% if is_follower %}
                 <button class="btn btn-danger col-md-4"
-                        onclick="removeFollower('{{ author_id }}','{{ user.uuid }}')">
+                        onclick="removeFollower('{{ author_id }}','{{ user_info.uuid }}')">
                     Remove Follower
                 </button>
             {% elif user_info.id != author_id %}
