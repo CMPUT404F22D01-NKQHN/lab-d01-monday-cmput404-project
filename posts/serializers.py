@@ -178,7 +178,7 @@ class CommentInboxItemSerializer(serializers.Serializer):
     type = serializers.CharField()
     author = serializers.JSONField()
     comment = serializers.CharField()
-    post_id = serializers.CharField()
+    object = serializers.CharField()
 
 
 class ReadCommentSerializer(serializers.ModelSerializer):

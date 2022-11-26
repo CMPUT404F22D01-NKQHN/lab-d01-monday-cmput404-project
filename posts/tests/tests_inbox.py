@@ -50,9 +50,9 @@ class InboxTestCase(TestCase):
             "/authors/" + self.author.id + "/inbox/",
             {
                 "type": "comment",
-                "post_id": post.id,
                 "comment": "test comment",
                 "author": AuthorSerializer(self.author2).data,
+                "object": ReadPostSerializer(post).data["id"],
             },
             content_type="application/json",
         )
