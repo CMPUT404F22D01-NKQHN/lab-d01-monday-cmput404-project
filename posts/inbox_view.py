@@ -1,3 +1,4 @@
+import json
 from rest_framework.response import Response
 
 from authors.models import Author
@@ -133,6 +134,7 @@ class InboxAPIView(GenericAPIView):
                                 host=node.api_url,
                                 display_name=response.json()["displayName"],
                                 proxy=True,
+                                username=gen_id()
                             )
                             node.proxy_users.add(author)
                             break
@@ -150,11 +152,12 @@ class InboxAPIView(GenericAPIView):
                 api_url = node.api_url + "authors/" + author_id + "/inbox/"
                 response = requests.post(
                     api_url,
-                    data=request.data,
-                    headers={"Authorization": f"Basic {node.username}:{node.password}", "Content-Type": "application/json"},
+                    data=json.dumps(request.data),
+                    headers={"Authorization": f"basic {node.username}:{node.password}", "Content-Type": "application/json"},
                 )
                 print(response.status_code)
-                print(api_url)
+                print(response.text)
+                print(json.dumps(request.data))
                 return Response(response.json(), status=response.status_code)
             if request.user.is_another_server:
                 """
