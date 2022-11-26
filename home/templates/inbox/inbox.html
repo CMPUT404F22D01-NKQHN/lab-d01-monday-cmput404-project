@@ -15,7 +15,7 @@
             {% if author_notif.type == "follow" %}
                 {% include "followers/follow-request.html" with followreq=author_notif only %}
             {% elif author_notif.type == "post" %}
-                {% include "post/post-shared.html" with author_post=author_notif author_id=author_notif.author.uuid only %}
+                {% include "post/post-shared.html" with author_post=author_notif author_id=author_notif.author.id only %}
             {% elif author_notif.type == "like" %}
                 <div class="card">
                     <div class="card-header">
