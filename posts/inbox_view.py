@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 
 from authors.models import Author
-from cmput404_project.utilities import CustomPagination
+from cmput404_project.utilities import CustomPagination, gen_id
 from friends.serializers import FriendRequestSerializer
 from posts.openapi_examples import *
 from .models import Inbox, Like, Post, Comment
@@ -163,31 +163,33 @@ class InboxAPIView(GenericAPIView):
 
                 We can use this proxy user to send outgoing inbox messages.
                 """
-                if "author" not in request.data:
+                if "author" not in request.data and "actor" not in request.data:
                     return Response(
                         status=400,
                         data={
-                            "error": "The author field is required for this request."
+                            "error": "The author/actor field is required for this request."
                         },
                     )
-                foreign_author_id = request.data["author"]["id"].split("/")[-1]
+                author_obj = request.data.get("author", request.data.get("actor"))
+                    
+                foreign_author_id = author_obj["id"].split("/")[-1]
                 if not Author.objects.filter(id=foreign_author_id).exists():
                     print("Author does not exist, creating proxy user")
-                    auth_obj = request.data["author"]
                     foreign_author, _ = Author.objects.get_or_create(
                         id=foreign_author_id,
-                        host=auth_obj["host"],
-                        display_name=auth_obj["displayName"],
+                        host=author_obj["host"],
+                        display_name=author_obj["displayName"],
                         proxy=True,
+                        username=gen_id()
                     )
                     # Add foreign author to the proxy users field in the node
                     node = Node.objects.get(team_account=request.user)
                     node.proxy_users.add(foreign_author)
-            if request.data["type"] == "comment":
+            if request.data["type"].lower() == "comment":
                 handle_comment_inbox(request)
 
             elif (
-                request.data["type"] == "like"
+                request.data["type"].lower() == "like"
                 and LikeSerializer(data=request.data).is_valid()
             ):
                 # print("like")
@@ -237,12 +239,12 @@ class InboxAPIView(GenericAPIView):
                 except Author.DoesNotExist:
                     pass
 
-            elif request.data["type"] == "post":
+            elif request.data["type"].lower() == "post":
                 # print("post")
                 pass
                 # TODO: Check if the post is valid
 
-            elif request.data["type"] == "follow":
+            elif request.data["type"].lower() == "follow":
                 # TODO: Check if the friend request is valid
                 req = FriendRequestSerializer(data=request.data)
                 req.is_valid()
