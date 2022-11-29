@@ -12,6 +12,12 @@
     <div class="card-body">
         {% if author_post.contentType == "image/png;base64" %}
             <img src="{{ author_post.content }}" alt="" width="100"/>
+            
+        {% elif author_post.contentType == "text/markdown" %}
+        {% autoescape off %}
+        {{author_post.content}}
+        {% endautoescape %}
+
         {% else %}
             <textarea rows="4" cols="50" readonly>{{author_post.content}}</textarea>
         {% endif %}

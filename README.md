@@ -71,3 +71,9 @@ Create a friends post
     "content": "hello"
 }
 ```
+
+# UI Dependencies
+We are using MIT licenced code from the following projects for some UI stuff
+
+* https://github.com/showdownjs/showdown (static/js/home/showdown.js)
+* https://github.com/twbs/bootstrap (lstatic/css/home/base.css)

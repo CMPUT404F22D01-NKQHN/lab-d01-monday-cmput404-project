@@ -81,11 +81,14 @@ snapshots['UITestCase::test_home 1'] = '''
                                    id="image/png;base64"
                                    name="uploadImage">
                             <textarea id="text/markdown" name="text/markdown" rows="4" cols="50">
-</textarea>
+                            </textarea>
+                            <textarea id="plain-text" name="plain-text" rows="4" cols="50">
+                            </textarea>
                             <!-- Hide the upload image button and the text/markdown text area until the user selects the appropriate post type -->
                             <script>
                                     document.getElementById("image/png;base64").style.display = "none";
                                     document.getElementById("text/markdown").style.display = "block";
+                                    document.getElementById("plain-text").style.display = "none"
                                     document.getElementById("postType").addEventListener("change", function() {
                                         if (this.value == "image/png;base64") {
                                             // document.getElementById("uploadImageButton").style.display = "block"; 
@@ -97,7 +100,8 @@ snapshots['UITestCase::test_home 1'] = '''
 
                                         } else {
                                             document.getElementById("image/png;base64").style.display = "none";
-                                            document.getElementById("text/markdown").style.display = "block";
+                                            document.getElementById("text/markdown").style.display = "none";
+                                            document.getElementById("plain-text").style.display = "block"
                                         }
                                     });
                             </script>
@@ -165,6 +169,7 @@ snapshots['UITestCase::test_home 1'] = '''
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src=/static/js/home/base.1b89639d08c9.js></script>
+    <script src=/static/js/home/base.7727949a86ec.js></script>
+    <script src = /static/js/home/showdown.a4a4ba0f8f8e.js></script>
 </html>
 '''
