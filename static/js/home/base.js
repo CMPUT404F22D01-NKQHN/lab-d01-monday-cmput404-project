@@ -314,7 +314,6 @@ async function sharePost(author_id, post_url) {
 }
 
 
-const author_id = "{{ author_id }}"
 function openForm() {
   document.getElementById("postForm").style.display = "block";
   document.getElementById("postButton").style.display = "none";
@@ -342,7 +341,20 @@ function submitPost(author_id) {
   const unlisted = document.getElementById("unlisted").checked;
   const visibility = document.getElementById("visibility").value;
   const contentType = document.getElementById("postType").value;
-  let content = document.getElementById(contentType).value;
+
+  if (postType.value != "text/plain") {
+    var content = document.getElementById(contentType).value;
+  }
+
+  if (postType.value == "text/markdown") {
+    var converter = new showdown.Converter;
+    content = converter.makeHtml(content);
+  }
+
+  if (postType.value == "text/plain") {
+    content = document.getElementById("plain-text").value;
+  }
+
   let data = {
     "title": title,
     "description": description,
