@@ -51,6 +51,7 @@ html {
 }
 
 /* Position "form-popup" in the center of the page */
+
 .form-popup, .edit-form-popup {
     position: fixed;
     /* place it in the middle of the page */

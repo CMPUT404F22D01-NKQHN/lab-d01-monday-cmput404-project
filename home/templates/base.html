@@ -21,8 +21,10 @@
                 <li class="nav-item active">
                     <div class="form-popup" id="shareForm">
                     </div>
-                    <div class="form-popup" id="postForm">
-                        <h1 id = "post-header">Create Post</h1>
+                    <!-- align the elements in the div below properly and evenly spaced from the left of the div -->
+                    <div style = "display: flex; justify-content: space-between; align-items: center;"
+                    class="form-popup" id="postForm">
+                        <h1 id="post-header">Create Post</h1>
                         <label for="title">
                             <b>Title</b>
                         </label>
@@ -39,7 +41,7 @@
                                 and if text/markdown is selected, then create a text area for text/markdown by default let it be empty -->
                         <label for="postType"></label>
                         <label for="postType">
-                            <b id = "post-type-content">Post Type</b>
+                            <b id="post-type-content">Post Type</b>
                         </label>
                         <select id="postType" name="postType">
                             <option value="text/markdown">
@@ -59,27 +61,6 @@
                         <textarea id="plain-text" name="plain-text" rows="4" cols="50">
                             </textarea>
                         <!-- Hide the upload image button and the text/markdown text area until the user selects the appropriate post type -->
-                        <script>
-                            document.getElementById("image/png;base64").style.display = "none";
-                            document.getElementById("plain-text").style.display = "none"
-                            document.getElementById("postType").addEventListener("change", function () {
-                                if (this.value == "image/png;base64") {
-                                    // document.getElementById("uploadImageButton").style.display = "block"; 
-                                    document.getElementById("image/png;base64").style.display = "block";
-                                    document.getElementById("text/markdown").style.display = "none";
-                                    document.getElementById("plain-text").style.display = "none"
-                                } else if (this.value == "text/markdown") {
-                                    document.getElementById("image/png;base64").style.display = "none";
-                                    document.getElementById("text/markdown").style.display = "block";
-                                    document.getElementById("plain-text").style.display = "none"
-
-                                } else {
-                                    document.getElementById("image/png;base64").style.display = "none";
-                                    document.getElementById("text/markdown").style.display = "none";
-                                    document.getElementById("plain-text").style.display = "block"
-                                }
-                            });
-                        </script>
                         <label for="unlisted">
                             <b>Unlisted</b>
                         </label>
@@ -99,9 +80,16 @@
                                 Private
                             </option>
                         </select>
-                        <button type="submit" class="btn" id = "postButton" onclick="submitPost('{{ author_id }}')">Create Post</button>
-                        <button type="submit" class="btn" id="editPostButton" >Edit Post</button>
-                        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+                        <button style="position: absolute; right:    0; bottom:   0; margin: 5%;" type="submit"
+                            class="btn" id="postButton" onclick="submitPost('{{ author_id }}')">Create
+                            Post
+                        </button>
+                        <button style="position: absolute; right:    0; bottom:   0; margin: 5%;" type="submit"
+                            class="btn" id="editPostButton">Edit Post
+                        </button>
+                        <button style="position: absolute; left:    0; bottom:   0; margin: 5%;" type="button"
+                            class="btn cancel" onclick="closeForm()">Close
+                        </button>
                     </div>
                     <button type="button" id="postButton" class="btn btn-primary" onclick="openForm()">Create a
                         Post</button>
@@ -130,6 +118,25 @@
 <script>
     document.getElementById("postForm").style.display = "none";
     document.getElementById("editPostButton").style.display = "none";
+    document.getElementById("image/png;base64").style.display = "none";
+    document.getElementById("plain-text").style.display = "none"
+    document.getElementById("postType").addEventListener("change", function () {
+        if (this.value == "image/png;base64") {
+            // document.getElementById("uploadImageButton").style.display = "block"; 
+            document.getElementById("image/png;base64").style.display = "block";
+            document.getElementById("text/markdown").style.display = "none";
+            document.getElementById("plain-text").style.display = "none"
+        } else if (this.value == "text/markdown") {
+            document.getElementById("image/png;base64").style.display = "none";
+            document.getElementById("text/markdown").style.display = "block";
+            document.getElementById("plain-text").style.display = "none"
+
+        } else {
+            document.getElementById("image/png;base64").style.display = "none";
+            document.getElementById("text/markdown").style.display = "none";
+            document.getElementById("plain-text").style.display = "block"
+        }
+    });
 
 </script>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

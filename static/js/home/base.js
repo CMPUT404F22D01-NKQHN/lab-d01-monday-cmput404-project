@@ -339,16 +339,6 @@ function openForm() {
   document.getElementById("editPostButton").style.display = "none";
   document.getElementById("post-type-content").innerHTML = "Post Type"
   document.getElementById("postType").style.display = "block";
-  document.getElementById("text/markdown").style.display = "block";
-
-
-
-  // // when openForm is called reset the form to its original state and remove the edit button
-  // document.getElementById("postButton").style.display = "none";
-  // document.getElementById("editPostButton").style.display = "block";
-  // document.getElementById("post-type-content").innerHTML = contentType;
-  // document.getElementById("post-header").innerHTML = "Edit Post";
-  // document.getElementById("postType").style.display = "none";
 
 }
 
@@ -412,8 +402,10 @@ function submitPost(author_id) {
 
   if (contentType == "image/png;base64") {
     // Read the file in base64
-    const file = document.getElementById("post-img").files[0];
-    console.log("asdddddddddd");
+    const file = document.getElementById("image/png;base64").files[0];
+    console.log(document.getElementById("image/png;base64"));
+    console.log(file);
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
     var read = false;
@@ -421,7 +413,7 @@ function submitPost(author_id) {
       data.content = reader.result;
       options.body = JSON.stringify(data);
       fetch(author_id + '/posts/', options).then(() => {
-        location.reload();
+        //location.reload();
       })
     };
     reader.onerror = (error) => {
@@ -431,7 +423,7 @@ function submitPost(author_id) {
 
   } else {
     fetch(author_id + '/posts/', options).then(() => {
-      location.reload();
+      //location.reload();
     })
   }
 
@@ -447,6 +439,7 @@ function editPost(post_id_var, contentType) {
   // to use relative path do ./authors/<author_id>/posts/<post_id>
   post_id_var = "./authors/" + author_id + "/posts/" + post_id;
 
+
   openForm();
 
   document.getElementById("postButton").style.display = "none";
@@ -457,9 +450,13 @@ function editPost(post_id_var, contentType) {
 
   if (contentType == "text/plain") {
     document.getElementById("post-type-content").innerHTML = "text/plain";
+    document.getElementById("plain-text").style.display = "block";
+    document.getElementById("text/markdown").style.display = "none";
   }
   if (contentType == "text/markdown") {
     document.getElementById("post-type-content").innerHTML = "text/markdown";
+    document.getElementById("text/markdown").style.display = "block";
+    document.getElementById("plain-text").style.display = "none";
   }
   // if its an image don't show anything
   if (contentType == "image/png;base64") {
@@ -483,19 +480,16 @@ function editPost(post_id_var, contentType) {
       return;
     }
     const unlisted = document.getElementById("unlisted").checked;
-    const visibility = document.getElementById("visibility").value;
+    const visibility = document.getElementById("visibility").value;    
 
-    // Change the html of Post type dropdown to be the same as the contentType of the post
-    
-
-    if (postType.value != "text/plain") {
+    if (contentType != "text/plain") {
       var content = document.getElementById(contentType).value;
     }
-    if (postType.value == "text/markdown") {
+    if (contentType == "text/markdown") {
       var converter = new showdown.Converter;
       content = converter.makeHtml(content);
     }
-    if (postType.value == "text/plain") {
+    if (contentType == "text/plain") {
       content = document.getElementById("plain-text").value;
     }
 
@@ -519,27 +513,20 @@ function editPost(post_id_var, contentType) {
       body: JSON.stringify(data)
     }
 
-    if (contentType == "image/png;base64") {
-      // Read the file in base64
-      const file = document.getElementById("image/png;base64").files[0];
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      var read = false;
-      reader.onload = () => {
-        data.content = reader.result;
-        options.body = JSON.stringify(data);
-        fetch(post_id_var, options).then(() => {
-          location.reload();
-        })
-      };
-      reader.onerror = (error) => {
-        alert("Error: " + error);
-      };
 
-    } else {
+    if (contentType == "image/png;base64") {
+      // The file is already uploaded and it's id is post-img so we just need to get the base64 string and we have img source as the content
+      const file = document.getElementById("post-img").src;
+      const base64 = file.split("/").pop();
+      data.content = base64;
+      options.body = JSON.stringify(data);
       fetch(post_id_var, options).then(() => {
-        location.reload();
       })
     }
+    else {
+      fetch(post_id_var, options).then(() => {
+      })
+    }
+
   });
 }
