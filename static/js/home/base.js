@@ -64,100 +64,39 @@ function editProfile(author_id) {
 
 }
 
-// function editPost2(post_id_var) {
+async function newComment(author_id, post_id) {
+  const content = prompt("Enter the content of your comment");
+  if (content === null) {
+    return;
+  }
 
-//   // extract the post id from the post_id_var
-//   const post_id = post_id_var.split("/").pop();
-//   // extract author_id from post_id_var given http://localhost:8000/authors/b1aa5d08243c4bc4bf69bb220c09aa9f/posts/ca6df392b72941d8b9ca393331c5a554
-//   const author_id = post_id_var.split("/").slice(-3)[0];
-
-//   // to use relative path do ./authors/<author_id>/posts/<post_id>
-//   post_id_var = "./authors/" + author_id + "/posts/" + post_id;
-
-//   console.log(post_id_var);
-
-//   // I want to create an edit form here with everything prefilled and allow the user to edit it
-//   // I want to use the same form as the new post form but with the prefilled values
-//   // here is the new post form
-//   openForm();
-//   document.getElementById("editPostButton").style.display = "block";
-//   document.getElementById("postButton").style.display = "none";
-
-//   // change the title of the form to edit post
-//   document.getElementById("post-header").innerHTML = "Edit Post";
-//   // prefill the values with the current values
-//   // title should be prefilled with the value of card-title
-//   document.getElementById("title").value = "title";
-
-
-
-
-
-//   // const title = prompt("Enter the title of your post");
-//   // const content = prompt("Enter the content of your post");
-//   // const source = prompt("Enter the source of your post");
-//   // const origin = prompt("Enter the origin of your post");
-//   // const description = prompt("Enter the description of your post");
-//   const unlisted = true;
-//   const visibility = "PUBLIC";
-//   const contentType = "text/plain";
-//   const data = {
-//     "title": title,
-//     "source": source,
-//     "origin": origin,
-//     "description": description,
-//     "unlisted": unlisted,
-//     "visibility": visibility,
-//     "contentType": contentType,
-//     "content": content
-//   }
-
-//   const options = {
-//     method: 'PUT',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'X-CSRFToken': getCookie("csrftoken")
-//     },
-//     body: JSON.stringify(data)
-//   }
-//   fetch(post_id_var, options);
-//   location.reload();
-// }
-
-
-// async function newComment(author_id, post_id) {
-//   const content = prompt("Enter the content of your comment");
-//   if (content === null) {
-//     return;
-//   }
-
-//   const author_obj = await fetch(author_id, { method: 'GET' }).then(response => response.json());
-//   const post_obj = await fetch(post_id, { method: 'GET' }).then(response => response.json());
-//   const summary = author_obj.displayName + " commented on your post";
-//   const reciever_uuid = post_obj.author.id.split("/").pop();
-//   const data = {
-//     "type": "comment",
-//     "summary": summary,
-//     "author": author_obj,
-//     "object": post_id,
-//     "comment": content,
-//   }
-//   const options = {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'X-CSRFToken': getCookie("csrftoken")
-//     },
-//     body: JSON.stringify(data)
-//   }
-//   fetch("/authors/" + reciever_uuid + "/inbox/", options).then(response => {
-//     if (response.ok) {
-//       location.reload();
-//     } else {
-//       alert("Error: " + response.status);
-//     }
-//   });
-// }
+  const author_obj = await fetch(author_id, { method: 'GET' }).then(response => response.json());
+  const post_obj = await fetch(post_id, { method: 'GET' }).then(response => response.json());
+  const summary = author_obj.displayName + " commented on your post";
+  const reciever_uuid = post_obj.author.id.split("/").pop();
+  const data = {
+    "type": "comment",
+    "summary": summary,
+    "author": author_obj,
+    "object": post_id,
+    "comment": content,
+  }
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie("csrftoken")
+    },
+    body: JSON.stringify(data)
+  }
+  fetch("/authors/" + reciever_uuid + "/inbox/", options).then(response => {
+    if (response.ok) {
+      location.reload();
+    } else {
+      alert("Error: " + response.status);
+    }
+  });
+}
 
 async function sendRequest(object_id, author_id) {
   const author_obj = await fetch(author_id, { method: 'GET' }).then(response => response.json());
@@ -330,7 +269,6 @@ async function sharePost(author_id, post_url) {
 
 }
 
-// users should only be able to edit common mark and not plain/text
 
 function openForm() {
   document.getElementById("postForm").style.display = "block";
@@ -413,7 +351,7 @@ function submitPost(author_id) {
       data.content = reader.result;
       options.body = JSON.stringify(data);
       fetch(author_id + '/posts/', options).then(() => {
-        //location.reload();
+        location.reload();
       })
     };
     reader.onerror = (error) => {
@@ -423,7 +361,7 @@ function submitPost(author_id) {
 
   } else {
     fetch(author_id + '/posts/', options).then(() => {
-      //location.reload();
+      location.reload();
     })
   }
 

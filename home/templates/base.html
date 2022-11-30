@@ -21,10 +21,19 @@
                 <li class="nav-item active">
                     <div class="form-popup" id="shareForm">
                     </div>
-                    <!-- align the elements in the div below properly and evenly spaced from the left of the div -->
-                    <div style = "display: flex; justify-content: space-between; align-items: center;"
-                    class="form-popup" id="postForm">
-                        <h1 id="post-header">Create Post</h1>
+                    <div style="  
+                    text-align: left;
+                    display: inline-block;
+                    content: '';
+                    width: 50%;
+                    margin: 0 10px; 
+                    padding: 2%;
+                    margin-top: 10px;
+                    margin-bottom: 10px;
+                    " class="form-popup" id="postForm">
+                        <h1 style="
+                            text-align: center;
+                        " id="post-header">Create Post</h1>
                         <label for="title">
                             <b>Title</b>
                         </label>
@@ -39,8 +48,12 @@
                         <input type="text" placeholder="Enter Categories" name="categories" required>
                         <!-- Create a drop down for post type: text/markdown and image/png;base64 if image/png;base64 is selected, then create a button to upload image/png;base64
                                 and if text/markdown is selected, then create a text area for text/markdown by default let it be empty -->
-                        <label for="postType"></label>
-                        <label for="postType">
+                        <label style="
+                        display: inline-block;
+                        display: block;
+                        text-align: left;
+                        width: 100%;
+                        " for="postType">
                             <b id="post-type-content">Post Type</b>
                         </label>
                         <select id="postType" name="postType">
