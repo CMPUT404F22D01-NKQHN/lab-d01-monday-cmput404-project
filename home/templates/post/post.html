@@ -11,7 +11,7 @@
     <br>
     <div class="card-body">
         {% if author_post.contentType == "image/png;base64" %}
-            <img src="{{ author_post.content }}" alt="" width="100"/>
+            <img id ="post-img" src="{{ author_post.content }}" alt="" width="100"/>
             
         {% elif author_post.contentType == "text/markdown" %}
         {% autoescape off %}
@@ -66,7 +66,7 @@
         {% if editable %}
             <button type="button"
                     class="btn btn-warning"
-                    onclick="editPost('{{ author_post.id }}')">Edit</button>
+                    onclick="editPost('{{ author_post.id }}', '{{author_post.contentType}}')">Edit</button>
             <button type="button"
                     class="btn btn-danger"
                     onclick="deletePost('{{ author_post.id }}')">Delete</button>

@@ -64,83 +64,100 @@ function editProfile(author_id) {
 
 }
 
-function editPost(post_id_var) {
+// function editPost2(post_id_var) {
 
-  // extract the post id from the post_id_var
-  const post_id = post_id_var.split("/").pop();
-  // extract author_id from post_id_var given http://localhost:8000/authors/b1aa5d08243c4bc4bf69bb220c09aa9f/posts/ca6df392b72941d8b9ca393331c5a554
-  const author_id = post_id_var.split("/").slice(-3)[0];
+//   // extract the post id from the post_id_var
+//   const post_id = post_id_var.split("/").pop();
+//   // extract author_id from post_id_var given http://localhost:8000/authors/b1aa5d08243c4bc4bf69bb220c09aa9f/posts/ca6df392b72941d8b9ca393331c5a554
+//   const author_id = post_id_var.split("/").slice(-3)[0];
 
-  // to use relative path do ./authors/<author_id>/posts/<post_id>
-  post_id_var = "./authors/" + author_id + "/posts/" + post_id;
-  console.log(post_id_var);
+//   // to use relative path do ./authors/<author_id>/posts/<post_id>
+//   post_id_var = "./authors/" + author_id + "/posts/" + post_id;
 
+//   console.log(post_id_var);
 
-  const title = prompt("Enter the title of your post");
-  const content = prompt("Enter the content of your post");
-  const source = prompt("Enter the source of your post");
-  const origin = prompt("Enter the origin of your post");
-  const description = prompt("Enter the description of your post");
-  const unlisted = true;
-  const visibility = "PUBLIC";
-  const contentType = "text/plain";
-  const data = {
-    "title": title,
-    "source": source,
-    "origin": origin,
-    "description": description,
-    "unlisted": unlisted,
-    "visibility": visibility,
-    "contentType": contentType,
-    "content": content
-  }
+//   // I want to create an edit form here with everything prefilled and allow the user to edit it
+//   // I want to use the same form as the new post form but with the prefilled values
+//   // here is the new post form
+//   openForm();
+//   document.getElementById("editPostButton").style.display = "block";
+//   document.getElementById("postButton").style.display = "none";
 
-  const options = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie("csrftoken")
-    },
-    body: JSON.stringify(data)
-  }
-  fetch(post_id_var, options);
-  location.reload();
-}
+//   // change the title of the form to edit post
+//   document.getElementById("post-header").innerHTML = "Edit Post";
+//   // prefill the values with the current values
+//   // title should be prefilled with the value of card-title
+//   document.getElementById("title").value = "title";
 
 
-async function newComment(author_id, post_id) {
-  const content = prompt("Enter the content of your comment");
-  if (content === null) {
-    return;
-  }
 
-  const author_obj = await fetch(author_id, { method: 'GET' }).then(response => response.json());
-  const post_obj = await fetch(post_id, { method: 'GET' }).then(response => response.json());
-  const summary = author_obj.displayName + " commented on your post";
-  const reciever_uuid = post_obj.author.id.split("/").pop();
-  const data = {
-    "type": "comment",
-    "summary": summary,
-    "author": author_obj,
-    "object": post_id,
-    "comment": content,
-  }
-  const options = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie("csrftoken")
-    },
-    body: JSON.stringify(data)
-  }
-  fetch("/authors/" + reciever_uuid + "/inbox/", options).then(response => {
-    if (response.ok) {
-      location.reload();
-    } else {
-      alert("Error: " + response.status);
-    }
-  });
-}
+
+
+//   // const title = prompt("Enter the title of your post");
+//   // const content = prompt("Enter the content of your post");
+//   // const source = prompt("Enter the source of your post");
+//   // const origin = prompt("Enter the origin of your post");
+//   // const description = prompt("Enter the description of your post");
+//   const unlisted = true;
+//   const visibility = "PUBLIC";
+//   const contentType = "text/plain";
+//   const data = {
+//     "title": title,
+//     "source": source,
+//     "origin": origin,
+//     "description": description,
+//     "unlisted": unlisted,
+//     "visibility": visibility,
+//     "contentType": contentType,
+//     "content": content
+//   }
+
+//   const options = {
+//     method: 'PUT',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'X-CSRFToken': getCookie("csrftoken")
+//     },
+//     body: JSON.stringify(data)
+//   }
+//   fetch(post_id_var, options);
+//   location.reload();
+// }
+
+
+// async function newComment(author_id, post_id) {
+//   const content = prompt("Enter the content of your comment");
+//   if (content === null) {
+//     return;
+//   }
+
+//   const author_obj = await fetch(author_id, { method: 'GET' }).then(response => response.json());
+//   const post_obj = await fetch(post_id, { method: 'GET' }).then(response => response.json());
+//   const summary = author_obj.displayName + " commented on your post";
+//   const reciever_uuid = post_obj.author.id.split("/").pop();
+//   const data = {
+//     "type": "comment",
+//     "summary": summary,
+//     "author": author_obj,
+//     "object": post_id,
+//     "comment": content,
+//   }
+//   const options = {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'X-CSRFToken': getCookie("csrftoken")
+//     },
+//     body: JSON.stringify(data)
+//   }
+//   fetch("/authors/" + reciever_uuid + "/inbox/", options).then(response => {
+//     if (response.ok) {
+//       location.reload();
+//     } else {
+//       alert("Error: " + response.status);
+//     }
+//   });
+// }
 
 async function sendRequest(object_id, author_id) {
   const author_obj = await fetch(author_id, { method: 'GET' }).then(response => response.json());
@@ -313,10 +330,26 @@ async function sharePost(author_id, post_url) {
 
 }
 
+// users should only be able to edit common mark and not plain/text
 
 function openForm() {
   document.getElementById("postForm").style.display = "block";
-  document.getElementById("postButton").style.display = "none";
+  document.getElementById("postButton").style.display = "block";
+  document.getElementById("post-header").innerHTML = "Create Post";
+  document.getElementById("editPostButton").style.display = "none";
+  document.getElementById("post-type-content").innerHTML = "Post Type"
+  document.getElementById("postType").style.display = "block";
+  document.getElementById("text/markdown").style.display = "block";
+
+
+
+  // // when openForm is called reset the form to its original state and remove the edit button
+  // document.getElementById("postButton").style.display = "none";
+  // document.getElementById("editPostButton").style.display = "block";
+  // document.getElementById("post-type-content").innerHTML = contentType;
+  // document.getElementById("post-header").innerHTML = "Edit Post";
+  // document.getElementById("postType").style.display = "none";
+
 }
 
 function closeForm() {
@@ -355,6 +388,8 @@ function submitPost(author_id) {
     content = document.getElementById("plain-text").value;
   }
 
+
+
   let data = {
     "title": title,
     "description": description,
@@ -377,7 +412,8 @@ function submitPost(author_id) {
 
   if (contentType == "image/png;base64") {
     // Read the file in base64
-    const file = document.getElementById("image/png;base64").files[0];
+    const file = document.getElementById("post-img").files[0];
+    console.log("asdddddddddd");
     const reader = new FileReader();
     reader.readAsDataURL(file);
     var read = false;
@@ -394,13 +430,116 @@ function submitPost(author_id) {
 
 
   } else {
-    console.log("non-image data: " + JSON.stringify(data));
     fetch(author_id + '/posts/', options).then(() => {
       location.reload();
     })
   }
 
+}
 
+function editPost(post_id_var, contentType) {
+  console.log(contentType);
+  // extract the post id from the post_id_var
+  const post_id = post_id_var.split("/").pop();
+  // extract author_id from post_id_var given http://localhost:8000/authors/b1aa5d08243c4bc4bf69bb220c09aa9f/posts/ca6df392b72941d8b9ca393331c5a554
+  const author_id = post_id_var.split("/").slice(-3)[0];
 
+  // to use relative path do ./authors/<author_id>/posts/<post_id>
+  post_id_var = "./authors/" + author_id + "/posts/" + post_id;
 
+  openForm();
+
+  document.getElementById("postButton").style.display = "none";
+  document.getElementById("editPostButton").style.display = "block";
+  document.getElementById("post-type-content").innerHTML = contentType;
+  document.getElementById("post-header").innerHTML = "Edit Post";
+  document.getElementById("postType").style.display = "none";
+
+  if (contentType == "text/plain") {
+    document.getElementById("post-type-content").innerHTML = "text/plain";
+  }
+  if (contentType == "text/markdown") {
+    document.getElementById("post-type-content").innerHTML = "text/markdown";
+  }
+  // if its an image don't show anything
+  if (contentType == "image/png;base64") {
+    document.getElementById("text/markdown").style.display = "none";
+    document.getElementById("plain-text").style.display = "none";
+  }
+
+  // if the edit button is clicked then we will do the same thing as submitPost but with a PUT request using the post_id_var
+  document.getElementById("editPostButton").addEventListener("click", () => {
+    event.preventDefault();
+    const title = document.getElementById("title").value;
+    if (title == "") {
+      alert("Title cannot be empty");
+      return;
+    }
+    const source = "source"
+    const origin = "origin"
+    const description = document.getElementById("description").value;
+    if (description == "") {
+      alert("Description cannot be empty");
+      return;
+    }
+    const unlisted = document.getElementById("unlisted").checked;
+    const visibility = document.getElementById("visibility").value;
+
+    // Change the html of Post type dropdown to be the same as the contentType of the post
+    
+
+    if (postType.value != "text/plain") {
+      var content = document.getElementById(contentType).value;
+    }
+    if (postType.value == "text/markdown") {
+      var converter = new showdown.Converter;
+      content = converter.makeHtml(content);
+    }
+    if (postType.value == "text/plain") {
+      content = document.getElementById("plain-text").value;
+    }
+
+    let data = {
+      "title": title,
+      "description": description,
+      "source": source,
+      "origin": origin,
+      "unlisted": unlisted,
+      "visibility": visibility,
+      "contentType": contentType,
+      "content": content
+    }
+
+    let options = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie("csrftoken")
+      },
+      body: JSON.stringify(data)
+    }
+
+    if (contentType == "image/png;base64") {
+      // Read the file in base64
+      const file = document.getElementById("image/png;base64").files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      var read = false;
+      reader.onload = () => {
+        data.content = reader.result;
+        options.body = JSON.stringify(data);
+        fetch(post_id_var, options).then(() => {
+          location.reload();
+        })
+      };
+      reader.onerror = (error) => {
+        alert("Error: " + error);
+      };
+
+    } else {
+      fetch(post_id_var, options).then(() => {
+        location.reload();
+      })
+    }
+  });
 }
