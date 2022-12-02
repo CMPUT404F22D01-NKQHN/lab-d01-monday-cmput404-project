@@ -78,25 +78,7 @@ def profile(request):
     # change dict key to be ordered by published date
 
     # loop through each post
-    author_posts = []
-    for item in posts.json()["items"]:
-        # bring all of the author attributes into a dictionary combined with the post attributes
-        temp_dict = {}
-
-        # add everything except the author attributes
-        for key, value in item.items():
-            if key == "author":
-                # add everything from the author attributes except type
-                for subkey, subvalue in value.items():
-                    if subkey == "id":
-                        temp_dict["post_id"] = subvalue
-                    elif subkey != "type":
-                        temp_dict[subkey] = subvalue
-            else:
-                temp_dict[key] = value
-
-        # add new combined post + author attributes to list of posts
-        author_posts.append(temp_dict)
+    author_posts = posts.json().get("items", [])
 
     # sort posts newest to oldest
     sorted_posts = sorted(
