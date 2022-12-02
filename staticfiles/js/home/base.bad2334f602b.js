@@ -458,23 +458,13 @@ function editPost(post_url, contentType) {
       const base64 = file.split("/").pop();
       data.content = base64;
       options.body = JSON.stringify(data);
-      fetch(edit_post_url, options).then((res) => {
-        if (res.status == 200) {
-          location.reload();
-        }
-        else {
-          alert("Error: " + res.status);
-        }
+      fetch(edit_post_url, options).then(() => {
+        location.reload();
       })
     }
     else {
-      fetch(edit_post_url, options).then((res) => {
-        if (res.status == 200) {
-          location.reload();
-        }
-        else {
-          alert("Error: " + res.status);
-        }
+      fetch(edit_post_url, options).then(() => {
+        location.reload();
       })
     }
 

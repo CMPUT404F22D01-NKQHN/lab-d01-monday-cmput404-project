@@ -367,15 +367,15 @@ function submitPost(author_id) {
 
 }
 
-function editPost(post_url, contentType) {
+function editPost(post_id_var, contentType) {
   console.log(contentType);
   // extract the post id from the post_id_var
-  const post_id = post_url.split("/").pop();
+  const post_id = post_id_var.split("/").pop();
   // extract author_id from post_id_var given http://localhost:8000/authors/b1aa5d08243c4bc4bf69bb220c09aa9f/posts/ca6df392b72941d8b9ca393331c5a554
-  const author_id = post_url.split("/").slice(-3)[0];
+  const author_id = post_id_var.split("/").slice(-3)[0];
 
   // to use relative path do ./authors/<author_id>/posts/<post_id>
-  let edit_post_url = "./authors/" + author_id + "/posts/" + post_id;
+  post_id_var = "./authors/" + author_id + "/posts/" + post_id;
 
 
   openForm();
@@ -418,7 +418,7 @@ function editPost(post_url, contentType) {
       return;
     }
     const unlisted = document.getElementById("unlisted").checked;
-    const visibility = document.getElementById("visibility").value;
+    const visibility = document.getElementById("visibility").value;    
 
     if (contentType != "text/plain") {
       var content = document.getElementById(contentType).value;
@@ -458,23 +458,11 @@ function editPost(post_url, contentType) {
       const base64 = file.split("/").pop();
       data.content = base64;
       options.body = JSON.stringify(data);
-      fetch(edit_post_url, options).then((res) => {
-        if (res.status == 200) {
-          location.reload();
-        }
-        else {
-          alert("Error: " + res.status);
-        }
+      fetch(post_id_var, options).then(() => {
       })
     }
     else {
-      fetch(edit_post_url, options).then((res) => {
-        if (res.status == 200) {
-          location.reload();
-        }
-        else {
-          alert("Error: " + res.status);
-        }
+      fetch(post_id_var, options).then(() => {
       })
     }
 
