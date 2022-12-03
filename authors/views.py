@@ -19,8 +19,13 @@ class AuthorAPIView(generics.GenericAPIView):
         ],
         description="Get an author")
     def get(self, request, author_id):
-        author = Author.objects.get(id=author_id, proxy=False)
-        return Response(AuthorSerializer(author).data)
+        try:
+            author = Author.objects.get(id=author_id, proxy=False)
+            return Response(AuthorSerializer(author).data)
+        except Author.DoesNotExist:
+            return Response(status=404)
+        except Exception as e:
+            return Response(status=400)
 
     @extend_schema(
             request=UpdateAuthorSerializer, 

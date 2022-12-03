@@ -1,20 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="container">
-        <h3>Manage Followers</h3>
+        <h3>Manage Followers/Friends</h3>
         <hr>
         {% for follower in author_followers %}
-            <div class="follower">
+            <div class="row">
                 <img src="{{ follower.profileImage }}"
                      width="50"
                      height="50"
                      class="rounded-circle"/>
-                <p>{{ follower.displayName }}</p>
+                <p class="col-sm font-weight-bold align-middle">{{ follower.displayName }}</p>
+                <p class="col-sm">Host: {{ follower.host }}</p>
+                <p class="col-sm">Is true friend: {{ follower.is_friend }}</p>
                 <button class="btn btn-danger"
                         onclick="removeFollower('{{ author_url }}','{{ follower.uuid }}')">
-                    Remove Follower
+                    Remove {% if follower.is_friend %}Friend{% else %}Follower{% endif %}
                 </button>
+                <a class="col-sm" href="/user/{{ user.uuid }}">View Profile</a>
             </div>
+            <hr>
         {% endfor %}
         {% if author_followers|length == 0 %}<p>You have no followers</p>{% endif %}
         <br>

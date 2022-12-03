@@ -20,7 +20,7 @@ snapshots['UITestCase::test_home 1'] = '''
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/">Social Media Project</a>
+        <a class="navbar-brand" href="/">Welcome, test!</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -118,7 +118,6 @@ snapshots['UITestCase::test_home 1'] = '''
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/profile">Profile</a>
-                    <!-- Here we can put the logged in user\'s name instead of "Profile" -->
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/followers">Followers</a>
@@ -180,7 +179,7 @@ snapshots['UITestCase::test_home 1'] = '''
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
     integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
     crossorigin="anonymous"></script>
-<script src=/static/js/home/base.31262678a86f.js></script>
+<script src=/static/js/home/base.73d54276fb60.js></script>
 <script src=/static/js/home/showdown.a4a4ba0f8f8e.js></script>
 
 </html>'''
