@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from authors.models import Author
+from nodes.models import Node
 from authors.serializers import AuthorSerializer
 from datetime import datetime
 import requests
@@ -8,7 +9,7 @@ from authors import serializers
 from django.http import HttpResponse
 
 from django.shortcuts import redirect
-
+import requests
 # Create your views here.
 import json
 
@@ -189,6 +190,7 @@ def followers(request):
         user["uuid"] = user["id"].split("/")[-1]
     for user in author_followers:
         user["uuid"] = user["id"].split("/")[-1]
+        user["is_friend"] = check_friendship(request.user.id, user["uuid"])
     context = {
         "all_users": all_users,
         "author_followers": author_followers,
@@ -201,6 +203,25 @@ def followers(request):
 
     return render(request, "followers/index.html", context)
 
+def check_friendship(author_id, friend_id):
+    # Check if author_id is a follower of friend_id
+    friend_id = friend_id.split("/")[-1]
+    # Get friend's host
+    try:
+        author = Author.objects.get(id=friend_id)
+        friend_host = author.host+"/"
+        for node in Node.objects.all():
+            if node.proxy_users.filter(id=friend_id).exists():
+                friend_host = node.api_url
+                break
+        response = requests.get(friend_host + "authors/" + str(friend_id) + "/followers"+"/"+str(author_id))
+        if response.status_code == 200:
+            return True
+        return False
+        
+    except Exception as e:
+        print(e)
+        return False
 
 def user(request, author_id):
     server = request.GET.get("server", "local")
@@ -226,6 +247,7 @@ def user(request, author_id):
                 user_info = requests.get(
                     request.build_absolute_uri(server + "authors/" + str(author_id))
                 ).json()
+                assert user_info.get("host") in server
                 selected_server = server
                 found = True
                 break
@@ -241,7 +263,6 @@ def user(request, author_id):
         
     except:
         pass
-    
     user_info["uuid"] = user_info["id"].split("/")[-1]
     
     is_follower = request.user.followers.filter(id=author_id).exists()

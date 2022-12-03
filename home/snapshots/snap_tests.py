@@ -20,7 +20,7 @@ snapshots['UITestCase::test_home 1'] = '''
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/">Social Media Project</a>
+        <a class="navbar-brand" href="/">Welcome, test!</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -118,7 +118,6 @@ snapshots['UITestCase::test_home 1'] = '''
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/profile">Profile</a>
-                    <!-- Here we can put the logged in user\'s name instead of "Profile" -->
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/followers">Followers</a>
