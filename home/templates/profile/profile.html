@@ -8,8 +8,9 @@
         <img id="prfile" width="100" class="rounded-circle"/>
         <br>
         <br>
-        <button id="edit-profile" class="btn btn-primary"
-        onclick="editProfile('{{ author_id }}')">Edit Profile</button>
+        <button id="edit-profile"
+                class="btn btn-primary"
+                onclick="editProfile('{{ author_id }}')">Edit Profile</button>
       </div>
       <div class = "col-md-8">
         <label>Name:</label>
@@ -26,13 +27,20 @@
       {% include "post/post.html" with author_post=author_post editable=True %}
       <br>
     {% endfor %}
+    {% if not author_list %}<p>No posts yet</p>{% endif %}
+    <hr>
+    <div id="github-stream">
+      <h3>My Github activity</h3>
+      <div id="github-stream-content">
+      </div>
+    </div>
     <script>
-      
           window.onload = async function() {
             const user = await fetch('{{author_id}}').then(res => res.json());
             document.getElementById('user-display-name').innerText = user.displayName;
             if (user.github) {
-              document.getElementById('user-github').innerText = user.github;
+               document.getElementById('user-github').innerText = user.github;
+               await displayGithubActivity(user.github, document.getElementById('github-stream'));
             }
             document.getElementById('prfile').src = user.profileImage;
 

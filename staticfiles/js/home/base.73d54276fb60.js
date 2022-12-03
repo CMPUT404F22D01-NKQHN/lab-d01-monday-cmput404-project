@@ -64,50 +64,6 @@ function editProfile(author_id) {
 
 }
 
-function editPost(post_id_var) {
-
-  // extract the post id from the post_id_var
-  const post_id = post_id_var.split("/").pop();
-  // extract author_id from post_id_var given http://localhost:8000/authors/b1aa5d08243c4bc4bf69bb220c09aa9f/posts/ca6df392b72941d8b9ca393331c5a554
-  const author_id = post_id_var.split("/").slice(-3)[0];
-
-  // to use relative path do ./authors/<author_id>/posts/<post_id>
-  post_id_var = "./authors/" + author_id + "/posts/" + post_id;
-  console.log(post_id_var);
-
-
-  const title = prompt("Enter the title of your post");
-  const content = prompt("Enter the content of your post");
-  const source = prompt("Enter the source of your post");
-  const origin = prompt("Enter the origin of your post");
-  const description = prompt("Enter the description of your post");
-  const unlisted = true;
-  const visibility = "PUBLIC";
-  const contentType = "text/plain";
-  const data = {
-    "title": title,
-    "source": source,
-    "origin": origin,
-    "description": description,
-    "unlisted": unlisted,
-    "visibility": visibility,
-    "contentType": contentType,
-    "content": content
-  }
-
-  const options = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie("csrftoken")
-    },
-    body: JSON.stringify(data)
-  }
-  fetch(post_id_var, options);
-  location.reload();
-}
-
-
 async function newComment(author_id, post_id) {
   const content = prompt("Enter the content of your comment");
   if (content === null) {
@@ -117,7 +73,7 @@ async function newComment(author_id, post_id) {
   const author_obj = await fetch(author_id, { method: 'GET' }).then(response => response.json());
   const post_obj = await fetch(post_id, { method: 'GET' }).then(response => response.json());
   const summary = author_obj.displayName + " commented on your post";
-
+  const reciever_uuid = post_obj.author.id.split("/").pop();
   const data = {
     "type": "comment",
     "summary": summary,
@@ -133,7 +89,7 @@ async function newComment(author_id, post_id) {
     },
     body: JSON.stringify(data)
   }
-  fetch("/authors/" + post_obj.author.uuid + "/inbox/", options).then(response => {
+  fetch("/authors/" + reciever_uuid + "/inbox/", options).then(response => {
     if (response.ok) {
       location.reload();
     } else {
@@ -164,6 +120,7 @@ async function sendRequest(object_id, author_id) {
     },
     body: JSON.stringify(data)
   }
+  object_obj.uuid = object_obj.id.split("/").pop();
   console.log("SEND REQUEST TO: " + object_obj.id + "/inbox/")
   fetch("/authors/" + object_obj.uuid + "/inbox/", options).then((response) => {
     if (response.ok) {
@@ -313,10 +270,14 @@ async function sharePost(author_id, post_url) {
 }
 
 
-const author_id = "{{ author_id }}"
 function openForm() {
   document.getElementById("postForm").style.display = "block";
-  document.getElementById("postButton").style.display = "none";
+  document.getElementById("postButton").style.display = "block";
+  document.getElementById("post-header").innerHTML = "Create Post";
+  document.getElementById("editPostButton").style.display = "none";
+  document.getElementById("post-type-content").innerHTML = "Post Type"
+  document.getElementById("postType").style.display = "block";
+
 }
 
 function closeForm() {
@@ -341,7 +302,22 @@ function submitPost(author_id) {
   const unlisted = document.getElementById("unlisted").checked;
   const visibility = document.getElementById("visibility").value;
   const contentType = document.getElementById("postType").value;
-  let content = document.getElementById(contentType).value;
+
+  if (postType.value != "text/plain") {
+    var content = document.getElementById(contentType).value;
+  }
+
+  if (postType.value == "text/markdown") {
+    var converter = new showdown.Converter;
+    content = converter.makeHtml(content);
+  }
+
+  if (postType.value == "text/plain") {
+    content = document.getElementById("plain-text").value;
+  }
+
+
+
   let data = {
     "title": title,
     "description": description,
@@ -365,6 +341,9 @@ function submitPost(author_id) {
   if (contentType == "image/png;base64") {
     // Read the file in base64
     const file = document.getElementById("image/png;base64").files[0];
+    console.log(document.getElementById("image/png;base64"));
+    console.log(file);
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
     var read = false;
@@ -381,13 +360,171 @@ function submitPost(author_id) {
 
 
   } else {
-    console.log("non-image data: " + JSON.stringify(data));
     fetch(author_id + '/posts/', options).then(() => {
       location.reload();
     })
   }
 
+}
+
+function editPost(post_url, contentType) {
+  console.log(contentType);
+  // extract the post id from the post_id_var
+  const post_id = post_url.split("/").pop();
+  // extract author_id from post_id_var given http://localhost:8000/authors/b1aa5d08243c4bc4bf69bb220c09aa9f/posts/ca6df392b72941d8b9ca393331c5a554
+  const author_id = post_url.split("/").slice(-3)[0];
+
+  // to use relative path do ./authors/<author_id>/posts/<post_id>
+  let edit_post_url = "./authors/" + author_id + "/posts/" + post_id;
 
 
+  openForm();
+
+  document.getElementById("postButton").style.display = "none";
+  document.getElementById("editPostButton").style.display = "block";
+  document.getElementById("post-type-content").innerHTML = contentType;
+  document.getElementById("post-header").innerHTML = "Edit Post";
+  document.getElementById("postType").style.display = "none";
+
+  if (contentType == "text/plain") {
+    document.getElementById("post-type-content").innerHTML = "text/plain";
+    document.getElementById("plain-text").style.display = "block";
+    document.getElementById("text/markdown").style.display = "none";
+  }
+  if (contentType == "text/markdown") {
+    document.getElementById("post-type-content").innerHTML = "text/markdown";
+    document.getElementById("text/markdown").style.display = "block";
+    document.getElementById("plain-text").style.display = "none";
+  }
+  // if its an image don't show anything
+  if (contentType == "image/png;base64") {
+    document.getElementById("text/markdown").style.display = "none";
+    document.getElementById("plain-text").style.display = "none";
+  }
+
+  // if the edit button is clicked then we will do the same thing as submitPost but with a PUT request using the post_id_var
+  document.getElementById("editPostButton").addEventListener("click", () => {
+    event.preventDefault();
+    const title = document.getElementById("title").value;
+    if (title == "") {
+      alert("Title cannot be empty");
+      return;
+    }
+    const source = "source"
+    const origin = "origin"
+    const description = document.getElementById("description").value;
+    if (description == "") {
+      alert("Description cannot be empty");
+      return;
+    }
+    const unlisted = document.getElementById("unlisted").checked;
+    const visibility = document.getElementById("visibility").value;
+
+    if (contentType != "text/plain") {
+      var content = document.getElementById(contentType).value;
+    }
+    if (contentType == "text/markdown") {
+      var converter = new showdown.Converter;
+      content = converter.makeHtml(content);
+    }
+    if (contentType == "text/plain") {
+      content = document.getElementById("plain-text").value;
+    }
+
+    let data = {
+      "title": title,
+      "description": description,
+      "source": source,
+      "origin": origin,
+      "unlisted": unlisted,
+      "visibility": visibility,
+      "contentType": contentType,
+      "content": content
+    }
+
+    let options = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie("csrftoken")
+      },
+      body: JSON.stringify(data)
+    }
+
+
+    if (contentType == "image/png;base64") {
+      // The file is already uploaded and it's id is post-img so we just need to get the base64 string and we have img source as the content
+      const file = document.getElementById("post-img").src;
+      const base64 = file.split("/").pop();
+      data.content = base64;
+      options.body = JSON.stringify(data);
+      fetch(edit_post_url, options).then((res) => {
+        if (res.status == 200) {
+          location.reload();
+        }
+        else {
+          alert("Error: " + res.status);
+        }
+      })
+    }
+    else {
+      fetch(edit_post_url, options).then((res) => {
+        if (res.status == 200) {
+          location.reload();
+        }
+        else {
+          alert("Error: " + res.status);
+        }
+      })
+    }
+
+  });
+}
+
+async function displayGithubActivity(github, element) {
+  // Check if github url is valid
+  regex = /https:\/\/github.com\/[a-zA-Z0-9-]+\/?/;
+  if (!regex.test(github)) {
+    element.innerHTML = "Invalid Github URL";
+    return;
+  }
+  console.log("Github url is valid");
+  username = github.split("/").pop();
+  // https://docs.github.com/en/rest/activity/events
+  await fetch("https://api.github.com/users/" + username + "/events/public")
+    .then(response => response.json())
+    .then(data => {
+      if (data.message == "Not Found") {
+        element.innerHTML = "Github user not found";
+        return;
+      }
+      for (let i = 0; i < data.length; i++) {
+        // https://docs.github.com/en/developers/webhooks-and-events/events/github-event-types
+
+        let { type, public, payload, repository, actor, org, created_at, id } = data[i];
+        let { login, avatar_url } = actor;
+
+        let div = document.createElement("div");
+        div.className = "github-activity card";
+        div.innerHTML = `
+          <div class="github-activity-header card-header">
+            <img src="${avatar_url}" alt="github profile picture" class="github-profile-pic rounded-circle float-left img-fluid img-thumbnail" style="width: 40px; margin-right: 10px">
+            <h4>${login}</h4>
+            <p>${created_at}</p>
+          </div>
+          <div class="github-activity-body card-body">
+            <div class="github-activity-body-text card-text">
+              ${payload.commits ? payload.commits[0].message : type}
+            </div>
+          </div>
+        `;
+        element.appendChild(div);
+        element.appendChild(document.createElement("br"));
+
+
+      }
+      element.style.display = "block";
+
+    }).catch(error => console.log(error));
 
 }

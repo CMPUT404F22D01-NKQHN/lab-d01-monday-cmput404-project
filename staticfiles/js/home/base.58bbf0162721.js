@@ -480,3 +480,52 @@ function editPost(post_url, contentType) {
 
   });
 }
+
+// displayGithubActivity(user.github, document.getElementById('github-stream'));
+async function displayGithubActivity(github, element) {
+  // Check if github url is valid
+  regex = /https:\/\/github.com\/[a-zA-Z0-9-]+\/?/;
+  if (!regex.test(github)) {
+    element.innerHTML = "Invalid Github URL";
+    return;
+  }
+  console.log("Github url is valid");
+  username = github.split("/").pop();
+  // https://docs.github.com/en/rest/activity/events
+  await fetch("https://api.github.com/users/" + username + "/events/public")
+    .then(response => response.json())
+    .then(data => {
+      if (data.message == "Not Found") {
+        element.innerHTML = "Github user not found";
+        return;
+      }
+      for (let i = 0; i < data.length; i++) {
+        // https://docs.github.com/en/developers/webhooks-and-events/events/github-event-types
+        
+        let { type, public, payload, repository, actor, org, created_at, id } = data[i];
+        let { login, avatar_url } = actor;
+        
+        let div = document.createElement("div");
+        div.className = "github-activity card";
+        div.innerHTML = `
+          <div class="github-activity-header card-header">
+            <img src="${avatar_url}" alt="github profile picture" class="github-profile-pic rounded-circle float-left img-fluid img-thumbnail" style="width: 40px; margin-right: 10px">
+            <h4>${login}</h4>
+            <p>${created_at}</p>
+          </div>
+          <div class="github-activity-body card-body">
+            <div class="github-activity-body-text card-text">
+              ${payload.commits ? payload.commits[0].message : type}
+            </div>
+          </div>
+        `;
+        element.appendChild(div);
+        element.appendChild(document.createElement("br"));
+         
+           
+      }
+      element.style.display = "block";
+    
+    }).catch(error => console.log(error));
+
+}
