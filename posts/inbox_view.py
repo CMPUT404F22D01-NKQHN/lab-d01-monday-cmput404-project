@@ -127,7 +127,7 @@ class InboxAPIView(GenericAPIView):
                 for node in Node.objects.all():
                     try:
                         response = requests.get(
-                            f"{node.api_url}authors/{author_id}", timeout=0.5)
+                            f"{node.api_url}authors/{author_id}", timeout=3)
                         author_res = response.json()
                         assert author_res["host"] in node.api_url
                         print("Checking remote server",f"{node.api_url}authors/{author_id}")
@@ -160,7 +160,7 @@ class InboxAPIView(GenericAPIView):
                         api_url,
                         data=json.dumps(request.data),
                         headers={"Authorization": f"basic {creds}", "Content-Type": "application/json"},
-                        timeout=0.5
+                        timeout=3,
                     )
                     print(response.status_code)
                     print(response.text)
