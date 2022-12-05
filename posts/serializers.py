@@ -185,7 +185,7 @@ class CommentInboxItemSerializer(serializers.Serializer):
 class ReadCommentSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField("get_type")
     author = serializers.SerializerMethodField("get_author")
-    likes = serializers.SerializerMethodField("get_likes")
+    count = serializers.SerializerMethodField("get_likes")
     id = serializers.SerializerMethodField("get_id")
     # post_id = serializers.SerializerMethodField('get_post_id')
     def get_type(self, obj):
@@ -232,8 +232,7 @@ class ReadPostSerializer(serializers.ModelSerializer):
     visibility = serializers.CharField()
     contentType = serializers.CharField()
     content = serializers.SerializerMethodField("get_content")
-    likes = serializers.SerializerMethodField("get_likes")
-    count = serializers.SerializerMethodField("get_comments_count")
+    count = serializers.SerializerMethodField("get_likes")
     commentsSrc = serializers.SerializerMethodField("get_comments_list")
 
     def get_author(self, model: Post):
@@ -265,7 +264,15 @@ class ReadPostSerializer(serializers.ModelSerializer):
 
     def get_comments_list(self, model: Post):
         comments = model.comments.order_by("-published")[:5]
-        return ReadCommentSerializer(comments, many=True).data
+        data = {
+            "post": self.get_id(model),
+            "comments": ReadCommentSerializer(
+                comments,
+                many=True,).data,
+            "page": 1,
+            "size": 5
+            }
+        return ReadPostCommentsSerializer(data).data
 
     class Meta:
         model = Post
@@ -302,9 +309,9 @@ class ReadPostCommentsSerializer(serializers.Serializer):
         return data["comments"]
 
     def get_id(self, data):
-        return data["post_id"]+"/comments/"
+        return data["post"]+"/comments/"
     def get_post(self, data):
-        return data["post_id"]
+        return data["post"]
     def get_size(self, data):
         return data["size"]
     def get_page(self, data):

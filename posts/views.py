@@ -150,7 +150,7 @@ def get_all_comments_by_post(self, request, post_id):
             or post.author.followers.filter(id=request.user.id).exists()
         ), "Post is not commentable"
         data = {
-            "post_id": ReadPostSerializer(post).data["id"],
+            "post": ReadPostSerializer(post).data["id"],
             "comments": ReadCommentSerializer(
                 self.paginate_queryset(
                     Comment.objects.filter(post_id=post_id).order_by("-published"),
