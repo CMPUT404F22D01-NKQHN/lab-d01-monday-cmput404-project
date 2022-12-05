@@ -12,18 +12,18 @@
         <br>
         <br>
         {% for author_notif in author_inbox %}
-            {% if author_notif.type == "follow" %}
+            {% if author_notif.type == "follow" or author_notif.type == "Follow" %}
                 {% include "followers/follow-request.html" with followreq=author_notif only %}
-            {% elif author_notif.type == "post" %}
+            {% elif author_notif.type == "post"  or author_notif.type == "Post" %}
                 {% include "post/post-shared.html" with author_post=author_notif author_id=author_notif.author.id only %}
-            {% elif author_notif.type == "like" %}
+            {% elif author_notif.type == "like" or author_notif.type == "Like" %}
                 <div class="card">
                     <div class="card-header">
                         <h5>New Like!</h5>
                         <h6>{{ author_notif.summary }}!</h6>
                     </div>
                 </div>
-            {% elif author_notif.type == "comment" %}
+            {% elif author_notif.type == "comment" or author_notif.type == "Comment" %}
                 <div class="card">
                     <div class="card-header">
                         <h5>New comment!</h5>
