@@ -126,18 +126,16 @@ class InboxAPIView(GenericAPIView):
                 # Check if author exists on remote server
                 for node in Node.objects.all():
                     try:
-                        author = requests.get(
-                            f"{node.api_url}authors/{author_id}"
-                        ).json()
-                        assert author["host"] in node.api_url
                         response = requests.get(
-                            f"{node.api_url}authors/{author_id}")
+                            f"{node.api_url}authors/{author_id}", timeout=0.5)
+                        author_res = response.json()
+                        assert author_res["host"] in node.api_url
                         print("Checking remote server",f"{node.api_url}authors/{author_id}")
                         if response.status_code == 200:
                             author = Author.objects.create(
                                 id=author_id,
                                 host=node.api_url,
-                                display_name=response.json()["displayName"],
+                                display_name=author_res["displayName"],
                                 proxy=True,
                                 username=gen_id()
                             )
@@ -149,23 +147,31 @@ class InboxAPIView(GenericAPIView):
             if not author:
                 return Response(
                     status=404,
-                    data={"error": "The author you are trying to add does not exist."},
+                    data={"error": f"The author with id {author_id} does not exist. Not on this server or remote server."},
                 )
             if Node.objects.filter(proxy_users=author).exists():
-                print("proxy user")
-                node = Node.objects.get(proxy_users=author)
-                api_url = node.api_url + "authors/" + author_id + "/inbox/"
-                print("URL",api_url)
-                creds = base64.b64encode(f"{node.username}:{node.password}".encode()).decode()
-                response = requests.post(
-                    api_url,
-                    data=json.dumps(request.data),
-                    headers={"Authorization": f"basic {creds}", "Content-Type": "application/json"},
-                )
-                print(response.status_code)
-                print(response.text)
-                print(json.dumps(request.data))
-                return Response(response.json(), status=response.status_code)
+                try:
+                    print("proxy user")
+                    node = Node.objects.get(proxy_users=author)
+                    api_url = node.api_url + "authors/" + author_id + "/inbox/"
+                    print("URL",api_url)
+                    creds = base64.b64encode(f"{node.username}:{node.password}".encode()).decode()
+                    response = requests.post(
+                        api_url,
+                        data=json.dumps(request.data),
+                        headers={"Authorization": f"basic {creds}", "Content-Type": "application/json"},
+                        timeout=0.5
+                    )
+                    print(response.status_code)
+                    print(response.text)
+                    print(json.dumps(request.data))
+                    return Response(response.json(), status=response.status_code)
+                except Exception as e:
+                    print(e)
+                    return Response(
+                        status=500,
+                        data={"error": "Error sending request to remote server."},
+                    )
             if request.user.is_another_server:
                 """
                 This block of code is essentially to handle post requests from other servers
