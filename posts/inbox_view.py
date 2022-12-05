@@ -126,7 +126,10 @@ class InboxAPIView(GenericAPIView):
                 # Check if author exists on remote server
                 for node in Node.objects.all():
                     try:
-                        assert author.host in node.api_url
+                        author = requests.get(
+                            f"{node.api_url}authors/{author_id}"
+                        ).json()
+                        assert author["host"] in node.api_url
                         response = requests.get(
                             f"{node.api_url}authors/{author_id}")
                         print("Checking remote server",f"{node.api_url}authors/{author_id}")
@@ -152,6 +155,7 @@ class InboxAPIView(GenericAPIView):
                 print("proxy user")
                 node = Node.objects.get(proxy_users=author)
                 api_url = node.api_url + "authors/" + author_id + "/inbox/"
+                print("URL",api_url)
                 creds = base64.b64encode(f"{node.username}:{node.password}".encode()).decode()
                 response = requests.post(
                     api_url,

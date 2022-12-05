@@ -165,6 +165,7 @@ async function newLike(author_id, post_id, comment = false) {
     "object": post_id
 
   }
+  post_obj.author.uuid = post_obj.author.id.split("/").pop();
   fetch("/authors/" + post_obj.author.uuid + "/inbox/", {
     method: 'POST',
     headers: {
@@ -196,6 +197,7 @@ async function sharePost(author_id, post_url) {
   console.log(followers);
   // Display a checkbox list of all followers
   const followers_list = followers.items.map((follower) => {
+    follower.uuid = follower.id.split("/").pop();
     return `<input type="checkbox" class="form-check-input" name="followers" value="${follower.uuid}">${follower.displayName}</input><br>`
   });
   const followers_html = `<h3>Select followers to share with</h3><form id="followers_form">${followers_list}
